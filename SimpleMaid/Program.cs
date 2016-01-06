@@ -429,7 +429,6 @@ namespace SimpleMaid
 
     // <- PROBLEMS PROBLEMS PROBLEMS I STOPPED CHECKING THEM HERE, NEED TO TEST OUTPUT FROM CMD/PS COMMANDS!!!
 
-    // Problems (what to send instead of new line)
     private static string executeCommand(string command, bool usePowershell)
     {
       ProcessStartInfo procStartInfo;
