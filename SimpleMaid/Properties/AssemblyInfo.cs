@@ -6,7 +6,11 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("SimpleMaid")]
 [assembly: AssemblyDescription("This application (if running on a target PC) allows you to send CMD, PowerShell or custom commands")]
-[assembly: AssemblyConfiguration("")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
 [assembly: AssemblyCompany("Svetomech")]
 [assembly: AssemblyProduct("SimpleMaid")]
 [assembly: AssemblyCopyright("Copyright © Svetomech TheRainwildsKeeper 2015")]
