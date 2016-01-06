@@ -532,7 +532,6 @@ namespace SimpleMaid
     {
       reportThreadStart(resources.ChatStart);
 
-
       string ans = resources.AnswerPrefix;
       string sep = resources.CommandsSeparator;
 
@@ -554,7 +553,6 @@ namespace SimpleMaid
           Thread.Sleep(1000);
         }
 
-        // Sanity check (no message)
         if (String.Empty == sRemoteMessage || sRemoteMessage.StartsWith(ans))
         {
           Thread.Sleep(1000);
@@ -579,14 +577,12 @@ namespace SimpleMaid
         Thread.Sleep(1000);
       }
 
-
       reportThreadStop(resources.ChatStop);
     }
 
     private static void awaitCommands()
     {
       reportThreadStart(resources.CommandStart);
-
 
       string ans = resources.AnswerPrefix;
       string sep = resources.CommandsSeparator;
@@ -608,7 +604,6 @@ namespace SimpleMaid
           Thread.Sleep(1000);
         }
 
-        // Sanity check (no command)
         if (String.Empty == sRemoteCommand || sRemoteCommand.StartsWith(ans))
         {
           Thread.Sleep(1000);
@@ -696,7 +691,6 @@ namespace SimpleMaid
         Thread.Sleep(1000);
       }
 
-
       reportThreadStop(resources.CommandStop);
     }
 
@@ -726,10 +720,8 @@ namespace SimpleMaid
       return resources.GeneralOKMessage;
     }
 
-    // Problems (way too sync, an attack)
     private static string downloadCommand(string[] command_parts)
     {
-      // Sanity check (not enough arguments)
       if (command_parts.Length < 2)
       {
         return resources.IncompleteCommandErrMsg;
@@ -777,6 +769,7 @@ namespace SimpleMaid
 
       Directory.CreateDirectory(download_dir);
 
+      // TODO: Use my FTP
       using (var wc = new WebClient())
       {
         try
@@ -829,13 +822,11 @@ namespace SimpleMaid
 
     private static string powershellCommand(string[] command_parts)
     {
-      // Sanity check (not enough arguments)
       if (command_parts.Length < 2)
       {
         return resources.IncompleteCommandErrMsg;
       }
 
-      // Make separated commands whole
       for (int i = 2; i < command_parts.Length; ++i)
       {
         command_parts[1] += "; " + command_parts[i];
