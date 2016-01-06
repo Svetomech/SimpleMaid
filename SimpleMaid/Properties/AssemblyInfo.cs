@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SimpleMaid")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("This application (if running on a target PC) allows you to send CMD, PowerShell or custom commands")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Svetomech")]
 [assembly: AssemblyProduct("SimpleMaid")]

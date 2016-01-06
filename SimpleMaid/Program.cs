@@ -83,7 +83,6 @@ namespace SimpleMaid
       return String.Empty;
     }
 
-    // Problems (decoding)
     public static string Get(string tag)
     {
       tag = app.ProductName + "_" + tag;
@@ -132,6 +131,7 @@ namespace SimpleMaid
         return resources.WebErrorMessage;
       }
 
+      // TODO: Rewrite - problems with decoding
       value = PublicMethods.DecodeEncodedNonAsciiCharacters(value);
       value = value.Replace(@"\/", @"/");
       value = value.Replace(@"\\", @"\");
@@ -372,6 +372,7 @@ namespace SimpleMaid
       return machinesList;
     }
 
+    #region Reports
     private static void reportGeneralError(string msg)
     {
       Console.ForegroundColor = ConsoleColor.Red;
@@ -395,6 +396,7 @@ namespace SimpleMaid
       Console.ForegroundColor = ConsoleColor.DarkRed;
       Console.WriteLine(msg + "\n");
     }
+    #endregion
 
     private static void openChatWindow()
     {
@@ -447,7 +449,7 @@ namespace SimpleMaid
 
       string result = proc.StandardOutput.ReadToEnd();
 
-      result = result.Replace(Environment.NewLine, "");
+      result = result.Replace(Environment.NewLine, @"\n");
 
       return result;
     }
