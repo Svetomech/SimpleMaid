@@ -427,8 +427,6 @@ namespace SimpleMaid
       ChatboxExit = true;
     }
 
-    // <- PROBLEMS PROBLEMS PROBLEMS I STOPPED CHECKING THEM HERE, NEED TO TEST OUTPUT FROM CMD/PS COMMANDS!!!
-
     private static string executeCommand(string command, bool usePowershell)
     {
       ProcessStartInfo procStartInfo;
