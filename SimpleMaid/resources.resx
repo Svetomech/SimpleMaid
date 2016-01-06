@@ -122,30 +122,37 @@
   </data>
   <data name="AdminErrorMessage" xml:space="preserve">
     <value>You shouldn't run this app as administrator. Don't risk your PC! (:</value>
+    <comment>Localizable</comment>
   </data>
   <data name="CommandsSeparator" xml:space="preserve">
     <value>;</value>
   </data>
   <data name="CommandStart" xml:space="preserve">
     <value>Command thread has started.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="CommandStop" xml:space="preserve">
     <value>Command thread has stopped.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="ConfigName" xml:space="preserve">
     <value>Configuration.ini</value>
   </data>
   <data name="ConnectionStart" xml:space="preserve">
     <value>Connection thread has started.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="ConnectionStop" xml:space="preserve">
     <value>Connection thread has stopped.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="OSErrorMessage" xml:space="preserve">
     <value>This app only suports Windows, sorry.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="PastSins" xml:space="preserve">
     <value>What else can you be when the world can only see a MONSTER?</value>
+    <comment>Localizable</comment>
   </data>
   <data name="PowershellCommand" xml:space="preserve">
     <value>p</value>
@@ -161,9 +168,11 @@
   </data>
   <data name="TimeStart" xml:space="preserve">
     <value>Time thread has started.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="WebErrorMessage" xml:space="preserve">
     <value>Problem connecting to server. Check your internet connection.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="AnswerPrefix" xml:space="preserve">
     <value>A: </value>
@@ -182,6 +191,7 @@
   </data>
   <data name="OldnewErrorMessage" xml:space="preserve">
     <value>What did you do?!</value>
+    <comment>Localizable</comment>
   </data>
   <data name="QuitCommand" xml:space="preserve">
     <value>q</value>
@@ -194,9 +204,11 @@
   </data>
   <data name="IncompleteCommandErrMsg" xml:space="preserve">
     <value>One good turn deserves another.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="WrongCommandErrMsg" xml:space="preserve">
     <value>A typo: </value>
+    <comment>Localizable</comment>
   </data>
   <data name="GeneralExitDelay" xml:space="preserve">
     <value>3000</value>
@@ -210,9 +222,11 @@
   </data>
   <data name="ChatStart" xml:space="preserve">
     <value>Chat thread has started.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="ChatStop" xml:space="preserve">
     <value>Chat thread has stopped.</value>
+    <comment>Localizable</comment>
   </data>
   <data name="IndividualValueLimit" xml:space="preserve">
     <value>500</value>
