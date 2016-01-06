@@ -490,9 +490,10 @@ namespace SimpleMaid
         if (resources.WebErrorMessage !=
           Set("time." + machine, String.Format("{0} {1}", now.ToShortDateString(), now.ToLongTimeString())))
         {
-          internetAlive = true;
+          if (!internetAlive)
+            resurrectDeadThreads();
 
-          resurrectDeadThreads();
+          internetAlive = true;
         }
 
         Thread.Sleep(1000 - now.Millisecond);
