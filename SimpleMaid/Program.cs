@@ -456,6 +456,7 @@ namespace SimpleMaid
       return result;
     }
 
+
     private static void resurrectDeadThreads()
     {
       if (null != connectionThread && !connectionThread.IsAlive)
@@ -477,7 +478,6 @@ namespace SimpleMaid
         chatThread.Start();
       }
     }
-
 
     private static void sendMachineTime()
     {
