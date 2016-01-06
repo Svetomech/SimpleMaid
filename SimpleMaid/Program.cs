@@ -3,6 +3,7 @@ using IniParser.Model;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -161,6 +162,10 @@ namespace SimpleMaid
         NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
         app.Hidden = true;
       }
+      #endregion
+
+      #region Localization
+      Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(CultureInfo.InstalledUICulture.Name);
       #endregion
 
       #region OS/priveleges check

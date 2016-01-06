@@ -88,6 +88,24 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Exit.
+        /// </summary>
+        internal static string btnBidFarewell_Text {
+            get {
+                return ResourceManager.GetString("btnBidFarewell_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Send message.
+        /// </summary>
+        internal static string btnSendLetter_Text {
+            get {
+                return ResourceManager.GetString("btnSendLetter_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Chat thread has started..
         /// </summary>
         internal static string ChatStart {

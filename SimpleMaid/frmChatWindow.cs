@@ -14,6 +14,8 @@ namespace SimpleMaid
     {
       this.Text = " ";
       letterBody.Text = String.Empty;
+      btnSendLetter.Text = resources.btnSendLetter_Text;
+      btnBidFarewell.Text = resources.btnBidFarewell_Text;
 
       letterBody.Enabled = true;
       btnSendLetter.Enabled = true;
