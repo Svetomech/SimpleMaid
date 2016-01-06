@@ -13,10 +13,6 @@ namespace SimpleMaid
 {
   class Program
   {
-    // TODO: избавиться от _
-    // TODO: dir, path, folder = использовать соотв. класс, а не стринг
-    // TODO: Problems
-
     private static readonly Application app = new Application();
     private static string appDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
     private static string config = resources.ConfigName;
