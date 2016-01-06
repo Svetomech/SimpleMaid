@@ -406,17 +406,18 @@ namespace SimpleMaid
 
       ChatboxWindow = new frmChatWindow();
       ChatboxWindow.ShowDialog();
+
+      // ! code below only executes after ChatboxWindow is closed
+
       ChatboxExit = false;
 
       busyChatWise = false;
 
-      #region ChatWindow_Closed
       while (resources.WebErrorMessage == Set("commands." + machine, resources.AnswerPrefix + 
         String.Format("{0},{1}", resources.MessageCommand, ChatboxWindow.Visible.ToString())))
       {
         Thread.Sleep(1000);
       }
-      #endregion
     }
 
     private static void closeChatWindow()
