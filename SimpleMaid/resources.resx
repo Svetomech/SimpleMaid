@@ -232,4 +232,12 @@
     <value>500</value>
     <comment>characters</comment>
   </data>
+  <data name="btnBidFarewell_Text" xml:space="preserve">
+    <value>Exit</value>
+    <comment>Localizable</comment>
+  </data>
+  <data name="btnSendLetter_Text" xml:space="preserve">
+    <value>Send message</value>
+    <comment>Localizable</comment>
+  </data>
 </root>
