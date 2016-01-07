@@ -196,17 +196,7 @@ namespace SimpleMaid
       #endregion
 
       #region Startup directory management
-      Directory.CreateDirectory(appDir);
-      string sfn;
-      if (Directory.Exists(sfn = ConfigurationManager.AppSettings["SvtFolderName"]))
-      {
-        string[] file_paths = Directory.GetFiles(sfn, "*.*", SearchOption.TopDirectoryOnly);
-        foreach (string file_path in file_paths)
-        {
-          File.Copy(file_path, appDir + Path.GetFileName(file_path), true);
-        }
-      }
-      sfn = null;
+      PublicMethods.DirectoryCopy(ConfigurationManager.AppSettings["SvtFolderName"], appDir);
       #endregion
 
       #region Necessary INI declarations
