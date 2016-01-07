@@ -37,6 +37,16 @@ namespace SimpleMaid
       }
     }
 
+    public static bool CheckConsoleArgument(string argument, string[] arguments)
+    {
+      foreach (string arg in arguments)
+      {
+        if (arg == argument)
+          return true;
+      }
+      return false;
+    }
+
     public static void DirectoryCopy(string sourceDirName, string destDirName, bool topDirIndicator = true)
     {
       DirectoryInfo dir = new DirectoryInfo(sourceDirName);

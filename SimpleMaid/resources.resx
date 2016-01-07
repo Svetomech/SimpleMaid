@@ -237,4 +237,16 @@
     <value>Send message</value>
     <comment>Localizable</comment>
   </data>
+  <data name="AutorunArgument" xml:space="preserve">
+    <value>-autorun</value>
+  </data>
+  <data name="RogueArgument" xml:space="preserve">
+    <value>-rogue</value>
+  </data>
+  <data name="PasswordArgument" xml:space="preserve">
+    <value>-pass</value>
+  </data>
+  <data name="ForbiddenPassword" xml:space="preserve">
+    <value>.</value>
+  </data>
 </root>

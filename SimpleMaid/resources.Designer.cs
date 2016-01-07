@@ -88,6 +88,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на -autorun.
+        /// </summary>
+        internal static string AutorunArgument {
+            get {
+                return ResourceManager.GetString("AutorunArgument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Exit.
         /// </summary>
         internal static string btnBidFarewell_Text {
@@ -205,6 +214,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на ..
+        /// </summary>
+        internal static string ForbiddenPassword {
+            get {
+                return ResourceManager.GetString("ForbiddenPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на 3000.
         /// </summary>
         internal static string GeneralExitDelay {
@@ -286,6 +304,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на -pass.
+        /// </summary>
+        internal static string PasswordArgument {
+            get {
+                return ResourceManager.GetString("PasswordArgument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на What else can you be when the world can only see a MONSTER?.
         /// </summary>
         internal static string PastSins {
@@ -318,6 +345,15 @@ namespace SimpleMaid {
         internal static string RepeatCommand {
             get {
                 return ResourceManager.GetString("RepeatCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на -rogue.
+        /// </summary>
+        internal static string RogueArgument {
+            get {
+                return ResourceManager.GetString("RogueArgument", resourceCulture);
             }
         }
         

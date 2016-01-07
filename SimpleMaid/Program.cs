@@ -157,10 +157,29 @@ namespace SimpleMaid
       appDir = String.Format("{0}\\{1}\\{2}\\", appDir, app.CompanyName, app.ProductName);
       config = appDir + config;
 
+      #region CMD args: check presence
+      bool rogueArgFound = false;
+      bool autorunArgFound = false;
+      string passArg = resources.ForbiddenPassword;
+      if (args.Length >= 1)
+      {
+        rogueArgFound = PublicMethods.CheckConsoleArgument(resources.RogueArgument, args);
+        autorunArgFound = PublicMethods.CheckConsoleArgument(resources.AutorunArgument, args);
+        if (args.Length >= 2)
+        {
+          for (int i = 0; i < args.Length; ++i)
+          {
+            if (args[i] == resources.PasswordArgument)
+              passArg = args[i + 1];
+          }
+        }
+      }
+      #endregion
+
       #region Handle autorun
       handle = NativeMethods.GetConsoleWindow();
       bool inAutorunDir = appDir == app.Directory;
-      if (inAutorunDir)
+      if (inAutorunDir || rogueArgFound)
       {
         NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
         app.Hidden = true;
@@ -210,18 +229,35 @@ namespace SimpleMaid
       #region Settings to read
       bool   machineConfigured = false;
       string machineName       = createMachine();
-      string machinePassword   = ".";
-      bool   autoRun           = true;
+      string machinePassword   = passArg;
+      bool   autoRun           = !autorunArgFound;
       #endregion
 
-      #region Read configuration file
+      #region Compose configuration file
       if (File.Exists(config))
       {
         configuration = config_parser.ReadFile(config);
 
           machineConfigured = bool.Parse(configuration["Service"]["bMachineConfigured"]);
           machinePassword   =            configuration["Service"]["sMachinePassword"];
+        if (resources.ForbiddenPassword == passArg) // resources.ForbiddenPassword == configuration["Service"]["sMachinePassword"]
+        {
+          machinePassword   =            configuration["Service"]["sMachinePassword"]; // initiatepasswordchange
+        }
+        else
+        {
+          configuration["Service"]["sMachinePassword"] = passArg;
+          machinePassword   =            configuration["Service"]["sMachinePassword"];
+        }
+        if (!autorunArgFound)
+        {
           autoRun           = bool.Parse(configuration["Service"]["bAutoRun"]);
+        }
+        else
+        {
+          configuration["Service"]["bAutoRun"] = (!bool.Parse(configuration["Service"]["bAutoRun"])).ToString();
+          autoRun           = bool.Parse(configuration["Service"]["bAutoRun"]);
+        }
         if ("d" != configuration["Service"]["sMachineName"])
         {
           machineName       =            configuration["Service"]["sMachineName"];
@@ -239,7 +275,7 @@ namespace SimpleMaid
         configuration.Sections.AddSection("Service");
         configuration["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
         configuration["Service"].AddKey("sMachineName",       machineName);
-        configuration["Service"].AddKey("sMachinePassword",   machinePassword);
+        configuration["Service"].AddKey("sMachinePassword",   machinePassword); // initiatepasswordchange
         configuration["Service"].AddKey("bAutoRun",           autoRun.ToString());
       }
       #endregion
@@ -305,7 +341,12 @@ namespace SimpleMaid
             Thread.Sleep(1000);
           }
         }
+      }
+      #endregion
 
+      #region Update INI file
+      if (!machineConfigured || autorunArgFound || resources.ForbiddenPassword != passArg)
+      {
         machineConfigured = true;
         configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
 
