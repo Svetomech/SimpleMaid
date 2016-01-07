@@ -37,7 +37,7 @@ namespace SimpleMaid
       }
     }
 
-    public static void DirectoryCopy(string sourceDirName, string destDirName)
+    public static void DirectoryCopy(string sourceDirName, string destDirName, bool topDirIndicator = true)
     {
       DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 
@@ -48,17 +48,20 @@ namespace SimpleMaid
 
       Directory.CreateDirectory(destDirName);
 
-      FileInfo[] files = dir.GetFiles();
-      foreach (FileInfo file in files)
+      if (!topDirIndicator)
       {
-        string temppath = Path.Combine(destDirName, file.Name);
-        file.CopyTo(temppath, true);
+        FileInfo[] files = dir.GetFiles();
+        foreach (FileInfo file in files)
+        {
+          string temppath = Path.Combine(destDirName, file.Name);
+          file.CopyTo(temppath, true);
+        }
       }
 
       foreach (DirectoryInfo subdir in dirs)
       {
         string temppath = Path.Combine(destDirName, subdir.Name);
-        DirectoryCopy(subdir.FullName, temppath);
+        DirectoryCopy(subdir.FullName, temppath, false);
       }
     }
 
