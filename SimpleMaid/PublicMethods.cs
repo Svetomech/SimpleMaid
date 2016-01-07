@@ -18,23 +18,23 @@ namespace SimpleMaid
       return true;
     }
 
-    public static void SwitchAppAutorun(bool switcher, string app_name, string app_path = null)
+    public static void SwitchAppAutorun(bool switcher, string appName, string appPath = null)
     {
       string regValue = String.Empty;
       
       regValue = Convert.ToString(Registry.CurrentUser.OpenSubKey(
-        "Software\\Microsoft\\Windows\\CurrentVersion\\Run", false).GetValue(app_name));
+        "Software\\Microsoft\\Windows\\CurrentVersion\\Run", false).GetValue(appName));
       if (regValue == String.Empty) regValue = null;
 
-      if (regValue != app_path)
+      if (regValue != appPath)
       {
         using (RegistryKey reg = Registry.CurrentUser.CreateSubKey(
           "Software\\Microsoft\\Windows\\CurrentVersion\\Run"))
         {
           if (switcher)
-            reg.SetValue(app_name, app_path);
+            reg.SetValue(appName, appPath);
           else
-            reg.DeleteValue(app_name);
+            reg.DeleteValue(appName);
         }
       }
     }
@@ -91,11 +91,11 @@ namespace SimpleMaid
     // Get filename from link (hacky way! need to reimplement this later)
     public static string UrlToFile(string url)
     {
-      string[] url_parts = url.Split(new char[] { '/' },
+      string[] urlParts = url.Split(new char[] { '/' },
           StringSplitOptions.RemoveEmptyEntries);
-      string file_part = Uri.UnescapeDataString(url_parts[url_parts.Length - 1]);
+      string filePart = Uri.UnescapeDataString(urlParts[urlParts.Length - 1]);
 
-      return file_part;
+      return filePart;
     }
 
     public static string GetFilledLine(char c)

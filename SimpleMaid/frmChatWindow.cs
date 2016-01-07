@@ -60,19 +60,19 @@ namespace SimpleMaid
       }
     }
 
-    private void deleteLine(int a_line)
+    private void deleteLine(int aLine)
     {
-      int start_index = letterBody.GetFirstCharIndexFromLine(a_line);
-      int count = letterBody.Lines[a_line].Length;
+      int startIndex = letterBody.GetFirstCharIndexFromLine(aLine);
+      int count = letterBody.Lines[aLine].Length;
 
       // Eat new line chars
-      if (a_line < letterBody.Lines.Length - 1)
+      if (aLine < letterBody.Lines.Length - 1)
       {
-        count += letterBody.GetFirstCharIndexFromLine(a_line + 1) -
-            ((start_index + count - 1) + 1);
+        count += letterBody.GetFirstCharIndexFromLine(aLine + 1) -
+            ((startIndex + count - 1) + 1);
       }
 
-      letterBody.Text = letterBody.Text.Remove(start_index, count);
+      letterBody.Text = letterBody.Text.Remove(startIndex, count);
     }
 
 
