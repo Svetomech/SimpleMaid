@@ -387,7 +387,7 @@ namespace SimpleMaid
 
     private static void reportThreadStart(string msg)
     {
-      Console.ForegroundColor = ConsoleColor.DarkBlue;
+      Console.ForegroundColor = ConsoleColor.Blue;
       Console.WriteLine(msg + "\n");
     }
 
