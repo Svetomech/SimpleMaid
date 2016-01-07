@@ -79,7 +79,8 @@ namespace SimpleMaid
         return resources.WebErrorMessage;
       }
 
-      Console.ResetColor();
+      Console.BackgroundColor = ConsoleColor.Black;
+      Console.ForegroundColor = ConsoleColor.Gray;
       Console.WriteLine("SET  {0}  {1}\n", tag, value);
 
       return String.Empty;
@@ -139,6 +140,7 @@ namespace SimpleMaid
       value = value.Replace(@"\\", @"\");
       value = WebUtility.HtmlDecode(value);
 
+      Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.DarkGreen;
       Console.WriteLine("GET  {0}  {1}\n", tag, value);
 
@@ -189,6 +191,7 @@ namespace SimpleMaid
       programMutex = new Mutex(false, "Local\\" + app.Guid);
       if (!programMutex.WaitOne(0, false))
       {
+        Console.BackgroundColor = ConsoleColor.Black;
         Console.ForegroundColor = ConsoleColor.DarkMagenta;
         Console.WriteLine(resources.PastSins);
         exit();
@@ -382,18 +385,21 @@ namespace SimpleMaid
 
     private static void reportWebError()
     {
+      Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.DarkYellow;
       Console.WriteLine(resources.WebErrorMessage + "\n");
     }
 
     private static void reportThreadStart(string msg)
     {
+      Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.Cyan;
       Console.WriteLine(msg + "\n");
     }
 
     private static void reportThreadStop(string msg)
     {
+      Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.Red;
       Console.WriteLine(msg + "\n");
     }
