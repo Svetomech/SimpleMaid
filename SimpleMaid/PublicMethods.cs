@@ -39,6 +39,65 @@ namespace SimpleMaid
       }
     }
 
+    public static string ProgramFilesx86()
+    {
+      if (8 == IntPtr.Size
+          || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
+      {
+        return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+      }
+
+      return Environment.GetEnvironmentVariable("ProgramFiles");
+    }
+
+    public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+    {
+      // Get the subdirectories for the specified directory.
+      DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+      if (!dir.Exists)
+      {
+        throw new DirectoryNotFoundException(
+            "Source directory does not exist or could not be found: "
+            + sourceDirName);
+      }
+
+      DirectoryInfo[] dirs = dir.GetDirectories();
+      // If the destination directory doesn't exist, create it.
+      if (!Directory.Exists(destDirName))
+      {
+        Directory.CreateDirectory(destDirName);
+      }
+
+      // Get the files in the directory and copy them to the new location.
+      FileInfo[] files = dir.GetFiles();
+      foreach (FileInfo file in files)
+      {
+        string temppath = Path.Combine(destDirName, file.Name);
+        file.CopyTo(temppath, false);
+      }
+
+      // If copying subdirectories, copy them and their contents to new location.
+      if (copySubDirs)
+      {
+        foreach (DirectoryInfo subdir in dirs)
+        {
+          string temppath = Path.Combine(destDirName, subdir.Name);
+          DirectoryCopy(subdir.FullName, temppath, copySubDirs);
+        }
+      }
+    }
+
+    // Get filename from link (hacky way! need to reimplement this later)
+    public static string UrlToFile(string url)
+    {
+      string[] url_parts = url.Split(new char[] { '/' },
+          StringSplitOptions.RemoveEmptyEntries);
+      string file_part = Uri.UnescapeDataString(url_parts[url_parts.Length - 1]);
+
+      return file_part;
+    }
+
     public static string GetFilledLine(char c)
     {
       string s = String.Empty;
@@ -110,20 +169,15 @@ namespace SimpleMaid
       //string result = proc.StandardOutput.ReadToEnd();
     }
 
-    // Get filename from link (hacky way! need to reimplement this later)
-    public static string UrlToFile(string url)
+    public static string PackmaniseString(string line, int startIndex, char escapeChar)
     {
-      string[] url_parts = url.Split(new char[] { '/' },
-          StringSplitOptions.RemoveEmptyEntries);
-      string file_part = Uri.UnescapeDataString(url_parts[url_parts.Length - 1]);
-
-      return file_part;
-    }
-
-    // Case-insensitive
-    public static bool StringContains(string word, string s)
-    {
-        return s.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0;
+      string packmanLine = null;
+      foreach (char c in line.Remove(0, startIndex))
+      {
+        if (c == escapeChar) break;
+        packmanLine += c;
+      }
+      return packmanLine;
     }
 
     public static IEnumerable<int> AllIndexesOf(this string str, string value)
@@ -139,15 +193,10 @@ namespace SimpleMaid
       }
     }
 
-    public static string PackmaniseString(string line, int startIndex, char escapeChar)
+    // Case-insensitive
+    public static bool StringContains(string word, string s)
     {
-      string packmanLine = null;
-      foreach (char c in line.Remove(0, startIndex))
-      {
-        if (c == escapeChar) break;
-        packmanLine += c;
-      }
-      return packmanLine;
+        return s.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     public static string EncodeNonAsciiCharacters(string value)
@@ -195,17 +244,6 @@ namespace SimpleMaid
       }
       return value;
     }*/
-
-    public static string ProgramFilesx86()
-    {
-      if (8 == IntPtr.Size
-          || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
-      {
-        return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
-      }
-
-      return Environment.GetEnvironmentVariable("ProgramFiles");
-    }
 
     public static string GetVariableName<T>(T item) where T : class
     {

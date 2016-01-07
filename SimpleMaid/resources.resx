@@ -163,9 +163,6 @@
   <data name="ServerAddress" xml:space="preserve">
     <value>http://appinvtinywebdb.appspot.com/</value>
   </data>
-  <data name="SvtFolderName" xml:space="preserve">
-    <value>svt_structure</value>
-  </data>
   <data name="TimeStart" xml:space="preserve">
     <value>Time thread has started.</value>
     <comment>Localizable</comment>

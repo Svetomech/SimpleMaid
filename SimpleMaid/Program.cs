@@ -2,6 +2,7 @@
 using IniParser.Model;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -196,14 +197,16 @@ namespace SimpleMaid
 
       #region Startup directory management
       Directory.CreateDirectory(appDir);
-      if (Directory.Exists(resources.SvtFolderName))
+      string sfn;
+      if (Directory.Exists(sfn = ConfigurationManager.AppSettings["SvtFolderName"]))
       {
-        string[] file_paths = Directory.GetFiles(resources.SvtFolderName, "*.*", SearchOption.TopDirectoryOnly);
+        string[] file_paths = Directory.GetFiles(sfn, "*.*", SearchOption.TopDirectoryOnly);
         foreach (string file_path in file_paths)
         {
           File.Copy(file_path, appDir + Path.GetFileName(file_path), true);
         }
       }
+      sfn = null;
       #endregion
 
       #region Necessary INI declarations

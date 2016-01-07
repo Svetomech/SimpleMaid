@@ -37,6 +37,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -66,7 +67,9 @@
     <Compile Include="SimplePlatform.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +83,12 @@
     <EmbeddedResource Include="resources.ru.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>robocopy $(TargetDir) $(TargetDir)\svt_structure "$(TargetName).resources.dll" /CREATE /S /XD svt_structure /IS /IT
+
+robocopy $(TargetDir) $(TargetDir)\svt_structure "$(TargetName).resources.dll" /MOVE /S /XD svt_structure /XL /IS /IT
+if %25errorlevel%25 leq 1 exit 0 else exit %25errorlevel%25</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

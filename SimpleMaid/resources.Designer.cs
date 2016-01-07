@@ -340,15 +340,6 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на svt_structure.
-        /// </summary>
-        internal static string SvtFolderName {
-            get {
-                return ResourceManager.GetString("SvtFolderName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Time thread has started..
         /// </summary>
         internal static string TimeStart {
