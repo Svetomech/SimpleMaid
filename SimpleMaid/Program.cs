@@ -152,6 +152,7 @@ namespace SimpleMaid
     static void Main(string[] args)
     {
       System.Windows.Forms.Application.EnableVisualStyles();
+      Console.Clear();
       app.State = "running";
 
       appDir = String.Format("{0}\\{1}\\{2}\\", appDir, app.CompanyName, app.ProductName);
