@@ -139,7 +139,7 @@ namespace SimpleMaid
       value = value.Replace(@"\\", @"\");
       value = WebUtility.HtmlDecode(value);
 
-      Console.ForegroundColor = ConsoleColor.Green;
+      Console.ForegroundColor = ConsoleColor.DarkGreen;
       Console.WriteLine("GET  {0}  {1}\n", tag, value);
 
       return value;
@@ -375,25 +375,26 @@ namespace SimpleMaid
     #region Reports
     private static void reportGeneralError(string msg)
     {
-      Console.ForegroundColor = ConsoleColor.Red;
+      Console.BackgroundColor = ConsoleColor.Blue;
+      Console.ForegroundColor = ConsoleColor.White;
       Console.WriteLine(msg + "\n");
     }
 
     private static void reportWebError()
     {
-      Console.ForegroundColor = ConsoleColor.Yellow;
+      Console.ForegroundColor = ConsoleColor.DarkYellow;
       Console.WriteLine(resources.WebErrorMessage + "\n");
     }
 
     private static void reportThreadStart(string msg)
     {
-      Console.ForegroundColor = ConsoleColor.Blue;
+      Console.ForegroundColor = ConsoleColor.Cyan;
       Console.WriteLine(msg + "\n");
     }
 
     private static void reportThreadStop(string msg)
     {
-      Console.ForegroundColor = ConsoleColor.DarkRed;
+      Console.ForegroundColor = ConsoleColor.Red;
       Console.WriteLine(msg + "\n");
     }
     #endregion
