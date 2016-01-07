@@ -187,10 +187,6 @@ namespace SimpleMaid
       }
       #endregion
 
-      #region Startup directory management
-      PublicMethods.DirectoryCopy(ConfigurationManager.AppSettings["SvtFolderName"], appDir);
-      #endregion
-
       #region Handle previous instance
       programMutex = new Mutex(false, "Local\\" + app.Guid);
       if (!programMutex.WaitOne(0, false))
@@ -200,6 +196,10 @@ namespace SimpleMaid
         Console.WriteLine(resources.PastSins);
         exit();
       }
+      #endregion
+
+      #region Startup directory management
+      PublicMethods.DirectoryCopy(ConfigurationManager.AppSettings["SvtFolderName"], appDir);
       #endregion
 
       #region Necessary INI declarations
