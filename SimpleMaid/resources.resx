@@ -249,4 +249,7 @@
   <data name="ForbiddenPassword" xml:space="preserve">
     <value>.</value>
   </data>
+  <data name="KeywordDefault" xml:space="preserve">
+    <value>d</value>
+  </data>
 </root>

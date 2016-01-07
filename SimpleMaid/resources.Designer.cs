@@ -277,6 +277,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на d.
+        /// </summary>
+        internal static string KeywordDefault {
+            get {
+                return ResourceManager.GetString("KeywordDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на m.
         /// </summary>
         internal static string MessageCommand {

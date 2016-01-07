@@ -258,7 +258,7 @@ namespace SimpleMaid
           configuration["Service"]["bAutoRun"] = (!bool.Parse(configuration["Service"]["bAutoRun"])).ToString();
           autoRun           = bool.Parse(configuration["Service"]["bAutoRun"]);
         }
-        if ("d" != configuration["Service"]["sMachineName"])
+        if (resources.KeywordDefault != configuration["Service"]["sMachineName"])
         {
           machineName       =            configuration["Service"]["sMachineName"];
         }
