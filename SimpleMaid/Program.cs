@@ -256,12 +256,13 @@ namespace SimpleMaid
           var file_oldpaths = new List<string>();
           var file_paths = new List<string>();
 
-          string app_path = String.Format("{0}{1}.exe", appDir, app.ProductName);
+          string app_path = String.Format("{0}{1}.exe", appDir, app.ProductName); // desired path, not actual one (app.ExecutablePath)
+          string app_config_path = String.Format("{0}{1}.exe.config", app.Directory, app.ProductName); // actual path, not desired one
 
           file_oldpaths.Add(app.ExecutablePath);
           file_paths.Add(app_path);
           // TODO: Kick some asses
-          var ass_paths = new string[] { app.Directory + "INIFileParser.dll" };
+          var ass_paths = new string[] { app_config_path, app.Directory + "INIFileParser.dll" };
           foreach (var ass in ass_paths)
           {
             file_oldpaths.Add(ass);
