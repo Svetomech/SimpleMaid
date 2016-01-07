@@ -70,6 +70,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Configuration.ini" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
