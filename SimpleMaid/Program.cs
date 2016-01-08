@@ -814,7 +814,7 @@ namespace SimpleMaid
         download_dir = String.Format("{0}{1}\\", Path.GetTempPath(), Guid.NewGuid().ToString().ToUpper());
         download_file = PublicMethods.UrlToFile(command_parts[1]);
       }
-
+      // TODO: Атаки типа "& && ||" - не баг, а фича!
       else if (command_parts.Length >= 3)
       {
         string ev = resources.EvaluateCmdVariable;
@@ -832,13 +832,18 @@ namespace SimpleMaid
           {
             string variable = PublicMethods.PackmaniseString(command_parts[2], (index + ev.Length) - diff, evd);
 
+            /*if (variable.Contains(" "))
+            {
+              reportGeneralError(resources.OldnewErrorMessage);
+              return;
+            }*/
+
             string unEvaluatedVariable = ev + variable + evd;
             string evaluatedVariable = executeCommand("echo " + variable, false);
             command_parts[2] = command_parts[2].Replace(unEvaluatedVariable, evaluatedVariable);
 
             diff += unEvaluatedVariable.Length - evaluatedVariable.Length;
           }
-          // TODO: Атаки типа "& && ||" - не баг, а фича!
         }
 
         download_dir = Path.GetDirectoryName(command_parts[2]) + "\\";
