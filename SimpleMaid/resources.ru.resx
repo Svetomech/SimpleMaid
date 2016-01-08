@@ -165,4 +165,7 @@
   <data name="btnSendLetter_Text" xml:space="preserve">
     <value>Отправить сообщение</value>
   </data>
+  <data name="PasswordEnterTip" xml:space="preserve">
+    <value>Пожалуйста, установите пароль: </value>
+  </data>
 </root>

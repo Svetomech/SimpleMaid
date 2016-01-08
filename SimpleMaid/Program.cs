@@ -188,9 +188,10 @@ namespace SimpleMaid
       #endregion
 
       #region Localization
-      Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(CultureInfo.InstalledUICulture.Name);
+      CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo(CultureInfo.InstalledUICulture.Name);
+      CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(CultureInfo.InstalledUICulture.Name);
       #endregion
-
+      passwordPrompt();
       #region OS/priveleges check
       if (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform())
       {
@@ -243,7 +244,7 @@ namespace SimpleMaid
           machinePassword   =            configuration["Service"]["sMachinePassword"];
         if (resources.ForbiddenPassword == passArg) // resources.ForbiddenPassword == configuration["Service"]["sMachinePassword"]
         {
-          machinePassword   =            configuration["Service"]["sMachinePassword"]; // initiatepasswordchange
+          machinePassword   =            configuration["Service"]["sMachinePassword"]; // passwordPrompt
         }
         else
         {
@@ -276,7 +277,7 @@ namespace SimpleMaid
         configuration.Sections.AddSection("Service");
         configuration["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
         configuration["Service"].AddKey("sMachineName",       machineName);
-        configuration["Service"].AddKey("sMachinePassword",   machinePassword); // initiatepasswordchange
+        configuration["Service"].AddKey("sMachinePassword",   machinePassword); // passwordPrompt
         configuration["Service"].AddKey("bAutoRun",           autoRun.ToString());
       }
       #endregion
@@ -416,6 +417,37 @@ namespace SimpleMaid
         Thread.Sleep(1000);
       }
       return machinesList;
+    }
+
+    private static void passwordPrompt()
+    {
+      string middlePractical = "| " + resources.PasswordEnterTip;
+      string middle = middlePractical + " |";
+      middle = middlePractical + PublicMethods.GetFilledLine(' ').Remove(0, middle.Length) + " |";
+
+      Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
+      Console.Write(middle);
+      Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
+      Console.SetCursorPosition(middlePractical.Length, Console.CursorTop - 2);
+
+      //TODO: Атаки с переполнением буфера - не баг, а фича!
+      ConsoleKey k;
+      int starsCount = 0;
+      int middleDiff = middle.Length - middlePractical.Length;
+      //bool stopCase = false;
+      while ((k = Console.ReadKey(true).Key) != ConsoleKey.Enter)
+      {
+        if (++starsCount >= middleDiff)
+          continue;
+
+        // generate
+        Console.Write('*');
+
+        if (starsCount + 1 == middleDiff)
+          Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
+      }
+
+      Console.Clear();
     }
 
     #region Reports

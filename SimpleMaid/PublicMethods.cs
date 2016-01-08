@@ -85,6 +85,27 @@ namespace SimpleMaid
       return filePart;
     }
 
+    public static string GetFilledLine(char c)
+    {
+      string s = String.Empty;
+
+      Console.BufferWidth = Console.WindowWidth;
+      for (int i = 0; i < Console.BufferWidth; ++i)
+      {
+        s += c.ToString();
+      }
+
+      return s;
+    }
+
+    public static void ClearConsoleLine()
+    {
+      int currentLineCursor = Console.CursorTop;
+      Console.SetCursorPosition(0, Console.CursorTop);
+      Console.Write(new string(' ', Console.WindowWidth));
+      Console.SetCursorPosition(0, currentLineCursor);
+    }
+
     public static string PackmaniseString(string line, int startIndex, char escapeChar)
     {
       string packmanLine = null;

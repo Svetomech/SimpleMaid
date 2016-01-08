@@ -252,4 +252,8 @@
   <data name="KeywordDefault" xml:space="preserve">
     <value>d</value>
   </data>
+  <data name="PasswordEnterTip" xml:space="preserve">
+    <value>Please, setup a password: </value>
+    <comment>Localizable</comment>
+  </data>
 </root>

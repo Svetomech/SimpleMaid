@@ -322,6 +322,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Please, setup a password: .
+        /// </summary>
+        internal static string PasswordEnterTip {
+            get {
+                return ResourceManager.GetString("PasswordEnterTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на What else can you be when the world can only see a MONSTER?.
         /// </summary>
         internal static string PastSins {
