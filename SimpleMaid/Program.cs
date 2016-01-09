@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -161,6 +163,8 @@ namespace SimpleMaid
       #region CMD args: check presence
       bool rogueArgFound = false;
       bool autorunArgFound = false;
+      bool passArgFound = false;
+
       string passArg = resources.ForbiddenPassword;
       if (args.Length >= 1)
       {
@@ -171,7 +175,10 @@ namespace SimpleMaid
           for (int i = 0; i < args.Length; ++i)
           {
             if (args[i] == resources.PasswordArgument)
+            {
               passArg = args[i + 1];
+              passArgFound = true;
+            }
           }
         }
       }
@@ -191,7 +198,7 @@ namespace SimpleMaid
       CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo(CultureInfo.InstalledUICulture.Name);
       CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(CultureInfo.InstalledUICulture.Name);
       #endregion
-      passwordPrompt();
+
       #region OS/priveleges check
       if (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform())
       {
@@ -236,50 +243,81 @@ namespace SimpleMaid
       #endregion
 
       #region Compose configuration file
-      if (File.Exists(config))
+      bool firstRun;
+      if (firstRun = !File.Exists(config))
+      {
+        configuration = new IniData();
+
+        configuration.Sections.AddSection("Service");
+
+        configuration["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
+        configuration["Service"].AddKey("sMachineName", machineName);
+        #region configuration["Service"].AddKey("sMachinePassword", machinePassword);
+        if (!isPasswordOK(machinePassword))
+        {
+          configuration["Service"].AddKey("sMachinePassword", new NetworkCredential(String.Empty, passwordPrompt()).Password);
+        }
+        else
+        {
+          configuration["Service"].AddKey("sMachinePassword", machinePassword);
+        }
+        #endregion
+        #region configuration["Service"].AddKey("bAutoRun", autoRun.ToString());
+        configuration["Service"].AddKey("bAutoRun", autoRun.ToString());
+        #endregion
+      }
+      else
       {
         configuration = config_parser.ReadFile(config);
 
-          machineConfigured = bool.Parse(configuration["Service"]["bMachineConfigured"]);
-          machinePassword   =            configuration["Service"]["sMachinePassword"];
-        if (resources.ForbiddenPassword == passArg) // resources.ForbiddenPassword == configuration["Service"]["sMachinePassword"]
-        {
-          machinePassword   =            configuration["Service"]["sMachinePassword"]; // passwordPrompt
-        }
-        else
-        {
-          configuration["Service"]["sMachinePassword"] = passArg;
-          machinePassword   =            configuration["Service"]["sMachinePassword"];
-        }
-        if (!autorunArgFound)
-        {
-          autoRun           = bool.Parse(configuration["Service"]["bAutoRun"]);
-        }
-        else
-        {
-          configuration["Service"]["bAutoRun"] = (!bool.Parse(configuration["Service"]["bAutoRun"])).ToString();
-          autoRun           = bool.Parse(configuration["Service"]["bAutoRun"]);
-        }
+        machineConfigured = bool.Parse(configuration["Service"]["bMachineConfigured"]);
+        #region machineName = configuration["Service"]["sMachineName"];
         if (resources.KeywordDefault != configuration["Service"]["sMachineName"])
         {
-          machineName       =            configuration["Service"]["sMachineName"];
+          machineName = configuration["Service"]["sMachineName"];
         }
         else
         {
           configuration["Service"]["sMachineName"] = machineName;
           machineConfigured = false;
         }
-      }
-      else
-      {
-        configuration = new IniData();
+        #endregion
+        #region machinePassword = configuration["Service"]["sMachinePassword"];
+        if (!isPasswordOK(machinePassword))
+        {
 
-        configuration.Sections.AddSection("Service");
-        configuration["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
-        configuration["Service"].AddKey("sMachineName",       machineName);
-        configuration["Service"].AddKey("sMachinePassword",   machinePassword); // passwordPrompt
-        configuration["Service"].AddKey("bAutoRun",           autoRun.ToString());
+        }
+        else
+        {
+
+        }
+        #endregion
+        #region autoRun = bool.Parse(configuration["Service"]["bAutoRun"])
+        if (!autorunArgFound)
+        {
+          autoRun = bool.Parse(configuration["Service"]["bAutoRun"]);
+        }
+        else
+        {
+          configuration["Service"]["bAutoRun"] = (!bool.Parse(configuration["Service"]["bAutoRun"])).ToString();
+          autoRun = bool.Parse(configuration["Service"]["bAutoRun"]);
+        }
+        #endregion
       }
+
+        if (!passArgFound)
+        {
+          if (resources.ForbiddenPassword == machinePassword)
+          {
+            configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
+            machinePassword = configuration["Service"]["sMachinePassword"];
+          }
+        }
+        else
+        {
+          configuration["Service"]["sMachinePassword"] = passArg;
+          machinePassword   =            configuration["Service"]["sMachinePassword"];
+        }
       #endregion
 
       // TODO: Get rid of these
@@ -347,7 +385,7 @@ namespace SimpleMaid
       #endregion
 
       #region Update INI file
-      if (!machineConfigured || autorunArgFound || resources.ForbiddenPassword != passArg)
+      if (!machineConfigured || autorunArgFound || passArgFound)
       {
         machineConfigured = true;
         configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
@@ -419,7 +457,16 @@ namespace SimpleMaid
       return machinesList;
     }
 
-    private static void passwordPrompt()
+    private static bool isPasswordOK(string p)
+    {
+      //!если не установил пароль
+      //?длина пароля
+      //!запрещённый
+    }
+
+    // TODO: Colours
+    // new NetworkCredential(String.Empty, passwordPrompt()).Password
+    private static SecureString passwordPrompt()
     {
       string middlePractical = "| " + resources.PasswordEnterTip;
       string middle = middlePractical + " |";
@@ -430,24 +477,62 @@ namespace SimpleMaid
       Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
       Console.SetCursorPosition(middlePractical.Length, Console.CursorTop - 2);
 
-      //TODO: Атаки с переполнением буфера - не баг, а фича!
-      ConsoleKey k;
+      ConsoleKeyInfo keyInfo;
+      var passHolder = new SecureString();
       int starsCount = 0;
       int middleDiff = middle.Length - middlePractical.Length;
-      //bool stopCase = false;
-      while ((k = Console.ReadKey(true).Key) != ConsoleKey.Enter)
+      while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
       {
-        if (++starsCount >= middleDiff)
-          continue;
+        if (keyInfo.Key != ConsoleKey.Backspace)
+        {
+          /*if (!((int)ki.Key >= 65 && (int)ki.Key <= 90))
+            continue;*/ // <-- stricter, but disallows digits
+          if (char.IsControl(keyInfo.KeyChar))
+            continue;
 
-        // generate
-        Console.Write('*');
+          if (starsCount + 1 < middleDiff)
+            ++starsCount;
+          else
+            continue;
 
+          passHolder.AppendChar(keyInfo.KeyChar);
+
+          Console.Write('*');
+        }
+        else
+        {
+          if (starsCount - 1 >= 0)
+            --starsCount;
+          else
+            continue;
+
+          passHolder.RemoveAt(passHolder.Length - 1);
+
+          PublicMethods.ClearConsoleLine();
+          Console.Write(middlePractical);
+          for (int i = 0; i < starsCount; ++i)
+          {
+            Console.Write('*');
+          }
+          var pos = new Point(Console.CursorLeft, Console.CursorTop);
+          Console.Write(PublicMethods.GetFilledLine(' ').Remove(0, middlePractical.Length + starsCount + " |".Length) + " |");
+          Console.SetCursorPosition(pos.X, pos.Y);
+        }
+
+        if (starsCount == 0)
+        {
+          Console.Beep();
+        }
         if (starsCount + 1 == middleDiff)
+        {
           Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
+          Console.Beep();
+        }
       }
 
       Console.Clear();
+
+      return passHolder;
     }
 
     #region Reports
@@ -613,14 +698,7 @@ namespace SimpleMaid
       string ans = resources.AnswerPrefix;
       string sep = resources.CommandsSeparator;
 
-      /*string rep = resources.RepeatCommand;
-      string pow = resources.PowershellCommand;
-      //string key = resources.KeyhookCommand;
-      string mes = resources.MessageCommand;
-      string dow = resources.DownloadCommand;
-      string sho = resources.ShowCommand;
-      string hid = resources.HideCommand;
-      string qui = resources.QuitCommand;*/
+      /* Command shortcuts here */
 
       string sRemoteMessageOld = null;
       while (busyChatWise && internetAlive)
@@ -667,7 +745,7 @@ namespace SimpleMaid
 
       string rep = resources.RepeatCommand;
       string pow = resources.PowershellCommand;
-      //string key = resources.KeyhookCommand;
+      //string key = resources.KeyhookCommand; /* app.State = Control.IsKeyLocked(Keys.CapsLock) ? "CAPS LOCK" : app.State; */
       string mes = resources.MessageCommand;
       string dow = resources.DownloadCommand;
       string sho = resources.ShowCommand;
