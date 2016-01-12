@@ -27,12 +27,12 @@ namespace SimpleMaid
         score++;
       if (password.Length >= 12)
         score++;
-      if (Regex.IsMatch(password, @"/\d+/", RegexOptions.ECMAScript))
+      if (Regex.IsMatch(password, @"[\d]", RegexOptions.ECMAScript))
         score++;
-      if (Regex.IsMatch(password, @"/[a-z]/", RegexOptions.ECMAScript) &&
-          Regex.IsMatch(password, @"/[A-Z]/", RegexOptions.ECMAScript))
+      if (Regex.IsMatch(password, @"[a-z]", RegexOptions.ECMAScript) &&
+          Regex.IsMatch(password, @"[A-Z]", RegexOptions.ECMAScript))
         score++;
-      if (Regex.IsMatch(password, @"/.[!,@,#,$,%,^,&,*,?,_,~,-,£,(,)]/", RegexOptions.ECMAScript))
+      if (Regex.IsMatch(password, @"[~`!@#$%\^\&\*\(\)\-_\+=\[\{\]\}\|\\;:'\""<\,>\.\?\/£]", RegexOptions.ECMAScript))
         score++;
 
       return (PasswordScore)score;

@@ -244,6 +244,7 @@ namespace SimpleMaid
 
       #region Compose configuration file
       bool firstRun;
+      bool promptShown = false;
       if (firstRun = !File.Exists(config))
       {
         configuration = new IniData();
@@ -256,6 +257,7 @@ namespace SimpleMaid
         if (!isPasswordOK(machinePassword))
         {
           configuration["Service"].AddKey("sMachinePassword", new NetworkCredential(String.Empty, passwordPrompt()).Password);
+          promptShown = true;
         }
         else
         {
@@ -290,6 +292,7 @@ namespace SimpleMaid
           if (!isPasswordOK(machinePassword))
           {
             configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
+            promptShown = true;
             machinePassword = configuration["Service"]["sMachinePassword"];
           }
         }
@@ -305,6 +308,7 @@ namespace SimpleMaid
             if (!isPasswordOK(machinePassword))
             {
               configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
+              promptShown = true;
               machinePassword = configuration["Service"]["sMachinePassword"];
             }
           }
@@ -389,7 +393,7 @@ namespace SimpleMaid
       #endregion
 
       #region Update INI file
-      if (!machineConfigured || autorunArgFound || passArgFound)
+      if (firstRun || !machineConfigured || autorunArgFound || passArgFound || promptShown)
       {
         machineConfigured = true;
         configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
