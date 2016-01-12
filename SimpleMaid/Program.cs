@@ -256,8 +256,14 @@ namespace SimpleMaid
         #region configuration["Service"].AddKey("sMachinePassword", machinePassword);
         if (!isPasswordOK(machinePassword))
         {
+          if (app.Hidden)
+            NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+
           configuration["Service"].AddKey("sMachinePassword", new NetworkCredential(String.Empty, passwordPrompt()).Password);
           promptShown = true;
+
+          if (app.Hidden)
+            NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
         }
         else
         {
@@ -291,9 +297,15 @@ namespace SimpleMaid
         {
           if (!isPasswordOK(machinePassword))
           {
+            if (app.Hidden)
+              NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+
             configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
             promptShown = true;
             machinePassword = configuration["Service"]["sMachinePassword"];
+
+            if (app.Hidden)
+              NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
           }
         }
         else
@@ -307,9 +319,15 @@ namespace SimpleMaid
           {
             if (!isPasswordOK(machinePassword))
             {
+              if (app.Hidden)
+                NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+
               configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
               promptShown = true;
               machinePassword = configuration["Service"]["sMachinePassword"];
+
+              if (app.Hidden)
+                NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
             }
           }
         }
