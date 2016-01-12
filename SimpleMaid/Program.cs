@@ -259,7 +259,12 @@ namespace SimpleMaid
           if (app.Hidden)
             NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
 
-          configuration["Service"].AddKey("sMachinePassword", new NetworkCredential(String.Empty, passwordPrompt()).Password);
+          string passwordValue;
+          while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
+          {
+            reportWeakPassword(passwordValue);
+          }
+          configuration["Service"].AddKey("sMachinePassword", passwordValue);
           promptShown = true;
 
           if (app.Hidden)
@@ -300,7 +305,12 @@ namespace SimpleMaid
             if (app.Hidden)
               NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
 
-            configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
+            string passwordValue;
+            while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
+            {
+              reportWeakPassword(passwordValue);
+            }
+            configuration["Service"]["sMachinePassword"] = passwordValue;
             promptShown = true;
             machinePassword = configuration["Service"]["sMachinePassword"];
 
@@ -322,7 +332,12 @@ namespace SimpleMaid
               if (app.Hidden)
                 NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
 
-              configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
+              string passwordValue;
+              while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
+              {
+                reportWeakPassword(passwordValue);
+              }
+              configuration["Service"]["sMachinePassword"] = passwordValue;
               promptShown = true;
               machinePassword = configuration["Service"]["sMachinePassword"];
 
@@ -493,6 +508,9 @@ namespace SimpleMaid
     // To get the actual value, not an object: new NetworkCredential(String.Empty, passwordPrompt()).Password
     private static SecureString passwordPrompt()
     {
+      Console.Clear();
+      Console.CursorVisible = true;
+
       string middlePractical = "| " + resources.PasswordEnterTip;
       string middle = middlePractical + " |";
       middle = middlePractical + PublicMethods.GetFilledLine(' ').Remove(0, middle.Length) + " |";
@@ -561,6 +579,23 @@ namespace SimpleMaid
     }
 
     #region Reports
+    private static void reportWeakPassword(string pas)
+    {
+      string middlePractical = "| " + resources.PasswordWeakHint;
+      string middle = middlePractical + " |";
+      middle = middlePractical + PublicMethods.GetFilledLine(' ').Remove(0, middle.Length) + " |";
+
+      Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
+      Console.Write(middle);
+      Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
+      Console.CursorVisible = false;
+
+      pas = null;
+      Thread.Sleep(int.Parse(resources.PasswordWeakDelay));
+
+      Console.CursorVisible = true;
+    }
+
     private static void reportGeneralError(string msg)
     {
       Console.BackgroundColor = ConsoleColor.Blue;

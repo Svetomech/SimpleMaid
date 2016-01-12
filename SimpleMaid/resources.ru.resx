@@ -168,4 +168,7 @@
   <data name="PasswordEnterTip" xml:space="preserve">
     <value>Пожалуйста, установите пароль: </value>
   </data>
+  <data name="PasswordWeakHint" xml:space="preserve">
+    <value>Слишком короткий.</value>
+  </data>
 </root>

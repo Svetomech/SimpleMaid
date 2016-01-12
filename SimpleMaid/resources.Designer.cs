@@ -331,6 +331,24 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на 1000.
+        /// </summary>
+        internal static string PasswordWeakDelay {
+            get {
+                return ResourceManager.GetString("PasswordWeakDelay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Too short..
+        /// </summary>
+        internal static string PasswordWeakHint {
+            get {
+                return ResourceManager.GetString("PasswordWeakHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на What else can you be when the world can only see a MONSTER?.
         /// </summary>
         internal static string PastSins {
