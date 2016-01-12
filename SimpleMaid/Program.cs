@@ -165,7 +165,7 @@ namespace SimpleMaid
       bool autorunArgFound = false;
       bool passArgFound = false;
 
-      string passArg = resources.ForbiddenPassword;
+      string passArg = resources.DefaultPassword;
       if (args.Length >= 1)
       {
         rogueArgFound = PublicMethods.CheckConsoleArgument(resources.RogueArgument, args);
@@ -283,13 +283,31 @@ namespace SimpleMaid
         }
         #endregion
         #region machinePassword = configuration["Service"]["sMachinePassword"];
-        if (!isPasswordOK(machinePassword))
-        {
+        machinePassword = configuration["Service"]["sMachinePassword"];
 
+        if (!passArgFound)
+        {
+          if (!isPasswordOK(machinePassword))
+          {
+            configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
+            machinePassword = configuration["Service"]["sMachinePassword"];
+          }
         }
         else
         {
-
+          if (isPasswordOK(passArg))
+          {
+            configuration["Service"]["sMachinePassword"] = passArg;
+            machinePassword = configuration["Service"]["sMachinePassword"];
+          }
+          else
+          {
+            if (!isPasswordOK(machinePassword))
+            {
+              configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
+              machinePassword = configuration["Service"]["sMachinePassword"];
+            }
+          }
         }
         #endregion
         #region autoRun = bool.Parse(configuration["Service"]["bAutoRun"])
@@ -304,20 +322,6 @@ namespace SimpleMaid
         }
         #endregion
       }
-
-        if (!passArgFound)
-        {
-          if (resources.ForbiddenPassword == machinePassword)
-          {
-            configuration["Service"]["sMachinePassword"] = new NetworkCredential(String.Empty, passwordPrompt()).Password;
-            machinePassword = configuration["Service"]["sMachinePassword"];
-          }
-        }
-        else
-        {
-          configuration["Service"]["sMachinePassword"] = passArg;
-          machinePassword   =            configuration["Service"]["sMachinePassword"];
-        }
       #endregion
 
       // TODO: Get rid of these
@@ -459,13 +463,12 @@ namespace SimpleMaid
 
     private static bool isPasswordOK(string p)
     {
-      //!если не установил пароль
-      //?длина пароля
-      //!запрещённый
+      var score = basicPasswordStrength.CheckStrength(p);
+
+      return (score > basicPasswordStrength.PasswordScore.VeryWeak) ? true : false;
     }
 
-    // TODO: Colours
-    // new NetworkCredential(String.Empty, passwordPrompt()).Password
+    // To get the actual value, not an object: new NetworkCredential(String.Empty, passwordPrompt()).Password
     private static SecureString passwordPrompt()
     {
       string middlePractical = "| " + resources.PasswordEnterTip;

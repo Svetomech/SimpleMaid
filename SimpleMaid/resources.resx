@@ -246,8 +246,9 @@
   <data name="PasswordArgument" xml:space="preserve">
     <value>-pass</value>
   </data>
-  <data name="ForbiddenPassword" xml:space="preserve">
+  <data name="DefaultPassword" xml:space="preserve">
     <value>.</value>
+    <comment>GuessMe</comment>
   </data>
   <data name="KeywordDefault" xml:space="preserve">
     <value>d</value>

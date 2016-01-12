@@ -187,6 +187,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на ..
+        /// </summary>
+        internal static string DefaultPassword {
+            get {
+                return ResourceManager.GetString("DefaultPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на d.
         /// </summary>
         internal static string DownloadCommand {
@@ -210,15 +219,6 @@ namespace SimpleMaid {
         internal static string EvaluateCmdVariableEnd {
             get {
                 return ResourceManager.GetString("EvaluateCmdVariableEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на ..
-        /// </summary>
-        internal static string ForbiddenPassword {
-            get {
-                return ResourceManager.GetString("ForbiddenPassword", resourceCulture);
             }
         }
         

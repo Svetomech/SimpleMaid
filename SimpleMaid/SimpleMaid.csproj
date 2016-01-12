@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="basicPasswordStrength.cs" />
     <Compile Include="frmChatWindow.cs">
       <SubType>Form</SubType>
     </Compile>
