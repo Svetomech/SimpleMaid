@@ -168,6 +168,7 @@ namespace SimpleMaid
       bool passArgFound = false;
 
       string passArg = resources.DefaultPassword;
+      string langArg = CultureInfo.InstalledUICulture.Name;
       if (args.Length >= 1)
       {
         rogueArgFound = PublicMethods.CheckConsoleArgument(resources.RogueArgument, args);
@@ -180,6 +181,10 @@ namespace SimpleMaid
             {
               passArg = args[i + 1];
               passArgFound = true;
+            }
+            else if (args[i] == resources.LanguageArgument)
+            {
+              langArg = args[i + 1];
             }
           }
         }
@@ -197,8 +202,8 @@ namespace SimpleMaid
       #endregion
 
       #region Localization
-      CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo(CultureInfo.InstalledUICulture.Name);
-      CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(CultureInfo.InstalledUICulture.Name);
+      CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo(langArg);
+      CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg);
       #endregion
 
       #region OS/priveleges check

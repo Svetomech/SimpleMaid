@@ -264,4 +264,7 @@
   <data name="PasswordWeakDelay" xml:space="preserve">
     <value>1000</value>
   </data>
+  <data name="LanguageArgument" xml:space="preserve">
+    <value>--lang</value>
+  </data>
 </root>
