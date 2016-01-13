@@ -226,9 +226,7 @@ namespace SimpleMaid
       programMutex = new Mutex(false, "Local\\" + app.Guid);
       if (!programMutex.WaitOne(0, false))
       {
-        Console.BackgroundColor = ConsoleColor.Black;
-        Console.ForegroundColor = ConsoleColor.DarkMagenta;
-        Console.WriteLine(resources.PastSins);
+        reportPastSelf();
         exit();
       }
       #endregion
@@ -615,6 +613,13 @@ namespace SimpleMaid
       Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.DarkYellow;
       Console.WriteLine(resources.WebErrorMessage + "\n");
+    }
+
+    private static void reportPastSelf()
+    {
+      Console.BackgroundColor = ConsoleColor.Black;
+      Console.ForegroundColor = ConsoleColor.DarkMagenta;
+      Console.WriteLine(resources.PastSins + "\n");
     }
 
     private static void reportThreadStart(string msg)
