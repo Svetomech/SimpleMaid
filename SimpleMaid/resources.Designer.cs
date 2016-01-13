@@ -88,7 +88,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на -autorun.
+        ///   Ищет локализованную строку, похожую на --autorun.
         /// </summary>
         internal static string AutorunArgument {
             get {
@@ -313,7 +313,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на -pass.
+        ///   Ищет локализованную строку, похожую на --pass.
         /// </summary>
         internal static string PasswordArgument {
             get {
@@ -385,7 +385,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на -rogue.
+        ///   Ищет локализованную строку, похожую на --rogue.
         /// </summary>
         internal static string RogueArgument {
             get {

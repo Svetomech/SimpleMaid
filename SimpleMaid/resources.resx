@@ -238,13 +238,13 @@
     <comment>Localizable</comment>
   </data>
   <data name="AutorunArgument" xml:space="preserve">
-    <value>-autorun</value>
+    <value>--autorun</value>
   </data>
   <data name="RogueArgument" xml:space="preserve">
-    <value>-rogue</value>
+    <value>--rogue</value>
   </data>
   <data name="PasswordArgument" xml:space="preserve">
-    <value>-pass</value>
+    <value>--pass</value>
   </data>
   <data name="DefaultPassword" xml:space="preserve">
     <value>.</value>
