@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SimpleMaid")]
-[assembly: AssemblyDescription("This application (if running on a target PC) allows you to send CMD, PowerShell or custom commands")]
+[assembly: AssemblyDescription("I'm but a simple maid, master.")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
