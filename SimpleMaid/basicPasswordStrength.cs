@@ -43,7 +43,6 @@ namespace SimpleMaid
       if (Regex.IsMatch(password, @"[~`!@#$%\^\&\*\(\)\-_\+=\[\{\]\}\|\\;:'\""<\,>\.\?\/£]", RegexOptions.ECMAScript) && score > 1)
         score++;
 
-      // treat them lower?
       var lstPass = password.ToCharArray();
       if (lstPass.Length > 2)
       {
