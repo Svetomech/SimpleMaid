@@ -1,2 +1,2 @@
 # SimpleMaid
-RemoteCMD-Server v2
+Allows you to receive help from other experienced users
