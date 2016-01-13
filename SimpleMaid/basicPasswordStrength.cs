@@ -21,7 +21,6 @@ namespace SimpleMaid
       int score = 1;
 
       bool restrictToFair = false;
-      bool restrictToStrong = false;
 
       if (password.Length < 1)
         return PasswordScore.Blank;
@@ -35,8 +34,6 @@ namespace SimpleMaid
 
       if (password.Length >= 12)
         score++;
-      else
-        restrictToStrong = true;
 
       if (Regex.IsMatch(password, @"[\d]", RegexOptions.ECMAScript) && !Regex.IsMatch(password, @"^\d+$"))
         score++;
@@ -57,13 +54,8 @@ namespace SimpleMaid
         }
       }
 
-      //System.Console.WriteLine($"restrictToFair: {restrictToFair}, restrictToStrong: {restrictToStrong}. {(PasswordScore)score}");
-      //System.Console.ReadLine();
-
       if (restrictToFair)
         return ((PasswordScore)score > PasswordScore.Fair) ? PasswordScore.Fair : (PasswordScore)score;
-      else if (restrictToStrong)
-        return ((PasswordScore)score > PasswordScore.Strong) ? PasswordScore.Strong : (PasswordScore)score;
       else
         return (PasswordScore)score;
     }
