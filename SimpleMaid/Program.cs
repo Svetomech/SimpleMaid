@@ -431,7 +431,7 @@ namespace SimpleMaid
         machineConfigured = true;
         configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
 
-        config_parser.WriteFile(config, configuration);
+        config_parser.WriteFile(config, configuration, Encoding.UTF8);
       }
       #endregion
 

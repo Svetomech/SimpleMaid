@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SimpleMaid
 {
@@ -27,10 +28,10 @@ namespace SimpleMaid
         score++;
       if (password.Length >= 12)
         score++;
-      if (Regex.IsMatch(password, @"[\d]", RegexOptions.ECMAScript))
+      if (Regex.IsMatch(password, @"[\d]", RegexOptions.ECMAScript) && !Regex.IsMatch(password, @"^\d+$"))
         score++;
-      if (Regex.IsMatch(password, @"[a-z]", RegexOptions.ECMAScript) &&
-          Regex.IsMatch(password, @"[A-Z]", RegexOptions.ECMAScript))
+      if (password.Any(c => char.IsLower(c)) &&
+          password.Any(c => char.IsUpper(c)))
         score++;
       if (Regex.IsMatch(password, @"[~`!@#$%\^\&\*\(\)\-_\+=\[\{\]\}\|\\;:'\""<\,>\.\?\/£]", RegexOptions.ECMAScript))
         score++;
