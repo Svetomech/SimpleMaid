@@ -507,7 +507,7 @@ namespace SimpleMaid
       return (strength >= minimalPasswordStrength) ? true : false;
     }
 
-    // To get the actual value, not an object: new NetworkCredential(String.Empty, passwordPrompt()).Password
+    // HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, passwordPrompt()).Password
     private static SecureString passwordPrompt()
     {
       Console.Clear();
