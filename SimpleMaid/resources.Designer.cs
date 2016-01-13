@@ -223,11 +223,11 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на 3000.
+        ///   Ищет локализованную строку, похожую на 2000.
         /// </summary>
-        internal static string GeneralExitDelay {
+        internal static string GeneralCloseDelay {
             get {
-                return ResourceManager.GetString("GeneralExitDelay", resourceCulture);
+                return ResourceManager.GetString("GeneralCloseDelay", resourceCulture);
             }
         }
         
@@ -340,7 +340,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на 1000.
+        ///   Ищет локализованную строку, похожую на 500.
         /// </summary>
         internal static string PasswordWeakDelay {
             get {

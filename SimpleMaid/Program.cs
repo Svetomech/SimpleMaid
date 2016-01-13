@@ -471,7 +471,7 @@ namespace SimpleMaid
 
     private static void exit()
     {
-      Thread.Sleep(int.Parse(resources.GeneralExitDelay));
+      Thread.Sleep(int.Parse(resources.GeneralCloseDelay));
       Environment.Exit(0);
     }
 
@@ -606,6 +606,14 @@ namespace SimpleMaid
       Console.BackgroundColor = ConsoleColor.Blue;
       Console.ForegroundColor = ConsoleColor.White;
       Console.WriteLine(msg + "\n");
+
+      if (app.Hidden)
+      {
+        NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+        Console.Beep();
+        Thread.Sleep(int.Parse(resources.GeneralCloseDelay));
+        NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
+      }
     }
 
     private static void reportWebError()

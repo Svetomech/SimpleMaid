@@ -207,8 +207,8 @@
     <value>A typo: </value>
     <comment>Localizable</comment>
   </data>
-  <data name="GeneralExitDelay" xml:space="preserve">
-    <value>3000</value>
+  <data name="GeneralCloseDelay" xml:space="preserve">
+    <value>2000</value>
     <comment>milliseconds</comment>
   </data>
   <data name="EvaluateCmdVariable" xml:space="preserve">
@@ -262,7 +262,8 @@
     <comment>Localizable</comment>
   </data>
   <data name="PasswordWeakDelay" xml:space="preserve">
-    <value>1000</value>
+    <value>500</value>
+    <comment>milliseconds</comment>
   </data>
   <data name="LanguageArgument" xml:space="preserve">
     <value>--lang</value>
