@@ -12,6 +12,7 @@ using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using static SimpleMaid.basicPasswordStrength;
 
 namespace SimpleMaid
 {
@@ -22,6 +23,7 @@ namespace SimpleMaid
     private static string config = resources.ConfigName;
     private static IntPtr handle;
     private static Mutex  programMutex;
+    private static PasswordScore minimalPasswordStrength = PasswordScore.Weak;
 
     #region Global threads
     private static Thread connectionThread;
@@ -500,9 +502,9 @@ namespace SimpleMaid
 
     private static bool isPasswordOK(string p)
     {
-      var score = basicPasswordStrength.CheckStrength(p);
+      var strength = CheckStrength(p);
 
-      return (score > basicPasswordStrength.PasswordScore.VeryWeak) ? true : false;
+      return (strength >= minimalPasswordStrength) ? true : false;
     }
 
     // To get the actual value, not an object: new NetworkCredential(String.Empty, passwordPrompt()).Password
