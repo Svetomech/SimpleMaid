@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("Svetomech")]
 [assembly: AssemblyProduct("SimpleMaid")]
-[assembly: AssemblyCopyright("Copyright © Svetomech TheRainwildsKeeper 2015")]
+[assembly: AssemblyCopyright("Copyright © Svetomech TheRainwildsKeeper 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
