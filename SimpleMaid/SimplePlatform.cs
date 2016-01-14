@@ -2,7 +2,7 @@ using System;
 
 namespace SimpleMaid
 {
-  public class SimplePlatform
+  public static class SimplePlatform
   {
     public enum Platform
     {

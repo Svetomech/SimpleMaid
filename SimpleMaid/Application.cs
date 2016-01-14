@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace SimpleMaid
 {
-  public class Application
+  internal class Application
   {
     private static readonly Assembly assembly = Assembly.GetEntryAssembly();
     private static readonly FileVersionInfo assemblyInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
