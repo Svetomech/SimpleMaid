@@ -12,7 +12,7 @@ using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using static SimpleMaid.basicPasswordStrength;
+using static SimpleMaid.PasswordStrength;
 
 namespace SimpleMaid
 {

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace SimpleMaid
 {
-  public static class basicPasswordStrength
+  public static class PasswordStrength
   {
     public enum PasswordScore
     {
