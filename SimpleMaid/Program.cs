@@ -12,15 +12,26 @@ using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using static SimpleMaid.Application;
+using static SimpleMaid.NativeMethods;
 using static SimpleMaid.PasswordStrength;
+using static SimpleMaid.PublicMethods;
+using static SimpleMaid.SimplePlatform;
 
 namespace SimpleMaid
 {
   class Program
   {
-    private static readonly Application app = new Application();
-    private static string appDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-    private static string config = resources.ConfigName;
+    //TODOS + убрать все private, эксперимент с static и инициализацией (как можно меньше инициализации здесь, но если она не на своём месте, то здесь)
+    //SEARCH: String.Format, Console.Write, +
+    //private static readonly Application Application = new Application();///////Application
+    #region Properties
+    public static bool Hidden { get; set; } = false;
+    public static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
+    #endregion
+
+    private static DirectoryInfo desiredAppDirectory;
+    private static FileInfo mainConfigFile;
     private static IntPtr handle;
     private static Mutex  programMutex;
     private static PasswordScore minimalPasswordStrength = PasswordScore.Weak;
@@ -51,7 +62,7 @@ namespace SimpleMaid
 
     public static string Set(string tag, string value)
     {
-      tag = app.ProductName + "_" + tag;
+      tag = Application.ProductName + "_" + tag;
 
       UTF8Encoding encoding = new UTF8Encoding();
       byte[] requestBody = encoding.GetBytes("tag=" + tag + "&value=" + value + "&fmt=html");
@@ -92,7 +103,7 @@ namespace SimpleMaid
 
     public static string Get(string tag)
     {
-      tag = app.ProductName + "_" + tag;
+      tag = Application.ProductName + "_" + tag;
 
       string value;
 
@@ -157,10 +168,10 @@ namespace SimpleMaid
     {
       System.Windows.Forms.Application.EnableVisualStyles();
       Console.Clear();
-      app.State = "running";
+      Program.State = "running";
 
-      appDir = String.Format("{0}\\{1}\\{2}\\", appDir, app.CompanyName, app.ProductName);
-      config = appDir + config;
+      desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
+      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, resources.ConfigName));
 
       #region CMD args: check presence
       bool rogueArgFound = false;
@@ -193,11 +204,11 @@ namespace SimpleMaid
 
       #region Handle autorun
       handle = NativeMethods.GetConsoleWindow();
-      bool inAutorunDir = appDir == app.Directory;
+      bool inAutorunDir = PublicMethods.ComparePaths(desiredAppDirectory.FullName, Application.StartupPath);
       if (inAutorunDir || rogueArgFound)
       {
         NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
-        app.Hidden = true;
+        Program.Hidden = true;
       }
       #endregion
 
@@ -223,7 +234,7 @@ namespace SimpleMaid
       #endregion
 
       #region Handle previous instance
-      programMutex = new Mutex(false, "Local\\" + app.Guid);
+      programMutex = new Mutex(false, "Local\\" + Application.AssemblyGuid);
       if (!programMutex.WaitOne(0, false))
       {
         reportPastSelf();
@@ -232,7 +243,7 @@ namespace SimpleMaid
       #endregion
 
       #region Startup directory management
-      PublicMethods.DirectoryCopy(ConfigurationManager.AppSettings["SvtFolderName"], appDir);
+      PublicMethods.DirectoryCopy(ConfigurationManager.AppSettings["SvtFolderName"], desiredAppDirectory.FullName);
       #endregion
 
       #region Necessary INI declarations
@@ -250,7 +261,7 @@ namespace SimpleMaid
       #region Compose configuration file
       bool firstRun;
       bool promptShown = false;
-      if (firstRun = !File.Exists(config))
+      if (firstRun = !mainConfigFile.Exists)
       {
         configuration = new IniData();
 
@@ -261,7 +272,7 @@ namespace SimpleMaid
         #region configuration["Service"].AddKey("sMachinePassword", machinePassword);
         if (!isPasswordOK(machinePassword))
         {
-          if (app.Hidden)
+          if (Program.Hidden)
             NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
 
           string passwordValue;
@@ -272,7 +283,7 @@ namespace SimpleMaid
           configuration["Service"].AddKey("sMachinePassword", passwordValue);
           promptShown = true;
 
-          if (app.Hidden)
+          if (Program.Hidden)
             NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
         }
         else
@@ -286,7 +297,7 @@ namespace SimpleMaid
       }
       else
       {
-        configuration = config_parser.ReadFile(config);
+        configuration = config_parser.ReadFile(mainConfigFile.FullName, Encoding.UTF8);
 
         machineConfigured = bool.Parse(configuration["Service"]["bMachineConfigured"]);
         #region machineName = configuration["Service"]["sMachineName"];
@@ -307,7 +318,7 @@ namespace SimpleMaid
         {
           if (!isPasswordOK(machinePassword))
           {
-            if (app.Hidden)
+            if (Program.Hidden)
               NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
 
             string passwordValue;
@@ -319,7 +330,7 @@ namespace SimpleMaid
             promptShown = true;
             machinePassword = configuration["Service"]["sMachinePassword"];
 
-            if (app.Hidden)
+            if (Program.Hidden)
               NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
           }
         }
@@ -334,7 +345,7 @@ namespace SimpleMaid
           {
             if (!isPasswordOK(machinePassword))
             {
-              if (app.Hidden)
+              if (Program.Hidden)
                 NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
 
               string passwordValue;
@@ -346,7 +357,7 @@ namespace SimpleMaid
               promptShown = true;
               machinePassword = configuration["Service"]["sMachinePassword"];
 
-              if (app.Hidden)
+              if (Program.Hidden)
                 NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
             }
           }
@@ -378,17 +389,17 @@ namespace SimpleMaid
           var file_oldpaths = new List<string>();
           var file_paths = new List<string>();
 
-          string app_path = String.Format("{0}{1}.exe", appDir, app.ProductName); // desired path, not actual one (app.ExecutablePath)
-          string app_config_path = String.Format("{0}{1}.exe.config", app.Directory, app.ProductName); // actual path, not desired one
+          string app_path = String.Format("{0}{1}.exe", desiredAppDirectory, Application.ProductName); // desired path, not actual one (app.ExecutablePath)
+          string app_config_path = String.Format("{0}{1}.exe.config", Application.StartupPath, Application.ProductName); // actual path, not desired one
 
-          file_oldpaths.Add(app.ExecutablePath);
+          file_oldpaths.Add(Application.ExecutablePath);
           file_paths.Add(app_path);
           // TODO: Kick some asses
-          var ass_paths = new string[] { app_config_path, app.Directory + "INIFileParser.dll" };
+          var ass_paths = new string[] { app_config_path, Application.StartupPath + "INIFileParser.dll" };
           foreach (var ass in ass_paths)
           {
             file_oldpaths.Add(ass);
-            file_paths.Add(appDir + Path.GetFileName(ass));
+            file_paths.Add(desiredAppDirectory + Path.GetFileName(ass));
           }
 
           if (file_oldpaths.Count != file_paths.Count)
@@ -402,16 +413,16 @@ namespace SimpleMaid
             File.Copy(file_oldpaths[i], file_paths[i], true);
           }
 
-          PublicMethods.SwitchAppAutorun(autoRun, app.ProductName, app_path);
+          PublicMethods.SwitchAppAutorun(autoRun, Application.ProductName, app_path);
         }
         else
         {
-          PublicMethods.SwitchAppAutorun(autoRun, app.ProductName, app.ExecutablePath);
+          PublicMethods.SwitchAppAutorun(autoRun, Application.ProductName, Application.ExecutablePath);
         }
       }
       else
       {
-        PublicMethods.SwitchAppAutorun(autoRun, app.ProductName);
+        PublicMethods.SwitchAppAutorun(autoRun, Application.ProductName);
       }
       #endregion
 
@@ -436,7 +447,7 @@ namespace SimpleMaid
         machineConfigured = true;
         configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
 
-        config_parser.WriteFile(config, configuration, Encoding.UTF8);
+        config_parser.WriteFile(mainConfigFile.FullName, configuration, Encoding.UTF8);
       }
       #endregion
 
@@ -607,7 +618,7 @@ namespace SimpleMaid
       Console.ForegroundColor = ConsoleColor.White;
       Console.WriteLine(msg + "\n");
 
-      if (app.Hidden)
+      if (Program.Hidden)
       {
         NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
         Console.Beep();
@@ -938,20 +949,20 @@ namespace SimpleMaid
 
     private static string hideCommand()
     {
-      if (app.Hidden) return resources.GeneralOKMessage;
+      if (Program.Hidden) return resources.GeneralOKMessage;
 
       NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
-      app.Hidden = true;
+      Program.Hidden = true;
 
       return resources.GeneralOKMessage;
     }
 
     private static string showCommand()
     {
-      if (!app.Hidden) return resources.GeneralOKMessage;
+      if (!Program.Hidden) return resources.GeneralOKMessage;
 
       NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
-      app.Hidden = false;
+      Program.Hidden = false;
 
       return resources.GeneralOKMessage;
     }

@@ -47,6 +47,13 @@ namespace SimpleMaid
       return false;
     }
 
+    public static bool ComparePaths(string pathA, string pathB)
+    {
+      return (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform()) ?
+        0 == String.Compare(Path.GetFullPath(pathA).TrimEnd(Path.DirectorySeparatorChar), Path.GetFullPath(pathB).TrimEnd(Path.DirectorySeparatorChar)) :
+        0 == String.Compare(Path.GetFullPath(pathA).TrimEnd(Path.DirectorySeparatorChar), Path.GetFullPath(pathB).TrimEnd(Path.DirectorySeparatorChar), StringComparison.InvariantCultureIgnoreCase);
+    }
+
     public static void DirectoryCopy(string sourceDirName, string destDirName, bool topDirIndicator = true)
     {
       DirectoryInfo dir = new DirectoryInfo(sourceDirName);
