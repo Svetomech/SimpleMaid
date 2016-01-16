@@ -164,7 +164,6 @@ namespace SimpleMaid
     {
       System.Windows.Forms.Application.EnableVisualStyles();
       Console.Clear();
-      Program.State = "running";
 
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
       mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, resources.ConfigName));
@@ -500,6 +499,8 @@ namespace SimpleMaid
     private static bool isPasswordOK(string p)
     {
       var strength = CheckStrength(p);
+
+      Program.State = $"Running, {nameof(PasswordStrength)}: {strength}";
 
       return (strength >= minimalPasswordStrength) ? true : false;
     }

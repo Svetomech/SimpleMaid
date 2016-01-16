@@ -349,7 +349,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Too short..
+        ///   Ищет локализованную строку, похожую на Too weak..
         /// </summary>
         internal static string PasswordWeakHint {
             get {

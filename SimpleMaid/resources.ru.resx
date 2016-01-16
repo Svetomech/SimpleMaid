@@ -166,6 +166,6 @@
     <value>Пожалуйста, установите пароль: </value>
   </data>
   <data name="PasswordWeakHint" xml:space="preserve">
-    <value>Слишком короткий.</value>
+    <value>Слишком слабый.</value>
   </data>
 </root>

@@ -256,7 +256,7 @@
     <comment>Localizable</comment>
   </data>
   <data name="PasswordWeakHint" xml:space="preserve">
-    <value>Too short.</value>
+    <value>Too weak.</value>
     <comment>Localizable</comment>
   </data>
   <data name="PasswordWeakDelay" xml:space="preserve">
