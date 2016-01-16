@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using static System.IO.Path;
-using static System.String;
-using static System.StringComparison;
 
 namespace SimpleMaid
 {
@@ -15,9 +13,11 @@ namespace SimpleMaid
       /// </summary>
       public static bool Equals(string pathA, string pathB)
       {
+        char[] trimChars = { DirectorySeparatorChar, AltDirectorySeparatorChar };
+
         return (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform()) ?
-          0 == Compare(GetFullPath(pathA).TrimEnd(DirectorySeparatorChar), GetFullPath(pathB).TrimEnd(DirectorySeparatorChar)) :
-          0 == Compare(GetFullPath(pathA).TrimEnd(DirectorySeparatorChar), GetFullPath(pathB).TrimEnd(DirectorySeparatorChar), OrdinalIgnoreCase);
+          String.Equals(GetFullPath(pathA).TrimEnd(trimChars), GetFullPath(pathB).TrimEnd(trimChars)) :
+          String.Equals(GetFullPath(pathA).TrimEnd(trimChars), GetFullPath(pathB).TrimEnd(trimChars), StringComparison.OrdinalIgnoreCase);
       }
     }
 
