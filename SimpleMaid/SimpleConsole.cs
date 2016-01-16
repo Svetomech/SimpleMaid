@@ -65,18 +65,5 @@ namespace SimpleMaid
         SetCursorPosition(0, currentLineCursor);
       }
     }
-
-    /*public static string GetFilledLine(char c)
-    {
-      string s = Empty;
-
-      BufferWidth = WindowWidth;
-      for (int i = 0; i < BufferWidth; ++i)
-      {
-        s += c.ToString();
-      }
-
-      return s;
-    }*/
   }
 }

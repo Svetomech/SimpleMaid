@@ -1,13 +1,13 @@
 using IniParser;
 using IniParser.Model;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -76,14 +76,14 @@ namespace SimpleMaid
           requestStream.Write(requestBody, 0, requestBody.Length);
         }
       }
-      catch (WebException exc)
+      catch (WebException)
       {
         reportWebError();
         internetAlive = false;
         return resources.WebErrorMessage;
       }
       try { using (var response = request.GetResponse()) ;}
-      catch (WebException exc)
+      catch (WebException)
       {
         reportWebError();
         internetAlive = false;
@@ -119,7 +119,7 @@ namespace SimpleMaid
           requestStream.Write(requestBody, 0, requestBody.Length);
         }
       }
-      catch (WebException exc)
+      catch (WebException)
       {
         reportWebError();
         internetAlive = false;
@@ -138,7 +138,7 @@ namespace SimpleMaid
           value = value.Remove(value.IndexOf("\""));
         }
       }
-      catch (WebException exc)
+      catch (WebException)
       {
         reportWebError();
         internetAlive = false;
@@ -146,7 +146,7 @@ namespace SimpleMaid
       }
 
       // TODO: Rewrite - problems with decoding
-      value = PublicMethods.DecodeEncodedNonAsciiCharacters(value);
+      value = decodeEncodedNonAsciiCharacters(value);
       value = value.Replace(@"\/", @"/");
       value = value.Replace(@"\\", @"\");
       value = WebUtility.HtmlDecode(value);
@@ -169,17 +169,19 @@ namespace SimpleMaid
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
       mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, resources.ConfigName));
 
-      #region CMD args: check presence
+      // TODO: Reduce perfomance hit (single array search, not multiple), modify class SimpleConsole.Arguments, ?modify class SimpleConsole
+      #region Console arguments
       bool rogueArgFound = false;
       bool autorunArgFound = false;
-      bool passArgFound = false;
+      bool passArgFound = false; // <-- only need it for clarity
 
       string passArg = resources.DefaultPassword;
       string langArg = CultureInfo.InstalledUICulture.Name;
+
       if (args.Length >= 1)
       {
-        rogueArgFound = PublicMethods.CheckConsoleArgument(resources.RogueArgument, args);
-        autorunArgFound = PublicMethods.CheckConsoleArgument(resources.AutorunArgument, args);
+        rogueArgFound = SimpleConsole.Arguments.CheckPresence(resources.RogueArgument, args);
+        autorunArgFound = SimpleConsole.Arguments.CheckPresence(resources.AutorunArgument, args);
         if (args.Length >= 2)
         {
           for (int i = 0; i < args.Length; ++i)
@@ -200,7 +202,7 @@ namespace SimpleMaid
 
       #region Handle autorun
       handle = GetConsoleWindow();
-      bool inDesiredDir = PublicMethods.PathsEqual(desiredAppDirectory.FullName, Application.StartupPath);
+      bool inDesiredDir = desiredAppDirectory.IsEqualTo(Application.StartupPath);
       if (inDesiredDir || rogueArgFound)
       {
         ShowWindow(handle, SW_HIDE);
@@ -221,7 +223,7 @@ namespace SimpleMaid
       }
       else
       {
-        if (PublicMethods.IsAppElevated())
+        if (SimpleApp.IsElevated())
         {
           reportGeneralError(resources.AdminErrorMessage);
           exit();
@@ -229,6 +231,7 @@ namespace SimpleMaid
       }
       #endregion
 
+      // TODO: Move so it happens AFTER startup directory management
       #region Handle previous instance
       programMutex = new Mutex(false, "Local\\" + Application.AssemblyGuid);
       if (!programMutex.WaitOne(0, false))
@@ -241,37 +244,26 @@ namespace SimpleMaid
       #region Startup directory management
       if (!inDesiredDir)
       {
-        PublicMethods.DirectoryCopy(ConfigurationManager.AppSettings["SvtFolderName"], desiredAppDirectory.FullName);
-
-
-        var file_oldpaths = new List<string>();
-        var file_paths = new List<string>();
-
-        string app_path = String.Format("{0}{1}.exe", desiredAppDirectory, Application.ProductName); // desired path, not actual one (app.ExecutablePath)
-        string app_config_path = String.Format("{0}{1}.exe.config", Application.StartupPath, Application.ProductName); // actual path, not desired one
-
-        file_oldpaths.Add(Application.ExecutablePath);
-        file_paths.Add(app_path);
-        // TODO: Kick some asses
-        var ass_paths = new string[] { app_config_path, Application.StartupPath + "INIFileParser.dll" };
-        foreach (var ass in ass_paths)
+        var svtFolder = new DirectoryInfo(ConfigurationManager.AppSettings["SvtFolderName"]); // <-- relative, ?make absolute
+        string[] filePaths = { Application.ExecutablePath, ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath, //AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
+          Assembly.GetAssembly(typeof(FileIniDataParser)).Location };
+        try
         {
-          file_oldpaths.Add(ass);
-          file_paths.Add(desiredAppDirectory + Path.GetFileName(ass));
+          svtFolder.CopyTo(desiredAppDirectory, false);
+          foreach (var filePath in filePaths)
+          {
+            File.Copy(filePath, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(filePath)), true);
+          }
         }
-
-        if (file_oldpaths.Count != file_paths.Count)
+        catch //unauthorized, io, notsupported
         {
-          reportGeneralError(resources.OldnewErrorMessage);
-          exit();
+          // 1. stop other instance using guid technique
+          //   if there is no other instance running, (?recursive or ?continue)
+          // 2. try to copy again
+          //   if unlucky, (?recursive or ?continue)
+          // 3. start that instance (?with a delay through .bat file)
+          // 4. exit
         }
-
-        for (int i = 0; i < file_paths.Count; ++i)
-        {
-          File.Copy(file_oldpaths[i], file_paths[i], true);
-        }
-
-        PublicMethods.SwitchAppAutorun(autoRun, Application.ProductName, app_path);
       }
       #endregion
 
@@ -412,9 +404,9 @@ namespace SimpleMaid
 
       #region Enable/disable autorun
       if (autoRun)
-        PublicMethods.SwitchAppAutorun(Application.ProductName, Application.ExecutablePath);
+        SimpleApp.SwitchAutorun(Application.ProductName, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(Application.ExecutablePath)));
       else
-        PublicMethods.SwitchAppAutorun(Application.ProductName);
+        SimpleApp.SwitchAutorun(Application.ProductName);
       #endregion
 
       #region Configure machine
@@ -520,11 +512,11 @@ namespace SimpleMaid
 
       string middlePractical = "| " + resources.PasswordEnterTip;
       string middle = middlePractical + " |";
-      middle = middlePractical + PublicMethods.GetFilledLine(' ').Remove(0, middle.Length) + " |";
+      middle = middlePractical + SimpleConsole.Line.GetFilled(' ').Remove(0, middle.Length) + " |";
 
-      Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
+      Console.Write("#" + SimpleConsole.Line.GetFilled('-').Remove(0, 2) + "#");
       Console.Write(middle);
-      Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
+      Console.Write("#" + SimpleConsole.Line.GetFilled('-').Remove(0, 2) + "#");
       Console.SetCursorPosition(middlePractical.Length, Console.CursorTop - 2);
 
       ConsoleKeyInfo keyInfo;
@@ -558,14 +550,14 @@ namespace SimpleMaid
 
           passHolder.RemoveAt(passHolder.Length - 1);
 
-          PublicMethods.ClearConsoleLine();
+          SimpleConsole.Line.ClearCurrent();
           Console.Write(middlePractical);
           for (int i = 0; i < starsCount; ++i)
           {
             Console.Write('*');
           }
           var pos = new Point(Console.CursorLeft, Console.CursorTop);
-          Console.Write(PublicMethods.GetFilledLine(' ').Remove(0, middlePractical.Length + starsCount + " |".Length) + " |");
+          Console.Write(SimpleConsole.Line.GetFilled(' ').Remove(0, middlePractical.Length + starsCount + " |".Length) + " |");
           Console.SetCursorPosition(pos.X, pos.Y);
         }
 
@@ -610,11 +602,11 @@ namespace SimpleMaid
     {
       string middlePractical = "| " + resources.PasswordWeakHint;
       string middle = middlePractical + " |";
-      middle = middlePractical + PublicMethods.GetFilledLine(' ').Remove(0, middle.Length) + " |";
+      middle = middlePractical + SimpleConsole.Line.GetFilled(' ').Remove(0, middle.Length) + " |";
 
-      Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
+      Console.Write("#" + SimpleConsole.Line.GetFilled('-').Remove(0, 2) + "#");
       Console.Write(middle);
-      Console.Write("#" + PublicMethods.GetFilledLine('-').Remove(0, 2) + "#");
+      Console.Write("#" + SimpleConsole.Line.GetFilled('-').Remove(0, 2) + "#");
       Console.CursorVisible = false;
 
       pas = null;
@@ -657,6 +649,8 @@ namespace SimpleMaid
       Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.Cyan;
       Console.WriteLine(msg + "\n");
+      if (resources.CommandStart == msg)
+        Console.Beep();
     }
 
     private static void reportThreadStop(string msg)
@@ -664,6 +658,8 @@ namespace SimpleMaid
       Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.Red;
       Console.WriteLine(msg + "\n");
+      if (resources.CommandStop == msg)
+        Console.Beep();
     }
     #endregion
 
@@ -991,7 +987,7 @@ namespace SimpleMaid
       if ((quickDownload = (command_parts.Length == 2)) || "d" == command_parts[2])
       {
         download_dir = String.Format("{0}{1}\\", Path.GetTempPath(), Guid.NewGuid().ToString().ToUpper());
-        download_file = PublicMethods.UrlToFile(command_parts[1]);
+        download_file = urlToFile(command_parts[1]);
       }
       // TODO: Атаки типа "& && ||" - не баг, а фича!
       else if (command_parts.Length >= 3)
@@ -1009,7 +1005,7 @@ namespace SimpleMaid
           int diff = 0;
           foreach (int index in indexesOfCmdVariables)
           {
-            string variable = PublicMethods.PackmaniseString(command_parts[2], (index + ev.Length) - diff, evd);
+            string variable = command_parts[2].Pacmanise(index + ev.Length - diff, evd);
 
             /*if (variable.Contains(" "))
             {

@@ -138,9 +138,6 @@
   <data name="ConnectionStop" xml:space="preserve">
     <value>Поток "Подключение" остановлен.</value>
   </data>
-  <data name="IncompleteCommandErrMsg" xml:space="preserve">
-    <value>Один сильный ход заслуживает, чтобы был сделан второй.</value>
-  </data>
   <data name="OldnewErrorMessage" xml:space="preserve">
     <value>Что это вы такое вытворяете?!</value>
   </data>
