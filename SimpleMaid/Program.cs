@@ -199,11 +199,11 @@ namespace SimpleMaid
       #endregion
 
       #region Handle autorun
-      handle = NativeMethods.GetConsoleWindow();
+      handle = GetConsoleWindow();
       bool inDesiredDir = PublicMethods.PathsEqual(desiredAppDirectory.FullName, Application.StartupPath);
       if (inDesiredDir || rogueArgFound)
       {
-        NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
+        ShowWindow(handle, SW_HIDE);
         Program.Hidden = true;
       }
       #endregion
@@ -302,7 +302,7 @@ namespace SimpleMaid
         if (!isPasswordOK(machinePassword))
         {
           if (Program.Hidden)
-            NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+            ShowWindow(handle, SW_SHOW);
 
           string passwordValue;
           while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
@@ -313,7 +313,7 @@ namespace SimpleMaid
           promptShown = true;
 
           if (Program.Hidden)
-            NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
+            ShowWindow(handle, SW_HIDE);
         }
         else
         {
@@ -348,7 +348,7 @@ namespace SimpleMaid
           if (!isPasswordOK(machinePassword))
           {
             if (Program.Hidden)
-              NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+              ShowWindow(handle, SW_SHOW);
 
             string passwordValue;
             while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
@@ -360,7 +360,7 @@ namespace SimpleMaid
             machinePassword = configuration["Service"]["sMachinePassword"];
 
             if (Program.Hidden)
-              NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
+              ShowWindow(handle, SW_HIDE);
           }
         }
         else
@@ -375,7 +375,7 @@ namespace SimpleMaid
             if (!isPasswordOK(machinePassword))
             {
               if (Program.Hidden)
-                NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+                ShowWindow(handle, SW_SHOW);
 
               string passwordValue;
               while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
@@ -387,7 +387,7 @@ namespace SimpleMaid
               machinePassword = configuration["Service"]["sMachinePassword"];
 
               if (Program.Hidden)
-                NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
+                ShowWindow(handle, SW_HIDE);
             }
           }
         }
@@ -631,10 +631,10 @@ namespace SimpleMaid
 
       if (Program.Hidden)
       {
-        NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+        ShowWindow(handle, SW_SHOW);
         Console.Beep();
         Thread.Sleep(int.Parse(resources.GeneralCloseDelay));
-        NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
+        ShowWindow(handle, SW_HIDE);
       }
     }
 
@@ -961,7 +961,7 @@ namespace SimpleMaid
     {
       if (Program.Hidden) return resources.GeneralOKMessage;
 
-      NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
+      ShowWindow(handle, SW_HIDE);
       Program.Hidden = true;
 
       return resources.GeneralOKMessage;
@@ -971,7 +971,7 @@ namespace SimpleMaid
     {
       if (!Program.Hidden) return resources.GeneralOKMessage;
 
-      NativeMethods.ShowWindow(handle, NativeMethods.SW_SHOW);
+      ShowWindow(handle, SW_SHOW);
       Program.Hidden = false;
 
       return resources.GeneralOKMessage;
