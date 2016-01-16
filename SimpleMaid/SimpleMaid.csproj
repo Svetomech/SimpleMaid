@@ -59,13 +59,16 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PublicMethods.cs" />
     <Compile Include="resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SimpleConsole.cs" />
+    <Compile Include="SimpleIO.cs" />
     <Compile Include="SimplePlatform.cs" />
+    <Compile Include="SimpleApp.cs" />
+    <Compile Include="SimpleString.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

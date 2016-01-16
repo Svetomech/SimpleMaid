@@ -1,4 +1,5 @@
-using System;
+using static System.Environment;
+using static System.PlatformID;
 
 namespace SimpleMaid
 {
@@ -12,10 +13,10 @@ namespace SimpleMaid
 
     public static Platform runningPlatform()
     {
-      switch (Environment.OSVersion.Platform)
+      switch (OSVersion.Platform)
       {
-        case PlatformID.Unix:
-        case PlatformID.MacOSX:
+        case Unix:
+        case MacOSX:
           return Platform.Unix;
 
         default:

