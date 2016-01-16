@@ -51,6 +51,18 @@ namespace SimpleMaid
           Copy(dir, new DirectoryInfo(Combine(destDir.FullName, dir.Name)));
         }
       }
+
+      /// <summary>
+      /// Doesn't complain if source directory isn't present or is the same as target,
+      /// overwrites the existing files (standart exception is thrown if they're in use).
+      /// </summary>
+      /// <param name="sourceDirPath">source directory full name.</param>
+      /// <param name="destDirPath">target directory full name.</param>
+      /// <param name="copyRootFiles">false to exclude files in source directory from being copied; otherwise, true.</param>
+      public static void Copy(string sourceDirPath, string destDirPath, bool copyRootFiles = true)
+      {
+        Copy(new DirectoryInfo(sourceDirPath), new DirectoryInfo(destDirPath), copyRootFiles);
+      }
     }
 
 
@@ -91,6 +103,21 @@ namespace SimpleMaid
         throw new ArgumentNullException(nameof(dir));
 
       Directory.Copy(dir, destDir, copyRootFiles);
+    }
+
+    /// <summary>
+    /// Doesn't complain if source directory isn't present or is the same as target,
+    /// overwrites the existing files (standart exception is thrown if they're in use).
+    /// </summary>
+    /// <param name="dir">source directory.</param>
+    /// <param name="destDirPath">target directory full name.</param>
+    /// <param name="copyRootFiles">false to exclude files in source directory from being copied; otherwise, true.</param>
+    public static void CopyTo(this DirectoryInfo dir, string destDirPath, bool copyRootFiles = true)
+    {
+      if (null == dir)
+        throw new ArgumentNullException(nameof(dir));
+
+      Directory.Copy(dir, new DirectoryInfo(destDirPath), copyRootFiles);
     }
 
     #endregion
