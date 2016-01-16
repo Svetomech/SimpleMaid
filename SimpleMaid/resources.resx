@@ -201,7 +201,6 @@
   </data>
   <data name="IncompleteCommandErrMsg" xml:space="preserve">
     <value>One good turn deserves another.</value>
-    <comment>Localizable</comment>
   </data>
   <data name="WrongCommandErrMsg" xml:space="preserve">
     <value>A typo: </value>
