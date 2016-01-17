@@ -744,8 +744,7 @@ namespace SimpleMaid
       {
         var now = DateTime.Now;
 
-        if (resources.WebErrorMessage !=
-          Set($"time.{machine}", $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
+        if (resources.WebErrorMessage != Set($"time.{machine}", $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
           if (!internetAlive)
             resurrectDeadThreads();
