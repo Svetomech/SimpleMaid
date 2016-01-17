@@ -9,10 +9,15 @@ namespace SimpleMaid
     public static class Path
     {
       /// <summary>
-      /// Platform-independent paths' equality check.
+      /// Doesn't complain if paths are null; platform-independent.
       /// </summary>
       public static bool Equals(string pathA, string pathB)
       {
+        if (pathA == pathB)
+          return true;
+        else if (String.IsNullOrWhiteSpace(pathA) || String.IsNullOrWhiteSpace(pathB))
+          return false;
+
         char[] trimChars = { DirectorySeparatorChar, AltDirectorySeparatorChar };
 
         return (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform()) ?
@@ -69,7 +74,7 @@ namespace SimpleMaid
     #region Extension methods
 
     /// <summary>
-    /// Platform-independent paths' equality check.
+    /// Doesn't complain if paths are null; platform-independent.
     /// </summary>
     public static bool IsEqualTo(this DirectoryInfo dir, string pathToCompare)
     {
@@ -80,7 +85,7 @@ namespace SimpleMaid
     }
 
     /// <summary>
-    /// Platform-independent paths' equality check.
+    /// Doesn't complain if paths are null; platform-independent.
     /// </summary>
     public static bool IsEqualTo(this FileInfo file, string pathToCompare)
     {
