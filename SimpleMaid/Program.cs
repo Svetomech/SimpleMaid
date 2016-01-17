@@ -20,7 +20,6 @@ namespace SimpleMaid
   class Program
   {
     //TODOS + убрать все private, эксперимент с static и инициализацией (как можно меньше инициализации здесь, но если она не на своём месте, то здесь)
-    //SEARCH: String.Format, Console.Write, +, Set, Get
     #region Properties
     public static bool Hidden { get; set; } = false;
     public static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
@@ -58,12 +57,12 @@ namespace SimpleMaid
 
     public static string Set(string tag, string value)
     {
-      tag = Application.ProductName + "_" + tag;
+      tag = $"{Application.ProductName}_{tag}";
 
-      UTF8Encoding encoding = new UTF8Encoding();
-      byte[] requestBody = encoding.GetBytes("tag=" + tag + "&value=" + value + "&fmt=html");
+      var encoding = new UTF8Encoding();
+      byte[] requestBody = encoding.GetBytes($"tag={tag}&value={value}&fmt=html");
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(resources.ServerAddress + "storeavalue");
+      var request = (HttpWebRequest)WebRequest.Create($"{resources.ServerAddress}/storeavalue");
       request.Method = "POST";
       request.Credentials = CredentialCache.DefaultCredentials;
       request.ContentType = "application/x-www-form-urlencoded";
@@ -92,21 +91,21 @@ namespace SimpleMaid
 
       Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.Gray;
-      Console.WriteLine("SET  {0}  {1}\n", tag, value);
+      Console.WriteLine($"SET  {tag}  {value}\n");
 
       return String.Empty;
     }
 
     public static string Get(string tag)
     {
-      tag = Application.ProductName + "_" + tag;
+      tag = $"{Application.ProductName}_{tag}";
 
       string value;
 
-      UTF8Encoding encoding = new UTF8Encoding();
-      byte[] requestBody = encoding.GetBytes("tag=" + tag + "&fmt=html");
+      var encoding = new UTF8Encoding();
+      byte[] requestBody = encoding.GetBytes($"tag={tag}&fmt=html");
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(resources.ServerAddress + "getvalue");
+      var request = (HttpWebRequest)WebRequest.Create($"{resources.ServerAddress}/getvalue");
       request.Method = "POST";
       request.Credentials = CredentialCache.DefaultCredentials;
       request.ContentType = "application/x-www-form-urlencoded";
@@ -153,7 +152,7 @@ namespace SimpleMaid
 
       Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.DarkGreen;
-      Console.WriteLine("GET  {0}  {1}\n", tag, value);
+      Console.WriteLine($"GET  {tag}  {value}\n");
 
       return value;
     }

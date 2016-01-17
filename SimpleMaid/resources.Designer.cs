@@ -403,7 +403,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на http://appinvtinywebdb.appspot.com/.
+        ///   Ищет локализованную строку, похожую на http://appinvtinywebdb.appspot.com.
         /// </summary>
         internal static string ServerAddress {
             get {
