@@ -210,7 +210,6 @@ namespace SimpleMaid
       #endregion
 
       #region Localization
-      CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo(langArg);
       CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg);
       #endregion
 
