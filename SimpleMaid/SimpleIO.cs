@@ -18,11 +18,11 @@ namespace SimpleMaid
         else if (String.IsNullOrWhiteSpace(pathA) || String.IsNullOrWhiteSpace(pathB))
           return false;
 
-        char[] trimChars = { DirectorySeparatorChar, AltDirectorySeparatorChar };
+        char[] dirSeparators = { DirectorySeparatorChar, AltDirectorySeparatorChar };
 
         return (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform()) ?
-          String.Equals(GetFullPath(pathA).TrimEnd(trimChars), GetFullPath(pathB).TrimEnd(trimChars)) :
-          String.Equals(GetFullPath(pathA).TrimEnd(trimChars), GetFullPath(pathB).TrimEnd(trimChars), StringComparison.OrdinalIgnoreCase);
+          String.Equals(GetFullPath(pathA).TrimEnd(dirSeparators), GetFullPath(pathB).TrimEnd(dirSeparators)) :
+          String.Equals(GetFullPath(pathA).TrimEnd(dirSeparators), GetFullPath(pathB).TrimEnd(dirSeparators), StringComparison.OrdinalIgnoreCase);
       }
     }
 
