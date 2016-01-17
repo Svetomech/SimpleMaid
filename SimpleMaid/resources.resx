@@ -211,7 +211,7 @@
     <comment>(milliseconds)</comment>
   </data>
   <data name="EvaluateCmdVariable" xml:space="preserve">
-    <value>nul(</value>
+    <value>eval(</value>
   </data>
   <data name="EvaluateCmdVariableEnd" xml:space="preserve">
     <value>)</value>

