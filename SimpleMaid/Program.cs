@@ -821,7 +821,6 @@ namespace SimpleMaid
       reportThreadStop(resources.ChatStop);
     }
 
-    // TODO: Change shortcuts to const
     private static void awaitCommands()
     {
       reportThreadStart(resources.CommandStart);
@@ -852,7 +851,6 @@ namespace SimpleMaid
           continue;
         }
 
-        // TODO: Rewrite using switch-case, exitCommand() should return answer
         #region Parsing command
         string[] command_parts = sRemoteCommand.Split(new char[] { char.Parse(sep) },
           StringSplitOptions.RemoveEmptyEntries);
@@ -923,6 +921,10 @@ namespace SimpleMaid
         }
         else if (qui == command_parts[0])
         {
+          while (resources.WebErrorMessage == Set("commands." + machine, ans))
+          {
+            Thread.Sleep(1000);
+          }
           exitCommand();
         }
         else
