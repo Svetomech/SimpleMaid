@@ -406,18 +406,15 @@ namespace SimpleMaid
         SimpleApp.SwitchAutorun(Application.ProductName);
       #endregion
 
-      #region Configure machine
-      if (!machineConfigured)
-      {
-        configureMachine();
-      }
-      #endregion
-
       #region Update INI file
       if (firstRun || !machineConfigured || autorunArgFound || passArgFound || promptShown)
       {
-        machineConfigured = true;
-        configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
+        if (!machineConfigured)
+        {
+          configureMachine();
+          machineConfigured = true;
+          configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
+        }
 
         config_parser.WriteFile(mainConfigFile.FullName, configuration, Encoding.UTF8);
       }
