@@ -266,4 +266,7 @@
   <data name="LanguageArgument" xml:space="preserve">
     <value>--lang</value>
   </data>
+  <data name="MachinesDelimiter" xml:space="preserve">
+    <value>:</value>
+  </data>
 </root>

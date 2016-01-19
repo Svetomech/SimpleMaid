@@ -409,15 +409,7 @@ namespace SimpleMaid
       #region Configure machine
       if (!machineConfigured)
       {
-        string machines = getMachinesList();
-
-        if (!machines.Contains(machine))
-        {
-          while (resources.WebErrorMessage == Set("machines", $"{machines}{machine}:"))
-          {
-            Thread.Sleep(1000);
-          }
-        }
+        configureMachine();
       }
       #endregion
 
@@ -471,26 +463,30 @@ namespace SimpleMaid
       return Guid.NewGuid().ToString();
     }
 
-    private static string getMachinesList()
+    private static void configureMachine()
     {
-      // Simple hack to bypass 500 characters limit
+      int valueLength = machine.Length + resources.MachinesDelimiter.Length;
+      int realValueLimit = (int) Math.Floor(double.Parse(resources.IndividualValueLimit) / valueLength) * valueLength;
+
       int listIndex = -1;
-      string listTest;
+      string currentList;
       do
       {
         listIndex++;
-        while (resources.WebErrorMessage == (listTest = Get("machines" + listIndex)))
+        while (resources.WebErrorMessage == (currentList = Get($"machines{listIndex}")))
         {
           Thread.Sleep(1000);
         }
-      } while (listTest.Length >= int.Parse(resources.IndividualValueLimit));
+        if (currentList.Contains(machine))
+          return;
+      } while (currentList.Length >= realValueLimit);
 
-      string machinesList;
-      while (resources.WebErrorMessage == (machinesList = Get("machines" + listIndex)))
+      string machines = currentList;
+
+      while (resources.WebErrorMessage == Set($"machines{listIndex}", $"{machines}{machine}{resources.MachinesDelimiter}"))
       {
         Thread.Sleep(1000);
       }
-      return machinesList;
     }
 
     private static bool isPasswordOK(string p)

@@ -295,6 +295,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на :.
+        /// </summary>
+        internal static string MachinesDelimiter {
+            get {
+                return ResourceManager.GetString("MachinesDelimiter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на m.
         /// </summary>
         internal static string MessageCommand {
