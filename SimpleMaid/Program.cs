@@ -468,7 +468,6 @@ namespace SimpleMaid
 
     private static string createMachine()
     {
-      // TODO: Use MAC address?
       return Guid.NewGuid().ToString();
     }
 
