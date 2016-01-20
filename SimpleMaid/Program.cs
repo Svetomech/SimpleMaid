@@ -319,7 +319,7 @@ namespace SimpleMaid
 
         machineConfigured = bool.Parse(configuration["Service"]["bMachineConfigured"]);
         #region machineName = configuration["Service"]["sMachineName"];
-        if (resources.KeywordDefault != configuration["Service"]["sMachineName"])
+        if (isNameOK(configuration["Service"]["sMachineName"]))
         {
           machineName = configuration["Service"]["sMachineName"];
         }
