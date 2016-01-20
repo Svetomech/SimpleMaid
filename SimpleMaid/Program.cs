@@ -486,13 +486,19 @@ namespace SimpleMaid
       }
     }
 
-    private static bool isPasswordOK(string p)
+    private static bool isNameOK(string name)
     {
-      var strength = CheckStrength(p);
+      Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
+      return Guid.TryParse(name, out temp);
+    }
+
+    private static bool isPasswordOK(string password)
+    {
+      var strength = CheckStrength(password);
 
       Program.State = $"running, {nameof(PasswordStrength)}: {strength}";
 
-      return (strength >= minimalPasswordStrength) ? true : false;
+      return (strength >= minimalPasswordStrength);
     }
 
     // HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, passwordPrompt()).Password
