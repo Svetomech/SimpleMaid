@@ -241,7 +241,7 @@ namespace SimpleMaid
       #region Startup directory management
       if (!inDesiredDir)
       {
-        var svtFolder = new DirectoryInfo(ConfigurationManager.AppSettings["SvtFolderName"]); // <-- relative, ?make absolute
+        var svtFolder = new DirectoryInfo(ConfigurationManager.AppSettings["SvtFolderName"]);
         string[] filePaths = { Application.ExecutablePath, ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath, //AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
           Assembly.GetAssembly(typeof(FileIniDataParser)).Location };
         try
