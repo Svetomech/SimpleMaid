@@ -5,7 +5,7 @@ namespace SimpleMaid
 {
   public static class SimpleConsole
   {
-    public static class Arguments
+    public class Arguments
     {
       /// <summary>
       /// Faster implementation of LINQ's Array.Contains().
