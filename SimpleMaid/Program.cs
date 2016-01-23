@@ -167,7 +167,7 @@ namespace SimpleMaid
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
       mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, resources.ConfigName));
 
-      // TODO: Reduce perfomance hit (single array search, not multiple), modify class SimpleConsole.Arguments, ?modify class SimpleConsole
+      // TODO: Reduce perfomance hit (single array search, not multiple), modify class SimpleConsole.Arguments
       #region Console arguments
       bool rogueArgFound = false;
       bool autorunArgFound = false;
