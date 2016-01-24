@@ -67,6 +67,7 @@ namespace SimpleMaid
       request.Credentials = CredentialCache.DefaultCredentials;
       request.ContentType = "application/x-www-form-urlencoded";
       request.ContentLength = requestBody.Length;
+      request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1";
 
       try
       {
@@ -110,6 +111,7 @@ namespace SimpleMaid
       request.Credentials = CredentialCache.DefaultCredentials;
       request.ContentType = "application/x-www-form-urlencoded";
       request.ContentLength = requestBody.Length;
+      request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1";
 
       try
       {
