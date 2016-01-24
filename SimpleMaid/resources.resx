@@ -161,7 +161,7 @@
     <value>r</value>
   </data>
   <data name="ServerAddress" xml:space="preserve">
-    <value>http://appinvtinywebdb.appspot.com</value>
+    <value>http://apptinywebdb.appspot.com</value>
   </data>
   <data name="TimeStart" xml:space="preserve">
     <value>Time thread has started.</value>
