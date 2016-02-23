@@ -200,7 +200,7 @@ namespace SimpleMaid
       }
       #endregion
 
-      #region Handle autorun
+      #region Hide window (if autorun)
       handle = GetConsoleWindow();
       bool inDesiredDir = desiredAppDirectory.IsEqualTo(Application.StartupPath);
       if (inDesiredDir || rogueArgFound)
@@ -210,11 +210,10 @@ namespace SimpleMaid
       }
       #endregion
 
-      #region Localization
+      // Localization
       CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg);
-      #endregion
 
-      #region OS/priveleges check
+      #region Exit (OS/privileges check)
       if (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform())
       {
         reportGeneralError(resources.OSErrorMessage);
@@ -231,7 +230,7 @@ namespace SimpleMaid
       #endregion
 
       // TODO: Move so it happens AFTER startup directory management
-      #region Handle previous instance
+      #region Exit (if already running)
       programMutex = new Mutex(false, "Local\\" + Application.AssemblyGuid);
       if (!programMutex.WaitOne(0, false))
       {
@@ -401,12 +400,11 @@ namespace SimpleMaid
       machine = machineName;
       pass = machinePassword;
 
-      #region Enable/disable autorun
+      // Enable/disable autorun
       if (autoRun)
         SimpleApp.SwitchAutorun(Application.ProductName, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(Application.ExecutablePath)));
       else
         SimpleApp.SwitchAutorun(Application.ProductName);
-      #endregion
 
       #region Update INI file
       if (firstRun || !machineConfigured || autorunArgFound || passArgFound || promptShown)
