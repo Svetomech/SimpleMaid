@@ -686,10 +686,10 @@ namespace SimpleMaid
       ChatboxExit = true;
     }
 
-    private static string executeCommand(string command, bool usePowershell)
+    private static string executeCmdCommand(string command, bool usePowershellInstead = false)
     {
       ProcessStartInfo procStartInfo;
-      if (!usePowershell)
+      if (!usePowershellInstead)
       {
         procStartInfo = new ProcessStartInfo("cmd", "/c " + command);
       }
@@ -866,7 +866,7 @@ namespace SimpleMaid
 
         if (!Regex.IsMatch(sRemoteCommand, "^.;.*"))
         {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + executeCommand(sRemoteCommand, false)))
+          while (resources.WebErrorMessage == Set("commands." + machine, ans + executeCmdCommand(sRemoteCommand)))
           {
             Thread.Sleep(1000);
           }
@@ -875,7 +875,7 @@ namespace SimpleMaid
         {
           if (!Regex.IsMatch(sRemoteCommand, "^.;.;.*"))
           {
-            executeCommand(command_parts[1], false);
+            executeCmdCommand(command_parts[1]);
           }
           else if (pow == command_parts[1])
           {
@@ -1011,7 +1011,7 @@ namespace SimpleMaid
             }*/
 
             string unEvaluatedVariable = ev + variable + evd;
-            string evaluatedVariable = executeCommand($"echo {variable}", false);
+            string evaluatedVariable = executeCmdCommand($"echo {variable}");
 
             command_parts[2] = command_parts[2].Replace(unEvaluatedVariable, evaluatedVariable);
 
@@ -1090,7 +1090,7 @@ namespace SimpleMaid
       }
       command_parts[1] = command_parts[1].Replace(@"""", @"\""");
 
-      return executeCommand(command_parts[1], true);
+      return executeCmdCommand(command_parts[1], true);
     }
   }
 }
