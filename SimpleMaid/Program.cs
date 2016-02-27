@@ -19,7 +19,6 @@ namespace SimpleMaid
 {
   class Program
   {
-    //TODOS + убрать все private, эксперимент с static и инициализацией (как можно меньше инициализации здесь, но если она не на своём месте, то здесь)
     #region Properties
     public static bool Hidden { get; set; } = false;
     public static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
