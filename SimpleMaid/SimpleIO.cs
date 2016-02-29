@@ -18,9 +18,6 @@ namespace SimpleMaid
         else if (String.IsNullOrWhiteSpace(pathA) || String.IsNullOrWhiteSpace(pathB))
           return false;
 
-        pathA = pathA.Replace("\"", "");
-        pathB = pathB.Replace("\"", "");
-
         char[] dirSeparators = { DirectorySeparatorChar, AltDirectorySeparatorChar };
 
         return (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform()) ?
