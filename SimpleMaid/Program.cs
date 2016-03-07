@@ -193,7 +193,7 @@ namespace SimpleMaid
           {
             if (!passArgFound && (args[i] == resources.PasswordArgument))
             {
-              passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : String.Empty;
+              passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : passArg;
 
               if (passArgFound)
                 adjustedLength -= 2;
@@ -202,7 +202,7 @@ namespace SimpleMaid
             }
             else if (!langArgFound && (args[i] == resources.LanguageArgument))
             {
-              langArg = (langArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : String.Empty;
+              langArg = (langArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : langArg;
 
               if (langArgFound)
                 adjustedLength -= 2;
