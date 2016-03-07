@@ -168,7 +168,6 @@ namespace SimpleMaid
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
       mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, resources.ConfigName));
 
-      // TODO: Reduce perfomance hit (single array search, not multiple), modify class SimpleConsole.Arguments
       #region Console arguments
       bool rogueArgFound = false;
       bool autorunArgFound = false;
@@ -179,20 +178,25 @@ namespace SimpleMaid
 
       if (args.Length >= 1)
       {
-        rogueArgFound = SimpleConsole.Arguments.CheckPresence(resources.RogueArgument, args);
-        autorunArgFound = SimpleConsole.Arguments.CheckPresence(resources.AutorunArgument, args);
-        if (args.Length >= 2)
+        int adjustedLength = args.Length;
+
+        for (int i = 0; i < args.Length; ++i)
         {
-          for (int i = 0; i < args.Length; ++i)
+          if (!rogueArgFound && (rogueArgFound = (args[i] == resources.RogueArgument)))
+            --adjustedLength;
+
+          if (!autorunArgFound && (autorunArgFound = (args[i] == resources.AutorunArgument)))
+            --adjustedLength;
+
+          if (adjustedLength >= 2)
           {
             if (args[i] == resources.PasswordArgument)
             {
-              passArg = args[i + 1];
-              passArgFound = true;
+              passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : String.Empty;
             }
             else if (args[i] == resources.LanguageArgument)
             {
-              langArg = args[i + 1];
+              langArg = (i + 1 < adjustedLength) ? args[i + 1] : String.Empty;
             }
           }
         }
