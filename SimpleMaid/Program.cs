@@ -210,8 +210,6 @@ namespace SimpleMaid
                 adjustedLength--;
             }
           }
-
-          Console.WriteLine($"length: {args.Length}\nadjusted length: {adjustedLength}");
         }
       }
       #endregion
