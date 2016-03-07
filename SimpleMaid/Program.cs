@@ -896,6 +896,10 @@ namespace SimpleMaid
 
             powershellCommand(command_parts_fixed);
           }
+          else if (qui == command_parts[1])
+          {
+            exitCommand();
+          }
           else
           {
             reportGeneralError(resources.WrongCommandErrMsg + sRemoteCommand);
