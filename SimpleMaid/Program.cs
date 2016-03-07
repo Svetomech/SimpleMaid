@@ -183,20 +183,30 @@ namespace SimpleMaid
         for (int i = 0; i < args.Length; ++i)
         {
           if (!rogueArgFound && (rogueArgFound = (args[i] == resources.RogueArgument)))
-            --adjustedLength;
+            adjustedLength--;
 
           if (!autorunArgFound && (autorunArgFound = (args[i] == resources.AutorunArgument)))
-            --adjustedLength;
+            adjustedLength--;
 
           if (adjustedLength >= 2)
           {
             if (args[i] == resources.PasswordArgument)
             {
               passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : String.Empty;
+
+              if (passArg != String.Empty)
+                adjustedLength -= 2;
+              else
+                adjustedLength--;
             }
             else if (args[i] == resources.LanguageArgument)
             {
               langArg = (i + 1 < adjustedLength) ? args[i + 1] : String.Empty;
+
+              if (langArg != String.Empty)
+                adjustedLength -= 2;
+              else
+                adjustedLength--;
             }
           }
         }
