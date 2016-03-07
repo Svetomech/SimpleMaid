@@ -172,6 +172,7 @@ namespace SimpleMaid
       bool rogueArgFound = false;
       bool autorunArgFound = false;
       bool passArgFound = false; // <-- only need it for clarity
+      bool langArgFound = false; // <-- only need it for clarity
 
       string passArg = resources.DefaultPassword;
       string langArg = CultureInfo.InstalledUICulture.Name;
@@ -190,25 +191,27 @@ namespace SimpleMaid
 
           if (adjustedLength >= 2)
           {
-            if (args[i] == resources.PasswordArgument)
+            if (!passArgFound && (args[i] == resources.PasswordArgument))
             {
               passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : String.Empty;
 
-              if (passArg != String.Empty)
+              if (passArgFound)
                 adjustedLength -= 2;
               else
                 adjustedLength--;
             }
-            else if (args[i] == resources.LanguageArgument)
+            else if (!langArgFound && (args[i] == resources.LanguageArgument))
             {
-              langArg = (i + 1 < adjustedLength) ? args[i + 1] : String.Empty;
+              langArg = (langArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : String.Empty;
 
-              if (langArg != String.Empty)
+              if (langArgFound)
                 adjustedLength -= 2;
               else
                 adjustedLength--;
             }
           }
+
+          Console.WriteLine($"length: {args.Length}\nadjusted length: {adjustedLength}");
         }
       }
       #endregion
