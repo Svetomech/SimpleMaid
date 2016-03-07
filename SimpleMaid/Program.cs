@@ -942,7 +942,7 @@ namespace SimpleMaid
         }
         else if (qui == command_parts[0])
         {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans))
+          while (resources.WebErrorMessage == Set("commands." + machine, ans + resources.GeneralOKMessage))
           {
             Thread.Sleep(1000);
           }
