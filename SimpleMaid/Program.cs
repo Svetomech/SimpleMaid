@@ -582,10 +582,7 @@ namespace SimpleMaid
     // TODO: Implement adequate decoding
     private static string decodeEncodedNonAsciiCharacters(string value)
     {
-      return Regex.Replace(
-          value,
-          @"\\u(?<Value>[a-zA-Z0-9]{4})",
-          m =>
+      return Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
           {
             return ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString();
           });
