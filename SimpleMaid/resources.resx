@@ -211,10 +211,10 @@
     <comment>(milliseconds)</comment>
   </data>
   <data name="EvaluateCmdVariable" xml:space="preserve">
-    <value>eval(</value>
+    <value>eval&lt;</value>
   </data>
   <data name="EvaluateCmdVariableEnd" xml:space="preserve">
-    <value>)</value>
+    <value>&gt;</value>
   </data>
   <data name="ChatStart" xml:space="preserve">
     <value>Chat thread has started.</value>
