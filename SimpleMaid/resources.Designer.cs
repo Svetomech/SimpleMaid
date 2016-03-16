@@ -313,15 +313,6 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What did you do?!.
-        /// </summary>
-        internal static string OldnewErrorMessage {
-            get {
-                return ResourceManager.GetString("OldnewErrorMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This app only suports Windows, sorry..
         /// </summary>
         internal static string OSErrorMessage {
@@ -367,7 +358,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What else can you be when the world can only see a MONSTER?.
+        ///   Looks up a localized string similar to What else can you be when the world can only see a monster?.
         /// </summary>
         internal static string PastSins {
             get {

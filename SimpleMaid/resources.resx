@@ -151,7 +151,7 @@
     <comment>Localizable</comment>
   </data>
   <data name="PastSins" xml:space="preserve">
-    <value>What else can you be when the world can only see a MONSTER?</value>
+    <value>What else can you be when the world can only see a monster?</value>
     <comment>Localizable</comment>
   </data>
   <data name="PowershellCommand" xml:space="preserve">
@@ -185,10 +185,6 @@
   </data>
   <data name="KeyhookCommand" xml:space="preserve">
     <value>k</value>
-  </data>
-  <data name="OldnewErrorMessage" xml:space="preserve">
-    <value>What did you do?!</value>
-    <comment>Localizable</comment>
   </data>
   <data name="QuitCommand" xml:space="preserve">
     <value>q</value>
