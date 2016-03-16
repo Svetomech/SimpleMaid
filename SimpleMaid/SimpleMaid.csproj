@@ -70,6 +70,7 @@
     <Compile Include="SimplePlatform.cs" />
     <Compile Include="SimpleApp.cs" />
     <Compile Include="SimpleString.cs" />
+    <Compile Include="Variables.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

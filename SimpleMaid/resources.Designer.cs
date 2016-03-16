@@ -61,38 +61,11 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to None.
-        /// </summary>
-        internal static string AccountCredentials {
-            get {
-                return ResourceManager.GetString("AccountCredentials", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to You shouldn&apos;t run this app as administrator. Don&apos;t risk your PC! (:.
         /// </summary>
         internal static string AdminErrorMessage {
             get {
                 return ResourceManager.GetString("AdminErrorMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A: .
-        /// </summary>
-        internal static string AnswerPrefix {
-            get {
-                return ResourceManager.GetString("AnswerPrefix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --autorun.
-        /// </summary>
-        internal static string AutorunArgument {
-            get {
-                return ResourceManager.GetString("AutorunArgument", resourceCulture);
             }
         }
         
@@ -133,15 +106,6 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ;.
-        /// </summary>
-        internal static string CommandsSeparator {
-            get {
-                return ResourceManager.GetString("CommandsSeparator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Command thread has started..
         /// </summary>
         internal static string CommandStart {
@@ -156,15 +120,6 @@ namespace SimpleMaid {
         internal static string CommandStop {
             get {
                 return ResourceManager.GetString("CommandStop", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Configuration.ini.
-        /// </summary>
-        internal static string ConfigName {
-            get {
-                return ResourceManager.GetString("ConfigName", resourceCulture);
             }
         }
         
@@ -187,132 +142,6 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ..
-        /// </summary>
-        internal static string DefaultPassword {
-            get {
-                return ResourceManager.GetString("DefaultPassword", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to d.
-        /// </summary>
-        internal static string DownloadCommand {
-            get {
-                return ResourceManager.GetString("DownloadCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to eval&lt;.
-        /// </summary>
-        internal static string EvaluateCmdVariable {
-            get {
-                return ResourceManager.GetString("EvaluateCmdVariable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &gt;.
-        /// </summary>
-        internal static string EvaluateCmdVariableEnd {
-            get {
-                return ResourceManager.GetString("EvaluateCmdVariableEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 2000.
-        /// </summary>
-        internal static string GeneralCloseDelay {
-            get {
-                return ResourceManager.GetString("GeneralCloseDelay", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to OK!.
-        /// </summary>
-        internal static string GeneralOKMessage {
-            get {
-                return ResourceManager.GetString("GeneralOKMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to h.
-        /// </summary>
-        internal static string HideCommand {
-            get {
-                return ResourceManager.GetString("HideCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to One good turn deserves another..
-        /// </summary>
-        internal static string IncompleteCommandErrMsg {
-            get {
-                return ResourceManager.GetString("IncompleteCommandErrMsg", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 500.
-        /// </summary>
-        internal static string IndividualValueLimit {
-            get {
-                return ResourceManager.GetString("IndividualValueLimit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to k.
-        /// </summary>
-        internal static string KeyhookCommand {
-            get {
-                return ResourceManager.GetString("KeyhookCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to d.
-        /// </summary>
-        internal static string KeywordDefault {
-            get {
-                return ResourceManager.GetString("KeywordDefault", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --lang.
-        /// </summary>
-        internal static string LanguageArgument {
-            get {
-                return ResourceManager.GetString("LanguageArgument", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to :.
-        /// </summary>
-        internal static string MachinesDelimiter {
-            get {
-                return ResourceManager.GetString("MachinesDelimiter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to m.
-        /// </summary>
-        internal static string MessageCommand {
-            get {
-                return ResourceManager.GetString("MessageCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This app only suports Windows, sorry..
         /// </summary>
         internal static string OSErrorMessage {
@@ -322,29 +151,11 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to --pass.
-        /// </summary>
-        internal static string PasswordArgument {
-            get {
-                return ResourceManager.GetString("PasswordArgument", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Please, setup a password: .
         /// </summary>
         internal static string PasswordEnterTip {
             get {
                 return ResourceManager.GetString("PasswordEnterTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 500.
-        /// </summary>
-        internal static string PasswordWeakDelay {
-            get {
-                return ResourceManager.GetString("PasswordWeakDelay", resourceCulture);
             }
         }
         
@@ -363,60 +174,6 @@ namespace SimpleMaid {
         internal static string PastSins {
             get {
                 return ResourceManager.GetString("PastSins", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to p.
-        /// </summary>
-        internal static string PowershellCommand {
-            get {
-                return ResourceManager.GetString("PowershellCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to q.
-        /// </summary>
-        internal static string QuitCommand {
-            get {
-                return ResourceManager.GetString("QuitCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to r.
-        /// </summary>
-        internal static string RepeatCommand {
-            get {
-                return ResourceManager.GetString("RepeatCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --rogue.
-        /// </summary>
-        internal static string RogueArgument {
-            get {
-                return ResourceManager.GetString("RogueArgument", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to http://apptinywebdb.appspot.com.
-        /// </summary>
-        internal static string ServerAddress {
-            get {
-                return ResourceManager.GetString("ServerAddress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to s.
-        /// </summary>
-        internal static string ShowCommand {
-            get {
-                return ResourceManager.GetString("ShowCommand", resourceCulture);
             }
         }
         

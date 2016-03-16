@@ -117,152 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AccountCredentials" xml:space="preserve">
-    <value>None</value>
-  </data>
   <data name="AdminErrorMessage" xml:space="preserve">
     <value>You shouldn't run this app as administrator. Don't risk your PC! (:</value>
-    <comment>Localizable</comment>
-  </data>
-  <data name="CommandsSeparator" xml:space="preserve">
-    <value>;</value>
   </data>
   <data name="CommandStart" xml:space="preserve">
     <value>Command thread has started.</value>
-    <comment>Localizable</comment>
   </data>
   <data name="CommandStop" xml:space="preserve">
     <value>Command thread has stopped.</value>
-    <comment>Localizable</comment>
-  </data>
-  <data name="ConfigName" xml:space="preserve">
-    <value>Configuration.ini</value>
   </data>
   <data name="ConnectionStart" xml:space="preserve">
     <value>Connection thread has started.</value>
-    <comment>Localizable</comment>
   </data>
   <data name="ConnectionStop" xml:space="preserve">
     <value>Connection thread has stopped.</value>
-    <comment>Localizable</comment>
   </data>
   <data name="OSErrorMessage" xml:space="preserve">
     <value>This app only suports Windows, sorry.</value>
-    <comment>Localizable</comment>
   </data>
   <data name="PastSins" xml:space="preserve">
     <value>What else can you be when the world can only see a monster?</value>
-    <comment>Localizable</comment>
-  </data>
-  <data name="PowershellCommand" xml:space="preserve">
-    <value>p</value>
-  </data>
-  <data name="RepeatCommand" xml:space="preserve">
-    <value>r</value>
-  </data>
-  <data name="ServerAddress" xml:space="preserve">
-    <value>http://apptinywebdb.appspot.com</value>
   </data>
   <data name="TimeStart" xml:space="preserve">
     <value>Time thread has started.</value>
-    <comment>Localizable</comment>
   </data>
   <data name="WebErrorMessage" xml:space="preserve">
     <value>Problem connecting to server. Check your internet connection.</value>
-    <comment>Localizable</comment>
-  </data>
-  <data name="AnswerPrefix" xml:space="preserve">
-    <value>A: </value>
-  </data>
-  <data name="MessageCommand" xml:space="preserve">
-    <value>m</value>
-  </data>
-  <data name="DownloadCommand" xml:space="preserve">
-    <value>d</value>
-  </data>
-  <data name="HideCommand" xml:space="preserve">
-    <value>h</value>
-  </data>
-  <data name="KeyhookCommand" xml:space="preserve">
-    <value>k</value>
-  </data>
-  <data name="QuitCommand" xml:space="preserve">
-    <value>q</value>
-  </data>
-  <data name="ShowCommand" xml:space="preserve">
-    <value>s</value>
-  </data>
-  <data name="GeneralOKMessage" xml:space="preserve">
-    <value>OK!</value>
-  </data>
-  <data name="IncompleteCommandErrMsg" xml:space="preserve">
-    <value>One good turn deserves another.</value>
   </data>
   <data name="WrongCommandErrMsg" xml:space="preserve">
     <value>A typo: </value>
-    <comment>Localizable</comment>
-  </data>
-  <data name="GeneralCloseDelay" xml:space="preserve">
-    <value>2000</value>
-    <comment>(milliseconds)</comment>
-  </data>
-  <data name="EvaluateCmdVariable" xml:space="preserve">
-    <value>eval&lt;</value>
-  </data>
-  <data name="EvaluateCmdVariableEnd" xml:space="preserve">
-    <value>&gt;</value>
   </data>
   <data name="ChatStart" xml:space="preserve">
     <value>Chat thread has started.</value>
-    <comment>Localizable</comment>
   </data>
   <data name="ChatStop" xml:space="preserve">
     <value>Chat thread has stopped.</value>
-    <comment>Localizable</comment>
-  </data>
-  <data name="IndividualValueLimit" xml:space="preserve">
-    <value>500</value>
-    <comment>(characters)</comment>
   </data>
   <data name="btnBidFarewell_Text" xml:space="preserve">
     <value>Exit</value>
-    <comment>Localizable</comment>
   </data>
   <data name="btnSendLetter_Text" xml:space="preserve">
     <value>Send message</value>
-    <comment>Localizable</comment>
-  </data>
-  <data name="AutorunArgument" xml:space="preserve">
-    <value>--autorun</value>
-  </data>
-  <data name="RogueArgument" xml:space="preserve">
-    <value>--rogue</value>
-  </data>
-  <data name="PasswordArgument" xml:space="preserve">
-    <value>--pass</value>
-  </data>
-  <data name="DefaultPassword" xml:space="preserve">
-    <value>.</value>
-  </data>
-  <data name="KeywordDefault" xml:space="preserve">
-    <value>d</value>
   </data>
   <data name="PasswordEnterTip" xml:space="preserve">
     <value>Please, setup a password: </value>
-    <comment>Localizable</comment>
   </data>
   <data name="PasswordWeakHint" xml:space="preserve">
     <value>Too weak.</value>
-    <comment>Localizable</comment>
-  </data>
-  <data name="PasswordWeakDelay" xml:space="preserve">
-    <value>500</value>
-    <comment>(milliseconds)</comment>
-  </data>
-  <data name="LanguageArgument" xml:space="preserve">
-    <value>--lang</value>
-  </data>
-  <data name="MachinesDelimiter" xml:space="preserve">
-    <value>:</value>
   </data>
 </root>
