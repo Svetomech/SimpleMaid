@@ -52,7 +52,7 @@ namespace SimpleMaid
     #endregion
 
 
-    public static string Set(string tag, string value)
+    private static string Set(string tag, string value)
     {
       tag = $"{Application.ProductName}_{tag}";
 
@@ -94,7 +94,7 @@ namespace SimpleMaid
       return String.Empty;
     }
 
-    public static string Get(string tag)
+    private static string Get(string tag)
     {
       tag = $"{Application.ProductName}_{tag}";
 
@@ -152,6 +152,26 @@ namespace SimpleMaid
       Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.DarkGreen;
       Console.WriteLine($"GET  {tag}  {value}\n");
+
+      return value;
+    }
+
+    public static void SetUntilSet(string tag, string value)
+    {
+      while (resources.WebErrorMessage == Set(tag, value))
+      {
+        Thread.Sleep(1000);
+      }
+    }
+
+    public static string GetUntilGet(string tag)
+    {
+      string value;
+
+      while (resources.WebErrorMessage == (value = Get(tag)))
+      {
+        Thread.Sleep(1000);
+      }
 
       return value;
     }
@@ -482,20 +502,14 @@ namespace SimpleMaid
       do
       {
         listIndex++;
-        while (resources.WebErrorMessage == (currentList = Get($"machines{listIndex}")))
-        {
-          Thread.Sleep(1000);
-        }
+        currentList = GetUntilGet($"machines{listIndex}");
         if (currentList.Contains(machine))
           return;
       } while (currentList.Length >= realValueLimit);
 
       string machines = currentList;
 
-      while (resources.WebErrorMessage == Set($"machines{listIndex}", $"{machines}{machine}{Variables.MachinesDelimiter}"))
-      {
-        Thread.Sleep(1000);
-      }
+      SetUntilSet($"machines{listIndex}", $"{machines}{machine}{Variables.MachinesDelimiter}");
     }
 
     private static bool isNameOK(string name)
@@ -680,10 +694,7 @@ namespace SimpleMaid
 
       busyChatWise = false;
 
-      while (resources.WebErrorMessage == Set($"commands.{machine}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}"))
-      {
-        Thread.Sleep(1000);
-      }
+      SetUntilSet($"commands.{machine}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
     }
 
     private static void closeChatWindow()
@@ -772,10 +783,7 @@ namespace SimpleMaid
         if (Get(machine) == pass)
         {
           busyCommandWise = !busyCommandWise;
-          while (resources.WebErrorMessage == Set(machine, String.Empty))
-          {
-            Thread.Sleep(1000);
-          }
+          SetUntilSet(machine, String.Empty);
 
           if (busyCommandWise && null != commandThread && !commandThread.IsAlive)
           {
@@ -805,10 +813,7 @@ namespace SimpleMaid
         if (sRemoteMessage != null)
           Thread.Sleep(1000);
 
-        while (resources.WebErrorMessage == (sRemoteMessage = Get("messages." + machine)))
-        {
-          Thread.Sleep(1000);
-        }
+        sRemoteMessage = GetUntilGet("messages." + machine);
 
         if (String.Empty == sRemoteMessage || sRemoteMessage.StartsWith(ans))
           continue;
@@ -821,10 +826,7 @@ namespace SimpleMaid
         //ChatCommand = message_parts[1];
         //показал окно чата или скрыл
 
-        while (resources.WebErrorMessage == Set("messages." + machine, String.Empty))
-        {
-          Thread.Sleep(1000);
-        }
+        SetUntilSet("messages." + machine, String.Empty);
         #endregion
       }
 
@@ -845,10 +847,7 @@ namespace SimpleMaid
         if (sRemoteCommand != null)
           Thread.Sleep(1000);
 
-        while (resources.WebErrorMessage == (sRemoteCommand = Get("commands." + machine)))
-        {
-          Thread.Sleep(1000);
-        }
+        sRemoteCommand = GetUntilGet("commands." + machine);
 
         if (String.Empty == sRemoteCommand || sRemoteCommand.StartsWith(ans))
           continue;
@@ -860,10 +859,7 @@ namespace SimpleMaid
 
         if (!isCommandSpecial)
         {
-          while (resources.WebErrorMessage == Set("commands." + machine, ans + executeCmdCommand(command_parts[0])))
-          {
-            Thread.Sleep(1000);
-          }
+          SetUntilSet("commands." + machine, ans + executeCmdCommand(command_parts[0]));
         }
         else
         {
@@ -872,46 +868,28 @@ namespace SimpleMaid
           switch (specialCommandIdentifier)
           {
             case Variables.QuitCommand:
-              while (resources.WebErrorMessage == Set("commands." + machine, ans + Variables.GeneralOKMsg))
-              {
-                Thread.Sleep(1000);
-              }
+              SetUntilSet("commands." + machine, ans + Variables.GeneralOKMsg);
               exitCommand();
               break;
 
             case Variables.HideCommand:
-              while (resources.WebErrorMessage == Set("commands." + machine, ans + hideCommand()))
-              {
-                Thread.Sleep(1000);
-              }
+              SetUntilSet("commands." + machine, ans + hideCommand());
               break;
 
             case Variables.ShowCommand:
-              while (resources.WebErrorMessage == Set("commands." + machine, ans + showCommand()))
-              {
-                Thread.Sleep(1000);
-              }
+              SetUntilSet("commands." + machine, ans + showCommand());
               break;
 
             case Variables.DownloadCommand:
-              while (resources.WebErrorMessage == Set("commands." + machine, ans + downloadCommand(command_parts)))
-              {
-                Thread.Sleep(1000);
-              }
+              SetUntilSet("commands." + machine, ans + downloadCommand(command_parts));
               break;
 
             case Variables.MessageCommand:
-              while (resources.WebErrorMessage == Set("commands." + machine, ans + messageCommand(command_parts)))
-              {
-                Thread.Sleep(1000);
-              }
+              SetUntilSet("commands." + machine, ans + messageCommand(command_parts));
               break;
 
             case Variables.PowershellCommand:
-              while (resources.WebErrorMessage == Set("commands." + machine, ans + powershellCommand(command_parts)))
-              {
-                Thread.Sleep(1000);
-              }
+              SetUntilSet("commands." + machine, ans + powershellCommand(command_parts));
               break;
 
             case Variables.RepeatCommand:
