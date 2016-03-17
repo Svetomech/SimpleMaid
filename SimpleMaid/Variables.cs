@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using static SimpleMaid.PasswordStrength;
 
 namespace SimpleMaid
 {
@@ -9,7 +10,8 @@ namespace SimpleMaid
 
     internal const string ConfigName = "Configuration.ini";
     internal const string KeywordDefault = "d";
-    internal const string DefaultPassword = "."; // never qualifies as strong enough by PasswordStrength.cs, so needs to be reset
+    internal const string DefaultPassword = ".";
+    internal const PasswordScore MinimalPasswordStrength = PasswordScore.Weak;
 
     internal const string PasswordArgument  = "--pass";     // SimpleMaid.exe --pass NewPassword
     internal const string AutorunArgument   = "--autorun";  // SimpleMaid.exe --autorun

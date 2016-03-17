@@ -28,7 +28,6 @@ namespace SimpleMaid
     private static FileInfo mainConfigFile;
     private static IntPtr handle;
     private static Mutex  programMutex;
-    private static PasswordScore minimalPasswordStrength = PasswordScore.Weak;
 
     #region Global threads
     private static Thread connectionThread;
@@ -512,7 +511,7 @@ namespace SimpleMaid
 
       Program.State = $"running, {nameof(PasswordStrength)}: {strength}";
 
-      return (strength >= minimalPasswordStrength);
+      return (strength >= Variables.MinimalPasswordStrength);
     }
 
     // HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, passwordPrompt()).Password
