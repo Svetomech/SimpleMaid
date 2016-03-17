@@ -924,7 +924,7 @@ namespace SimpleMaid
                 command_parts_fixed[i - 1] = command_parts[i];
               }
 
-              bool isRepeatCommandSpecial = (command_parts_fixed[0] != sRemoteCommand);
+              bool isRepeatCommandSpecial = ($"{command_parts[0]}{sep}{command_parts_fixed[0]}" != sRemoteCommand);
 
               if (!isRepeatCommandSpecial)
               {
