@@ -62,7 +62,7 @@ namespace SimpleMaid
 
       var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/storeavalue");
       request.Method = "POST";
-      request.Credentials = CredentialCache.DefaultCredentials;
+      request.Credentials = Variables.AccountCredentials;
       request.ContentType = "application/x-www-form-urlencoded";
       request.ContentLength = requestBody.Length;
       request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1";
@@ -106,7 +106,7 @@ namespace SimpleMaid
 
       var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/getvalue");
       request.Method = "POST";
-      request.Credentials = CredentialCache.DefaultCredentials;
+      request.Credentials = Variables.AccountCredentials;
       request.ContentType = "application/x-www-form-urlencoded";
       request.ContentLength = requestBody.Length;
       request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1";

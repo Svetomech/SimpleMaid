@@ -5,8 +5,8 @@ namespace SimpleMaid
 {
   internal static class Variables
   {
-    // internal static readonly ICredentials AccountCredentials = new NetworkCredential();
     internal static readonly string ServerAddress = "http://apptinywebdb.appspot.com";
+    internal static readonly NetworkCredential AccountCredentials = CredentialCache.DefaultNetworkCredentials;
 
     internal const string ConfigName = "Configuration.ini";
     internal const string KeywordDefault = "d";
