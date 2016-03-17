@@ -160,7 +160,7 @@ namespace SimpleMaid
     {
       while (resources.WebErrorMessage == Set(tag, value))
       {
-        Thread.Sleep(1000);
+        Thread.Sleep(Variables.GeneralDelay);
       }
     }
 
@@ -170,7 +170,7 @@ namespace SimpleMaid
 
       while (resources.WebErrorMessage == (value = Get(tag)))
       {
-        Thread.Sleep(1000);
+        Thread.Sleep(Variables.GeneralDelay);
       }
 
       return value;
@@ -770,7 +770,7 @@ namespace SimpleMaid
           internetAlive = true;
         }
 
-        Thread.Sleep(1000 - now.Millisecond);
+        Thread.Sleep(Variables.GeneralDelay - now.Millisecond);
       }
     }
 
@@ -793,7 +793,7 @@ namespace SimpleMaid
           }
         }
 
-        Thread.Sleep(1000);
+        Thread.Sleep(Variables.GeneralDelay);
       }
 
       reportThreadStop(resources.ConnectionStop);
@@ -811,7 +811,7 @@ namespace SimpleMaid
       while (busyChatWise && internetAlive)
       {
         if (sRemoteMessage != null)
-          Thread.Sleep(1000);
+          Thread.Sleep(Variables.GeneralDelay);
 
         sRemoteMessage = GetUntilGet("messages." + machine);
 
@@ -845,7 +845,7 @@ namespace SimpleMaid
       while (busyCommandWise && internetAlive)
       {
         if (sRemoteCommand != null)
-          Thread.Sleep(1000);
+          Thread.Sleep(Variables.GeneralDelay);
 
         sRemoteCommand = GetUntilGet("commands." + machine);
 

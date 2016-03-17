@@ -36,7 +36,8 @@ namespace SimpleMaid
     internal const char PowershellCommand = 'p';
     internal const char RepeatCommand     = 'r';
 
-    internal const int GeneralCloseDelay = 2000; // [milliseconds]
-    internal const int PasswordWeakDelay = 500;  // [milliseconds]
+    internal const int GeneralDelay       = 1000; // [milliseconds]
+    internal const int GeneralCloseDelay  = 2000; // [milliseconds]
+    internal const int PasswordWeakDelay  = 500;  // [milliseconds]
   }
 }
