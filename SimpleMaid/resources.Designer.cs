@@ -106,6 +106,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Chat.
+        /// </summary>
+        internal static string ChatWindowTitle {
+            get {
+                return ResourceManager.GetString("ChatWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command thread has started..
         /// </summary>
         internal static string CommandStart {
@@ -138,6 +147,15 @@ namespace SimpleMaid {
         internal static string ConnectionStop {
             get {
                 return ResourceManager.GetString("ConnectionStop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log.
+        /// </summary>
+        internal static string MainWindowTitle {
+            get {
+                return ResourceManager.GetString("MainWindowTitle", resourceCulture);
             }
         }
         

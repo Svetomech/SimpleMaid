@@ -522,7 +522,7 @@ namespace SimpleMaid
     {
       var strength = CheckStrength(password);
 
-      Program.State = $"running, {nameof(PasswordStrength)}: {strength}";
+      Program.State = $"{resources.MainWindowTitle} [{nameof(PasswordStrength)}: {strength}]";
 
       return (strength >= Variables.MinimalPasswordStrength);
     }

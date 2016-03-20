@@ -12,7 +12,7 @@ namespace SimpleMaid
 
     private void frmChatWindow_Load(object sender, EventArgs e)
     {
-      this.Text = " ";
+      this.Text = $"{Application.ProductName}: {resources.ChatWindowTitle}";
       letterBody.Text = String.Empty;
       btnSendLetter.Text = resources.btnSendLetter_Text;
       btnBidFarewell.Text = resources.btnBidFarewell_Text;

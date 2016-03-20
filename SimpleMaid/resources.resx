@@ -165,4 +165,10 @@
   <data name="PasswordWeakHint" xml:space="preserve">
     <value>Too weak.</value>
   </data>
+  <data name="ChatWindowTitle" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="MainWindowTitle" xml:space="preserve">
+    <value>Log</value>
+  </data>
 </root>
