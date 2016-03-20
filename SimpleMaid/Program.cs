@@ -807,6 +807,7 @@ namespace SimpleMaid
       char sep = Variables.CommandsSeparator;
 
       string sRemoteMessage = null;
+      string sPreviousRemoteMessage = null;
 
       while (busyChatWise && internetAlive)
       {
@@ -815,8 +816,10 @@ namespace SimpleMaid
 
         sRemoteMessage = GetUntilGet("messages." + machine);
 
-        if (String.Empty == sRemoteMessage || sRemoteMessage.StartsWith(ans))
+        if (sRemoteMessage == sPreviousRemoteMessage || String.Empty == sRemoteMessage || sRemoteMessage.StartsWith(ans))
           continue;
+
+        sPreviousRemoteMessage = sRemoteMessage; // SetUntilSet("messages." + machine, String.Empty);
 
         #region Parsing message
         string[] message_parts = sRemoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
@@ -825,8 +828,6 @@ namespace SimpleMaid
         ChatMessage = message_parts[0];
         //ChatCommand = message_parts[1];
         //показал окно чата или скрыл
-
-        SetUntilSet("messages." + machine, String.Empty);
         #endregion
       }
 
