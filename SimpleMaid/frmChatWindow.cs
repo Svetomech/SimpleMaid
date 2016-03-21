@@ -147,9 +147,9 @@ namespace SimpleMaid
         allowModification = letterBody.SelectionStart >= letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length;
     }
 
-    private void letterBody_MouseEnter(object sender, EventArgs e)
+    /*private void letterBody_MouseEnter(object sender, EventArgs e)
     {
       this.Activate();
-    }
+    }*/
   }
 }
