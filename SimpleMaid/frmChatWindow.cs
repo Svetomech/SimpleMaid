@@ -122,32 +122,29 @@ namespace SimpleMaid
       // anyCommand - hard (generalize "Parsing command" from "Await commands" region)
     }
 
-
-    private static int charsCount = 0;
+    private static bool allowModification = true;
 
     private void letterBody_KeyDown(object sender, KeyEventArgs e)
     {
-      if (e.KeyCode == Keys.Enter)
+      switch(e.KeyCode)
       {
-        e.SuppressKeyPress = true;
-        btnSendLetter.PerformClick();
+        case Keys.Enter:
+          e.SuppressKeyPress = true;
+          btnSendLetter.PerformClick();
+          break;
 
-        charsCount = 0;
+        case Keys.Back:
+          e.SuppressKeyPress = !allowModification;
+          break;
       }
+    }
+
+    private void letterBody_SelectionChanged(object sender, EventArgs e)
+    {
+      if (letterBody.SelectionLength == 0)
+        allowModification = letterBody.SelectionStart > letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length;
       else
-      {
-        if (e.KeyCode != Keys.Back)
-        {
-          charsCount++;
-        }
-        else
-        {
-          if (charsCount - 1 >= 0)
-            charsCount--;
-          else
-            e.SuppressKeyPress = true;
-        }
-      }
+        allowModification = letterBody.SelectionStart >= letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length;
     }
 
     private void letterBody_MouseEnter(object sender, EventArgs e)
