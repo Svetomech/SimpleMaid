@@ -101,12 +101,12 @@ namespace SimpleMaid
     {
       string currentLine = letterBody.Lines[letterBody.Lines.Length - 1];
 
+      Program.UserChatMessage = currentLine.Remove(0, emptyLine.Length);
+
       if (currentLine != emptyLine)
         letterBody.Text += $"\n{emptyLine}";
 
       updateCursor();
-
-      // Program.UserChatMessage = processMessage();
     }
 
     private void letterBody_KeyDown(object sender, KeyEventArgs e)

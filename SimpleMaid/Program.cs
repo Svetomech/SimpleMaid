@@ -800,6 +800,7 @@ namespace SimpleMaid
       reportThreadStop(resources.ConnectionStop);
     }
 
+    // TODO: Resolve colission - user and support sending messages simultaneously
     private static void serveMessages()
     {
       reportThreadStart(resources.ChatStart);
@@ -817,18 +818,23 @@ namespace SimpleMaid
 
         sRemoteMessage = GetUntilGet("messages." + machine);
 
+        if (UserChatMessage != null)
+        {
+          SetUntilSet("messages." + machine, ans + UserChatMessage);
+          UserChatMessage = null;
+        }
+
         if (sRemoteMessage == sPreviousRemoteMessage || String.Empty == sRemoteMessage || sRemoteMessage.StartsWith(ans))
           continue;
 
         sPreviousRemoteMessage = sRemoteMessage;
 
+        // TODO: частный случай m, ещё две то есть
+        // TODO: ChatCommand = message_aprts[1];
         #region Parsing message
         string[] message_parts = sRemoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
-        //частный случай m, еще две то есть
         SupportChatMessage = message_parts[0];
-        //ChatCommand = message_parts[1];
-        //показал окно чата или скрыл
         #endregion
       }
 
