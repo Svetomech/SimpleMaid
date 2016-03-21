@@ -47,7 +47,8 @@ namespace SimpleMaid
     #region Across forms
     public static frmChatWindow ChatboxWindow = null;
     public static volatile bool ChatboxExit = false;
-    public static volatile string ChatMessage;
+    public static volatile string SupportChatMessage;
+    public static volatile string UserChatMessage;
     public static volatile string ChatCommand;
     #endregion
 
@@ -156,7 +157,7 @@ namespace SimpleMaid
       return value;
     }
 
-    public static void SetUntilSet(string tag, string value)
+    private static void SetUntilSet(string tag, string value)
     {
       while (resources.WebErrorMessage == Set(tag, value))
       {
@@ -164,7 +165,7 @@ namespace SimpleMaid
       }
     }
 
-    public static string GetUntilGet(string tag)
+    private static string GetUntilGet(string tag)
     {
       string value;
 
@@ -472,7 +473,7 @@ namespace SimpleMaid
       #endregion
 
       #region 4 - Chat Thread
-      chatThread = new Thread(fetchMessages);
+      chatThread = new Thread(serveMessages);
       chatThread.IsBackground = true;
       // Starts in a different place
       #endregion
@@ -748,7 +749,7 @@ namespace SimpleMaid
       }
       if (busyChatWise && null != chatThread && !chatThread.IsAlive)
       {
-        chatThread = new Thread(fetchMessages);
+        chatThread = new Thread(serveMessages);
         chatThread.IsBackground = true;
         chatThread.Start();
       }
@@ -799,7 +800,7 @@ namespace SimpleMaid
       reportThreadStop(resources.ConnectionStop);
     }
 
-    private static void fetchMessages()
+    private static void serveMessages()
     {
       reportThreadStart(resources.ChatStart);
 
@@ -819,13 +820,13 @@ namespace SimpleMaid
         if (sRemoteMessage == sPreviousRemoteMessage || String.Empty == sRemoteMessage || sRemoteMessage.StartsWith(ans))
           continue;
 
-        sPreviousRemoteMessage = sRemoteMessage; // SetUntilSet("messages." + machine, String.Empty);
+        sPreviousRemoteMessage = sRemoteMessage;
 
         #region Parsing message
         string[] message_parts = sRemoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
         //частный случай m, еще две то есть
-        ChatMessage = message_parts[0];
+        SupportChatMessage = message_parts[0];
         //ChatCommand = message_parts[1];
         //показал окно чата или скрыл
         #endregion
@@ -1057,7 +1058,7 @@ namespace SimpleMaid
         #region 4 - Chat Thread
         if (busyChatWise && null != chatThread && !chatThread.IsAlive)
         {
-          chatThread = new Thread(fetchMessages);
+          chatThread = new Thread(serveMessages);
           chatThread.IsBackground = true;
           chatThread.Start();
         }

@@ -196,6 +196,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Support.
+        /// </summary>
+        internal static string SupportName {
+            get {
+                return ResourceManager.GetString("SupportName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Time thread has started..
         /// </summary>
         internal static string TimeStart {

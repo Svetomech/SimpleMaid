@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows.Forms;
 
 namespace SimpleMaid
@@ -10,18 +10,26 @@ namespace SimpleMaid
       InitializeComponent();
     }
 
+    private static string userName;
+    private static string supportName;
+    private static string emptyLine;
+
     private void frmChatWindow_Load(object sender, EventArgs e)
     {
+      userName = Environment.UserName;
+      supportName = resources.SupportName;
+      emptyLine = $"{userName}: ";
+
       this.Text = $"{Application.ProductName}: {resources.ChatWindowTitle}";
-      letterBody.Text = String.Empty;
+      letterBody.Text = emptyLine;
       btnSendLetter.Text = resources.btnSendLetter_Text;
       btnBidFarewell.Text = resources.btnBidFarewell_Text;
 
       letterBody.Enabled = true;
       btnSendLetter.Enabled = true;
       btnBidFarewell.Enabled = true;
-      //команды, скачка файла прямо в тексте
-      //мигающее копыто
+
+      updateCursor();
     }
 
     private void frmChatWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -35,28 +43,32 @@ namespace SimpleMaid
 
     private void tmrSpikeAssistance_Tick(object sender, EventArgs e)
     {
-      if (Program.ChatboxExit) this.Dispose();
+      if (Program.ChatboxExit)
+        this.Dispose();
 
       // TODO: Remove this workaround (staying on top)
       this.TopMost = true;
 
-      if (null != Program.ChatMessage)
+      if (Program.SupportChatMessage != null)
       {
-        if (String.Empty == letterBody.Text || !letterBody.Lines[letterBody.Lines.Length - 1].StartsWith("2: "))
+        if (String.Empty == letterBody.Text || !letterBody.Lines[letterBody.Lines.Length - 1].StartsWith(emptyLine))
         {
-          letterBody.Text += String.Format("1: {0}\n2: ", Program.ChatMessage);
+          letterBody.Text += $"{supportName}: {Program.SupportChatMessage}\n{emptyLine}";
         }
         else
         {
-          letterBody.Text += String.Format("\n1: {0}\n", Program.ChatMessage);
+          letterBody.Text += $"\n{supportName}: {Program.SupportChatMessage}\n";
           letterBody.Text += letterBody.Lines[letterBody.Lines.Length - 3];
           deleteLine(letterBody.Lines.Length - 3);
         }
-        Program.ChatMessage = null;
+        Program.SupportChatMessage = null;
 
-        this.Activate();
-        letterBody.SelectionStart = letterBody.Text.Length;
-        letterBody.Focus();
+        updateCursor();
+      }
+
+      if (Program.ChatCommand != null)
+      {
+        // enable btnHelpingHoof, then start blinking
       }
     }
 
@@ -75,17 +87,30 @@ namespace SimpleMaid
       letterBody.Text = letterBody.Text.Remove(startIndex, count);
     }
 
+    private void updateCursor()
+    {
+      this.Activate();
+      letterBody.SelectionStart = letterBody.Text.Length;
+      letterBody.Focus();
+    }
 
     private void btnSendLetter_Click(object sender, EventArgs e)
     {
-      //move to new line if not already
-      //write You: 
+      string currentLine = letterBody.Lines[letterBody.Lines.Length - 1];
+
+      if (currentLine != emptyLine)
+        letterBody.Text += $"\n{emptyLine}";
+
+      updateCursor();
+
+      // Program.UserChatMessage = processMessage();
     }
 
-    private void letterBody_KeyPress(object sender, KeyPressEventArgs e)
+    private void letterBody_KeyDown(object sender, KeyEventArgs e)
     {
-      if (e.KeyChar == (char)Keys.Enter)
+      if (e.KeyCode == Keys.Enter)
       {
+        e.SuppressKeyPress = true;
         btnSendLetter.PerformClick();
       }
     }
@@ -97,7 +122,9 @@ namespace SimpleMaid
 
     private void btnHelpingHoof_Click(object sender, EventArgs e)
     {
-      
+      // Program.cs
+      // executeCmdCommand - easy
+      // anyCommand - hard (generalize "Parsing command" from "Await commands" region)
     }
   }
 }

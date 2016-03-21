@@ -171,4 +171,7 @@
   <data name="MainWindowTitle" xml:space="preserve">
     <value>Журнал</value>
   </data>
+  <data name="SupportName" xml:space="preserve">
+    <value>Поддержка</value>
+  </data>
 </root>

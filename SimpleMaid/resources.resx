@@ -171,4 +171,7 @@
   <data name="MainWindowTitle" xml:space="preserve">
     <value>Log</value>
   </data>
+  <data name="SupportName" xml:space="preserve">
+    <value>Support</value>
+  </data>
 </root>

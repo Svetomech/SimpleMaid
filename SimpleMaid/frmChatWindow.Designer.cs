@@ -44,7 +44,7 @@
       this.letterBody.Size = new System.Drawing.Size(260, 208);
       this.letterBody.TabIndex = 0;
       this.letterBody.Text = "CelestAI: Hello, Gregory.\nYou: What?";
-      this.letterBody.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.letterBody_KeyPress);
+      this.letterBody.KeyDown += new System.Windows.Forms.KeyEventHandler(this.letterBody_KeyDown);
       // 
       // btnSendLetter
       // 
