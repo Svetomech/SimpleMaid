@@ -27,7 +27,6 @@ namespace SimpleMaid
     internal const string EvaluateCmdVariable = "eval<";
     internal const string EvaluateCmdVariableEnd = ">";
 
-    // internal const char KeyhookCommand    = 'k';
     internal const char QuitCommand       = 'q';
     internal const char HideCommand       = 'h';
     internal const char ShowCommand       = 's';
