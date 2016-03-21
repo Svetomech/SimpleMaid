@@ -120,7 +120,7 @@ namespace SimpleMaid
 
     private void letterBody_MouseEnter(object sender, EventArgs e)
     {
-      updateCursor();
+      this.Activate();
     }
 
     private void btnBidFarewell_Click(object sender, EventArgs e)
