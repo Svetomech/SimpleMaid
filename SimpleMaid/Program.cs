@@ -184,6 +184,22 @@ namespace SimpleMaid
       System.Windows.Forms.Application.EnableVisualStyles();
       Console.Clear();
 
+      #region Exit (OS/privileges check)
+      if (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform())
+      {
+        reportGeneralError(resources.OSErrorMessage);
+        exit();
+      }
+      else
+      {
+        if (SimpleApp.IsElevated())
+        {
+          reportGeneralError(resources.AdminErrorMessage);
+          exit();
+        }
+      }
+      #endregion
+
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
       mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, Variables.ConfigName));
 
@@ -245,22 +261,6 @@ namespace SimpleMaid
 
       // Localization
       CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg);
-
-      #region Exit (OS/privileges check)
-      if (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform())
-      {
-        reportGeneralError(resources.OSErrorMessage);
-        exit();
-      }
-      else
-      {
-        if (SimpleApp.IsElevated())
-        {
-          reportGeneralError(resources.AdminErrorMessage);
-          exit();
-        }
-      }
-      #endregion
 
       // TODO: Move so it happens AFTER startup directory management
       #region Exit (if already running)
