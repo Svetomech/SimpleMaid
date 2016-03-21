@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Windows.Forms;
 
 namespace SimpleMaid
@@ -16,7 +17,9 @@ namespace SimpleMaid
 
     private void frmChatWindow_Load(object sender, EventArgs e)
     {
-      userName = Environment.UserName;
+      string configUserName = ConfigurationManager.AppSettings["ChatUserName"];
+
+      userName = (Variables.KeywordDefault == configUserName) ? Environment.UserName : configUserName;
       supportName = resources.SupportName;
       emptyLine = $"{userName}: ";
 
