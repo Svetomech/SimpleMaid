@@ -93,9 +93,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>robocopy $(TargetDir) $(TargetDir)\svt_structure "$(TargetName).resources.dll" /CREATE /S /XD svt_structure /IS /IT
+    <PostBuildEvent>robocopy $(TargetDir) $(TargetDir)\languages "$(TargetName).resources.dll" /CREATE /S /XD languages /IS /IT
 
-robocopy $(TargetDir) $(TargetDir)\svt_structure "$(TargetName).resources.dll" /MOVE /S /XD svt_structure /XL /IS /IT
+robocopy $(TargetDir) $(TargetDir)\languages "$(TargetName).resources.dll" /MOVE /S /XD languages /XL /IS /IT
 if %25errorlevel%25 leq 1 exit 0 else exit %25errorlevel%25</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

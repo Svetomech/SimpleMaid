@@ -9,7 +9,7 @@ namespace SimpleMaid
     internal static readonly NetworkCredential AccountCredentials = CredentialCache.DefaultNetworkCredentials;
 
     internal const string ConfigName = "Configuration.ini";
-    internal const string KeywordDefault = "d";
+    internal const string KeywordDefault = "default";
     internal const string DefaultPassword = ".";
     internal const PasswordScore MinimalPasswordStrength = PasswordScore.Weak;
 
