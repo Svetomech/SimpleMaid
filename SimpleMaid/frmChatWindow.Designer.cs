@@ -46,7 +46,7 @@
       this.letterBody.Text = "CelestAI: Hello, Gregory.\nYou: What?";
       this.letterBody.SelectionChanged += new System.EventHandler(this.letterBody_SelectionChanged);
       this.letterBody.KeyDown += new System.Windows.Forms.KeyEventHandler(this.letterBody_KeyDown);
-      this.letterBody.MouseEnter += new System.EventHandler(this.letterBody_MouseEnter);
+      //this.letterBody.MouseEnter += new System.EventHandler(this.letterBody_MouseEnter);
       // 
       // btnSendLetter
       // 
