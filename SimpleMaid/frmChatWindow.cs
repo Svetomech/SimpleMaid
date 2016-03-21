@@ -103,7 +103,7 @@ namespace SimpleMaid
 
       Program.UserChatMessage = currentLine.Remove(0, emptyLine.Length);
 
-      if (currentLine != emptyLine)
+      if (currentLine.TrimEnd() != emptyLine.TrimEnd())
         letterBody.Text += $"\n{emptyLine}";
 
       updateCursor();

@@ -818,7 +818,7 @@ namespace SimpleMaid
 
         sRemoteMessage = GetUntilGet("messages." + machine);
 
-        if (!String.IsNullOrEmpty(UserChatMessage))
+        if (!String.IsNullOrWhiteSpace(UserChatMessage))
         {
           SetUntilSet("messages." + machine, ans + UserChatMessage);
           UserChatMessage = null;
