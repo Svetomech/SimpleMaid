@@ -42,8 +42,7 @@ namespace SimpleMaid
     }
 
 
-    private static bool letterBodyFreeze = true;
-
+    // TODO: Visibility change when deactivated
     private void tmrSpikeAssistance_Tick(object sender, EventArgs e)
     {
       if (Program.ChatboxExit)
@@ -75,6 +74,7 @@ namespace SimpleMaid
       }
     }
 
+
     private void deleteLine(int aLine)
     {
       int startIndex = letterBody.GetFirstCharIndexFromLine(aLine);
@@ -97,6 +97,7 @@ namespace SimpleMaid
       letterBody.Focus();
     }
 
+
     private void btnSendLetter_Click(object sender, EventArgs e)
     {
       string currentLine = letterBody.Lines[letterBody.Lines.Length - 1];
@@ -109,20 +110,6 @@ namespace SimpleMaid
       updateCursor();
     }
 
-    private void letterBody_KeyDown(object sender, KeyEventArgs e)
-    {
-      if (e.KeyCode == Keys.Enter)
-      {
-        e.SuppressKeyPress = true;
-        btnSendLetter.PerformClick();
-      }
-    }
-
-    private void letterBody_MouseEnter(object sender, EventArgs e)
-    {
-      this.Activate();
-    }
-
     private void btnBidFarewell_Click(object sender, EventArgs e)
     {
       this.Close();
@@ -133,6 +120,39 @@ namespace SimpleMaid
       // Program.cs
       // executeCmdCommand - easy
       // anyCommand - hard (generalize "Parsing command" from "Await commands" region)
+    }
+
+
+    private static int charsCount = 0;
+
+    private void letterBody_KeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.KeyCode == Keys.Enter)
+      {
+        e.SuppressKeyPress = true;
+        btnSendLetter.PerformClick();
+
+        charsCount = 0;
+      }
+      else
+      {
+        if (e.KeyCode != Keys.Back)
+        {
+          charsCount++;
+        }
+        else
+        {
+          if (charsCount - 1 >= 0)
+            charsCount--;
+          else
+            e.SuppressKeyPress = true;
+        }
+      }
+    }
+
+    private void letterBody_MouseEnter(object sender, EventArgs e)
+    {
+      this.Activate();
     }
   }
 }
