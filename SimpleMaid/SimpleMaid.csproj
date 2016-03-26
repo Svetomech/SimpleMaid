@@ -94,10 +94,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>robocopy $(TargetDir) $(TargetDir)\languages "$(TargetName).resources.dll" /CREATE /S /XD languages /IS /IT
-
-robocopy $(TargetDir) $(TargetDir)\languages "$(TargetName).resources.dll" /MOVE /S /XD languages /XL /IS /IT
-if %25errorlevel%25 leq 1 exit 0 else exit %25errorlevel%25</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
