@@ -15,32 +15,32 @@ using static SimpleMaid.PasswordStrength;
 
 namespace SimpleMaid
 {
-  class Program
+  internal class Program
   {
     #region Properties
     public static bool Hidden { get; set; } = false;
     public static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
     #endregion
 
-    private static DirectoryInfo desiredAppDirectory;
-    private static FileInfo mainConfigFile;
-    private static IntPtr handle;
-    private static Mutex  programMutex;
+    private static DirectoryInfo _desiredAppDirectory;
+    private static FileInfo _mainConfigFile;
+    private static IntPtr _handle;
+    private static Mutex  _programMutex;
 
     #region Global threads
-    private static Thread connectionThread;
-    private static Thread commandThread;
-    private static Thread chatThread;
+    private static Thread _connectionThread;
+    private static Thread _commandThread;
+    private static Thread _chatThread;
 
-    private static volatile bool busyCommandWise = false;
-    private static volatile bool busyChatWise = false;
+    private static volatile bool _busyCommandWise = false;
+    private static volatile bool _busyChatWise = false;
     #endregion
-    private static volatile bool internetAlive = true;
+    private static volatile bool _internetAlive = true;
 
     #region Global settings
     // TODO: Get rid of these
-    private static volatile string machine;
-    private static volatile string pass;
+    private static volatile string _machine;
+    private static volatile string _pass;
     #endregion
 
     #region Across forms
@@ -57,7 +57,7 @@ namespace SimpleMaid
       tag = $"{Application.ProductName}_{tag}";
 
       var encoding = new UTF8Encoding();
-      byte[] requestBody = encoding.GetBytes($"tag={tag}&value={value}&fmt=html");
+      var requestBody = encoding.GetBytes($"tag={tag}&value={value}&fmt=html");
 
       var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/storeavalue");
       request.Method = "POST";
@@ -76,14 +76,14 @@ namespace SimpleMaid
       catch (WebException)
       {
         reportWebError();
-        internetAlive = false;
+        _internetAlive = false;
         return resources.WebErrorMessage;
       }
       try { using (var response = request.GetResponse()) ;}
       catch (WebException)
       {
         reportWebError();
-        internetAlive = false;
+        _internetAlive = false;
         return resources.WebErrorMessage;
       }
 
@@ -101,7 +101,7 @@ namespace SimpleMaid
       string value;
 
       var encoding = new UTF8Encoding();
-      byte[] requestBody = encoding.GetBytes($"tag={tag}&fmt=html");
+      var requestBody = encoding.GetBytes($"tag={tag}&fmt=html");
 
       var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/getvalue");
       request.Method = "POST";
@@ -120,7 +120,7 @@ namespace SimpleMaid
       catch (WebException)
       {
         reportWebError();
-        internetAlive = false;
+        _internetAlive = false;
         return resources.WebErrorMessage;
       }
 
@@ -132,14 +132,14 @@ namespace SimpleMaid
         using (var sr = new StreamReader(responseStream))
         {
           value = sr.ReadToEnd();
-          value = value.Substring(value.IndexOf(tag) + tag.Length + 4);
-          value = value.Remove(value.IndexOf("\""));
+          value = value.Substring(value.IndexOf(tag, StringComparison.Ordinal) + tag.Length + 4);
+          value = value.Remove(value.IndexOf("\"", StringComparison.Ordinal));
         }
       }
       catch (WebException)
       {
         reportWebError();
-        internetAlive = false;
+        _internetAlive = false;
         return resources.WebErrorMessage;
       }
 
@@ -199,8 +199,8 @@ namespace SimpleMaid
       }
       #endregion
 
-      desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
-      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, Variables.ConfigName));
+      _desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
+      _mainConfigFile = new FileInfo(Path.Combine(_desiredAppDirectory.FullName, Variables.ConfigName));
 
       #region Console arguments
       bool rogueArgFound = false;
@@ -223,37 +223,37 @@ namespace SimpleMaid
           if (!autorunArgFound && (autorunArgFound = (args[i] == Variables.AutorunArgument)))
             adjustedLength--;
 
-          if (adjustedLength >= 2)
+          if (adjustedLength < 2)
+            continue;
+
+          if (!passArgFound && (args[i] == Variables.PasswordArgument))
           {
-            if (!passArgFound && (args[i] == Variables.PasswordArgument))
-            {
-              passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : passArg;
+            passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : passArg;
 
-              if (passArgFound)
-                adjustedLength -= 2;
-              else
-                adjustedLength--;
-            }
-            else if (!langArgFound && (args[i] == Variables.LanguageArgument))
-            {
-              langArg = (langArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : langArg;
+            if (passArgFound)
+              adjustedLength -= 2;
+            else
+              adjustedLength--;
+          }
+          else if (!langArgFound && (args[i] == Variables.LanguageArgument))
+          {
+            langArg = (langArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : langArg;
 
-              if (langArgFound)
-                adjustedLength -= 2;
-              else
-                adjustedLength--;
-            }
+            if (langArgFound)
+              adjustedLength -= 2;
+            else
+              adjustedLength--;
           }
         }
       }
       #endregion
 
       #region Hide window (if autorun)
-      handle = GetConsoleWindow();
-      bool inDesiredDir = desiredAppDirectory.IsEqualTo(Application.StartupPath);
+      _handle = GetConsoleWindow();
+      bool inDesiredDir = _desiredAppDirectory.IsEqualTo(Application.StartupPath);
       if (inDesiredDir || rogueArgFound)
       {
-        ShowWindow(handle, SW_HIDE);
+        ShowWindow(_handle, SW_HIDE);
         Program.Hidden = true;
       }
       #endregion
@@ -263,8 +263,8 @@ namespace SimpleMaid
 
       // TODO: Move so it happens AFTER startup directory management
       #region Exit (if already running)
-      programMutex = new Mutex(false, "Local\\" + Application.AssemblyGuid);
-      if (!programMutex.WaitOne(0, false))
+      _programMutex = new Mutex(false, "Local\\" + Application.AssemblyGuid);
+      if (!_programMutex.WaitOne(0, false))
       {
         reportPastSelf();
         exit();
@@ -279,10 +279,10 @@ namespace SimpleMaid
           Assembly.GetAssembly(typeof(FileIniDataParser)).Location };
         try
         {
-          svtFolder.CopyTo(desiredAppDirectory, false);
+          svtFolder.CopyTo(_desiredAppDirectory, false);
           foreach (var filePath in filePaths)
           {
-            File.Copy(filePath, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(filePath)), true);
+            File.Copy(filePath, Path.Combine(_desiredAppDirectory.FullName, Path.GetFileName(filePath)), true);
           }
         }
         catch //unauthorized, io, notsupported
@@ -312,7 +312,7 @@ namespace SimpleMaid
       #region Compose configuration file
       bool firstRun;
       bool promptShown = false;
-      if (firstRun = !mainConfigFile.Exists)
+      if (firstRun = !_mainConfigFile.Exists)
       {
         configuration = new IniData();
 
@@ -324,7 +324,7 @@ namespace SimpleMaid
         if (!isPasswordOK(machinePassword))
         {
           if (Program.Hidden)
-            ShowWindow(handle, SW_SHOW);
+            ShowWindow(_handle, SW_SHOW);
 
           string passwordValue;
           while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
@@ -335,7 +335,7 @@ namespace SimpleMaid
           promptShown = true;
 
           if (Program.Hidden)
-            ShowWindow(handle, SW_HIDE);
+            ShowWindow(_handle, SW_HIDE);
         }
         else
         {
@@ -348,7 +348,7 @@ namespace SimpleMaid
       }
       else
       {
-        configuration = config_parser.ReadFile(mainConfigFile.FullName, Encoding.UTF8);
+        configuration = config_parser.ReadFile(_mainConfigFile.FullName, Encoding.UTF8);
 
         machineConfigured = bool.Parse(configuration["Service"]["bMachineConfigured"]);
         #region machineName = configuration["Service"]["sMachineName"];
@@ -370,7 +370,7 @@ namespace SimpleMaid
           if (!isPasswordOK(machinePassword))
           {
             if (Program.Hidden)
-              ShowWindow(handle, SW_SHOW);
+              ShowWindow(_handle, SW_SHOW);
 
             string passwordValue;
             while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
@@ -382,7 +382,7 @@ namespace SimpleMaid
             machinePassword = configuration["Service"]["sMachinePassword"];
 
             if (Program.Hidden)
-              ShowWindow(handle, SW_HIDE);
+              ShowWindow(_handle, SW_HIDE);
           }
         }
         else
@@ -397,7 +397,7 @@ namespace SimpleMaid
             if (!isPasswordOK(machinePassword))
             {
               if (Program.Hidden)
-                ShowWindow(handle, SW_SHOW);
+                ShowWindow(_handle, SW_SHOW);
 
               string passwordValue;
               while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
@@ -409,7 +409,7 @@ namespace SimpleMaid
               machinePassword = configuration["Service"]["sMachinePassword"];
 
               if (Program.Hidden)
-                ShowWindow(handle, SW_HIDE);
+                ShowWindow(_handle, SW_HIDE);
             }
           }
         }
@@ -429,12 +429,12 @@ namespace SimpleMaid
       #endregion
 
       // TODO: Get rid of these
-      machine = machineName;
-      pass = machinePassword;
+      _machine = machineName;
+      _pass = machinePassword;
 
       // Enable/disable autorun
       if (autoRun)
-        SimpleApp.SwitchAutorun(Application.ProductName, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(Application.ExecutablePath)));
+        SimpleApp.SwitchAutorun(Application.ProductName, Path.Combine(_desiredAppDirectory.FullName, Path.GetFileName(Application.ExecutablePath)));
       else
         SimpleApp.SwitchAutorun(Application.ProductName);
 
@@ -448,7 +448,7 @@ namespace SimpleMaid
           configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
         }
 
-        config_parser.WriteFile(mainConfigFile.FullName, configuration, Encoding.UTF8);
+        config_parser.WriteFile(_mainConfigFile.FullName, configuration, Encoding.UTF8);
       }
       #endregion
 
@@ -460,20 +460,20 @@ namespace SimpleMaid
       Thread.Sleep(1000);
 
       #region 2 - Connection Thread
-      connectionThread = new Thread(handleConnection);
-      connectionThread.IsBackground = true;
-      connectionThread.Start();
+      _connectionThread = new Thread(handleConnection);
+      _connectionThread.IsBackground = true;
+      _connectionThread.Start();
       #endregion
 
       #region 3 - Command Thread
-      commandThread = new Thread(awaitCommands);
-      commandThread.IsBackground = true;
+      _commandThread = new Thread(awaitCommands);
+      _commandThread.IsBackground = true;
       // Starts in a different place
       #endregion
 
       #region 4 - Chat Thread
-      chatThread = new Thread(serveMessages);
-      chatThread.IsBackground = true;
+      _chatThread = new Thread(serveMessages);
+      _chatThread.IsBackground = true;
       // Starts in a different place
       #endregion
 
@@ -494,7 +494,7 @@ namespace SimpleMaid
 
     private static void configureMachine()
     {
-      int valueLength = machine.Length + 1; // Variables.MachinesDelimiter
+      int valueLength = _machine.Length + 1; // Variables.MachinesDelimiter
       int realValueLimit = (int) Math.Floor(Variables.IndividualValueLimit / valueLength) * valueLength;
 
       int listIndex = -1;
@@ -503,13 +503,13 @@ namespace SimpleMaid
       {
         listIndex++;
         currentList = GetUntilGet($"machines{listIndex}");
-        if (currentList.Contains(machine))
+        if (currentList.Contains(_machine))
           return;
       } while (currentList.Length >= realValueLimit);
 
       string machines = currentList;
 
-      SetUntilSet($"machines{listIndex}", $"{machines}{machine}{Variables.MachinesDelimiter}");
+      SetUntilSet($"machines{listIndex}", $"{machines}{_machine}{Variables.MachinesDelimiter}");
     }
 
     private static bool isNameOK(string name)
@@ -641,10 +641,10 @@ namespace SimpleMaid
 
       if (Program.Hidden)
       {
-        ShowWindow(handle, SW_SHOW);
+        ShowWindow(_handle, SW_SHOW);
         Console.Beep();
         Thread.Sleep(Variables.GeneralCloseDelay);
-        ShowWindow(handle, SW_HIDE);
+        ShowWindow(_handle, SW_HIDE);
       }
     }
 
@@ -683,7 +683,7 @@ namespace SimpleMaid
 
     private static void openChatWindow()
     {
-      busyChatWise = true;
+      _busyChatWise = true;
 
       ChatboxWindow = new frmChatWindow();
       ChatboxWindow.ShowDialog();
@@ -692,14 +692,14 @@ namespace SimpleMaid
 
       ChatboxExit = false;
 
-      busyChatWise = false;
+      _busyChatWise = false;
 
-      SetUntilSet($"commands.{machine}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
+      SetUntilSet($"commands.{_machine}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
     }
 
     private static void closeChatWindow()
     {
-      busyChatWise = false;
+      _busyChatWise = false;
 
       ChatboxExit = true;
     }
@@ -734,23 +734,23 @@ namespace SimpleMaid
 
     private static void resurrectDeadThreads()
     {
-      if (null != connectionThread && !connectionThread.IsAlive)
+      if (null != _connectionThread && !_connectionThread.IsAlive)
       {
-        connectionThread = new Thread(handleConnection);
-        connectionThread.IsBackground = true;
-        connectionThread.Start();
+        _connectionThread = new Thread(handleConnection);
+        _connectionThread.IsBackground = true;
+        _connectionThread.Start();
       }
-      if (busyCommandWise && null != commandThread && !commandThread.IsAlive)
+      if (_busyCommandWise && null != _commandThread && !_commandThread.IsAlive)
       {
-        commandThread = new Thread(awaitCommands);
-        commandThread.IsBackground = true;
-        commandThread.Start();
+        _commandThread = new Thread(awaitCommands);
+        _commandThread.IsBackground = true;
+        _commandThread.Start();
       }
-      if (busyChatWise && null != chatThread && !chatThread.IsAlive)
+      if (_busyChatWise && null != _chatThread && !_chatThread.IsAlive)
       {
-        chatThread = new Thread(serveMessages);
-        chatThread.IsBackground = true;
-        chatThread.Start();
+        _chatThread = new Thread(serveMessages);
+        _chatThread.IsBackground = true;
+        _chatThread.Start();
       }
     }
 
@@ -762,12 +762,12 @@ namespace SimpleMaid
       {
         var now = DateTime.Now;
 
-        if (resources.WebErrorMessage != Set($"time.{machine}" /* PUN NOT INTENDED */, $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
+        if (resources.WebErrorMessage != Set($"time.{_machine}" /* PUN NOT INTENDED */, $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
-          if (!internetAlive)
+          if (!_internetAlive)
             resurrectDeadThreads();
 
-          internetAlive = true;
+          _internetAlive = true;
         }
 
         Thread.Sleep(Variables.GeneralDelay - now.Millisecond);
@@ -778,18 +778,18 @@ namespace SimpleMaid
     {
       reportThreadStart(resources.ConnectionStart);
 
-      while (internetAlive)
+      while (_internetAlive)
       {
-        if (Get(machine) == pass)
+        if (Get(_machine) == _pass)
         {
-          busyCommandWise = !busyCommandWise;
-          SetUntilSet(machine, String.Empty);
+          _busyCommandWise = !_busyCommandWise;
+          SetUntilSet(_machine, String.Empty);
 
-          if (busyCommandWise && null != commandThread && !commandThread.IsAlive)
+          if (_busyCommandWise && null != _commandThread && !_commandThread.IsAlive)
           {
-            commandThread = new Thread(awaitCommands);
-            commandThread.IsBackground = true;
-            commandThread.Start();
+            _commandThread = new Thread(awaitCommands);
+            _commandThread.IsBackground = true;
+            _commandThread.Start();
           }
         }
 
@@ -810,16 +810,16 @@ namespace SimpleMaid
       string sRemoteMessage = null;
       string sPreviousRemoteMessage = null;
 
-      while (busyChatWise && internetAlive)
+      while (_busyChatWise && _internetAlive)
       {
         if (sRemoteMessage != null)
           Thread.Sleep(Variables.GeneralDelay);
 
-        sRemoteMessage = GetUntilGet("messages." + machine);
+        sRemoteMessage = GetUntilGet("messages." + _machine);
 
         if (!String.IsNullOrWhiteSpace(UserChatMessage))
         {
-          SetUntilSet("messages." + machine, ans + UserChatMessage);
+          SetUntilSet("messages." + _machine, ans + UserChatMessage);
           UserChatMessage = null;
         }
 
@@ -849,12 +849,12 @@ namespace SimpleMaid
 
       string sRemoteCommand = null;
 
-      while (busyCommandWise && internetAlive)
+      while (_busyCommandWise && _internetAlive)
       {
         if (sRemoteCommand != null)
           Thread.Sleep(Variables.GeneralDelay);
 
-        sRemoteCommand = GetUntilGet("commands." + machine);
+        sRemoteCommand = GetUntilGet("commands." + _machine);
 
         if (String.Empty == sRemoteCommand || sRemoteCommand.StartsWith(ans))
           continue;
@@ -866,7 +866,7 @@ namespace SimpleMaid
 
         if (!isCommandSpecial)
         {
-          SetUntilSet("commands." + machine, ans + executeCmdCommand(command_parts[0]));
+          SetUntilSet("commands." + _machine, ans + executeCmdCommand(command_parts[0]));
         }
         else
         {
@@ -875,28 +875,28 @@ namespace SimpleMaid
           switch (specialCommandIdentifier)
           {
             case Variables.QuitCommand:
-              SetUntilSet("commands." + machine, ans + Variables.GeneralOKMsg);
+              SetUntilSet("commands." + _machine, ans + Variables.GeneralOKMsg);
               exitCommand();
               break;
 
             case Variables.HideCommand:
-              SetUntilSet("commands." + machine, ans + hideCommand());
+              SetUntilSet("commands." + _machine, ans + hideCommand());
               break;
 
             case Variables.ShowCommand:
-              SetUntilSet("commands." + machine, ans + showCommand());
+              SetUntilSet("commands." + _machine, ans + showCommand());
               break;
 
             case Variables.DownloadCommand:
-              SetUntilSet("commands." + machine, ans + downloadCommand(command_parts));
+              SetUntilSet("commands." + _machine, ans + downloadCommand(command_parts));
               break;
 
             case Variables.MessageCommand:
-              SetUntilSet("commands." + machine, ans + messageCommand(command_parts));
+              SetUntilSet("commands." + _machine, ans + messageCommand(command_parts));
               break;
 
             case Variables.PowershellCommand:
-              SetUntilSet("commands." + machine, ans + powershellCommand(command_parts));
+              SetUntilSet("commands." + _machine, ans + powershellCommand(command_parts));
               break;
 
             case Variables.RepeatCommand:
@@ -957,7 +957,7 @@ namespace SimpleMaid
     {
       if (Program.Hidden) return Variables.GeneralOKMsg;
 
-      ShowWindow(handle, SW_HIDE);
+      ShowWindow(_handle, SW_HIDE);
       Program.Hidden = true;
 
       return Variables.GeneralOKMsg;
@@ -967,7 +967,7 @@ namespace SimpleMaid
     {
       if (!Program.Hidden) return Variables.GeneralOKMsg;
 
-      ShowWindow(handle, SW_SHOW);
+      ShowWindow(_handle, SW_SHOW);
       Program.Hidden = false;
 
       return Variables.GeneralOKMsg;
@@ -1061,11 +1061,11 @@ namespace SimpleMaid
         }
 
         #region 4 - Chat Thread
-        if (busyChatWise && null != chatThread && !chatThread.IsAlive)
+        if (_busyChatWise && null != _chatThread && !_chatThread.IsAlive)
         {
-          chatThread = new Thread(serveMessages);
-          chatThread.IsBackground = true;
-          chatThread.Start();
+          _chatThread = new Thread(serveMessages);
+          _chatThread.IsBackground = true;
+          _chatThread.Start();
         }
         #endregion
       }
