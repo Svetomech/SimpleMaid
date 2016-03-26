@@ -101,7 +101,11 @@
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild">
+    <CreateItem Include="$(TargetDir)\*\$(TargetName).resources.dll">
+      <Output TaskParameter="Include" ItemName="ResourcesToMove" />
+    </CreateItem>
+	<Move SourceFiles="@(ResourcesToMove)" DestinationFiles="@(ResourcesToMove->'$(TargetDir)languages\%(RecursiveDir)\%(Filename)%(Extension)')"/>
+  </Target>
 </Project>
