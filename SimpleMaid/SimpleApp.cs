@@ -34,6 +34,7 @@ namespace SimpleMaid
     public static bool VerifyAutorun(string appName, string appPath)
     {
       string regPath = null;
+
       using (var regKey = CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", false))
       {
         regPath = regKey.GetValue(appName)?.ToString();
