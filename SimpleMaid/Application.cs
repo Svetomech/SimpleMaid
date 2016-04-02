@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace SimpleMaid
+namespace SimpleLibrary
 {
   internal static class Application
   {

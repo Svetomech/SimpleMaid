@@ -1,4 +1,4 @@
-﻿namespace SimpleMaid
+﻿namespace SimpleLibrary
 {
   public struct Point
   {

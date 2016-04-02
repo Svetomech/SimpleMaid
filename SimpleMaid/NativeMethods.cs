@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SimpleLibrary
 {
-  public static class SimpleNative
+  public static class NativeMethods
   {
     public static IntPtr GetConsoleWindow()
     {

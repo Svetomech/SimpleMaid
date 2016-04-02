@@ -13,9 +13,9 @@ using System.Threading;
 using SimpleLibrary;
 using static SimpleLibrary.SimpleApp;
 using static SimpleLibrary.SimpleConsole;
-using static SimpleLibrary.SimpleNative;
 using static SimpleLibrary.SimplePlatform;
 using static SimpleLibrary.PasswordStrength;
+using static SimpleLibrary.NativeMethods;
 
 namespace SimpleMaid
 {
