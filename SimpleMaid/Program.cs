@@ -528,7 +528,6 @@ namespace SimpleMaid
       return (strength >= Variables.MinimalPasswordStrength);
     }
 
-    // HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, passwordPrompt()).Password
     private static string passwordPrompt()
     {
       return new NetworkCredential(String.Empty, PasswordPrompt(resources.PasswordEnterTip)).Password;

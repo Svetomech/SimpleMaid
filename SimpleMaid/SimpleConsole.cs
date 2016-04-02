@@ -55,6 +55,8 @@ namespace SimpleLibrary
       return result;
     }
 
+    /* HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, PasswordPrompt("Enter a password: ")).Password;
+         N.B.! It's really dirty, kills the purpose of using a SecureString and doesn't even work in Mono */
     public static SecureString PasswordPrompt(string hintMessage)
     {
       Clear();
