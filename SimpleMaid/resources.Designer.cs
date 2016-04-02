@@ -151,6 +151,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CMD injection attempt detected!.
+        /// </summary>
+        internal static string InjectionErrorMessage {
+            get {
+                return ResourceManager.GetString("InjectionErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Log.
         /// </summary>
         internal static string MainWindowTitle {

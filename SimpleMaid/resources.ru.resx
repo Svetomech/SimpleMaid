@@ -174,4 +174,7 @@
   <data name="SupportName" xml:space="preserve">
     <value>Поддержка</value>
   </data>
+  <data name="InjectionErrorMessage" xml:space="preserve">
+    <value>Зарегистрирована попытка внедрения CMD-кода!</value>
+  </data>
 </root>
