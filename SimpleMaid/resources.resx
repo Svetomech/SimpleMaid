@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AdminErrorMessage" xml:space="preserve">
-    <value>You shouldn't run this app as administrator. Don't risk your PC! (:</value>
+    <value>You shouldn't run this app with elevated privileges. Don't risk your PC! (:</value>
   </data>
   <data name="CommandStart" xml:space="preserve">
     <value>Command thread has started.</value>
@@ -131,9 +131,6 @@
   </data>
   <data name="ConnectionStop" xml:space="preserve">
     <value>Connection thread has stopped.</value>
-  </data>
-  <data name="OSErrorMessage" xml:space="preserve">
-    <value>This app only suports Windows, sorry.</value>
   </data>
   <data name="PastSins" xml:space="preserve">
     <value>What else can you be when the world can only see a monster?</value>

@@ -138,9 +138,6 @@
   <data name="ConnectionStop" xml:space="preserve">
     <value>Поток "Подключение" остановлен.</value>
   </data>
-  <data name="OSErrorMessage" xml:space="preserve">
-    <value>Приложение работает только на Windows, извините.</value>
-  </data>
   <data name="PastSins" xml:space="preserve">
     <value>Кем ты можешь быть, когда весь мир видит лишь монстра?</value>
   </data>

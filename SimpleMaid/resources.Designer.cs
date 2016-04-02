@@ -61,7 +61,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You shouldn&apos;t run this app as administrator. Don&apos;t risk your PC! (:.
+        ///   Looks up a localized string similar to You shouldn&apos;t run this app with elevated privileges. Don&apos;t risk your PC! (:.
         /// </summary>
         internal static string AdminErrorMessage {
             get {
@@ -165,15 +165,6 @@ namespace SimpleMaid {
         internal static string MainWindowTitle {
             get {
                 return ResourceManager.GetString("MainWindowTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This app only suports Windows, sorry..
-        /// </summary>
-        internal static string OSErrorMessage {
-            get {
-                return ResourceManager.GetString("OSErrorMessage", resourceCulture);
             }
         }
         
