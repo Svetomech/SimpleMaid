@@ -19,7 +19,7 @@ namespace SimpleMaid
     {
       string configUserName = ConfigurationManager.AppSettings["ChatUserName"];
 
-      userName = (Variables.KeywordDefault == configUserName) ? Environment.UserName : configUserName;
+      userName = (configUserName != Variables.KeywordDefault) ? configUserName : Environment.UserName;
       supportName = resources.SupportName;
       emptyLine = $"{userName}: ";
 
@@ -80,11 +80,9 @@ namespace SimpleMaid
       int startIndex = letterBody.GetFirstCharIndexFromLine(aLine);
       int count = letterBody.Lines[aLine].Length;
 
-      // Eat new line chars
       if (aLine < letterBody.Lines.Length - 1)
       {
-        count += letterBody.GetFirstCharIndexFromLine(aLine + 1) -
-            ((startIndex + count - 1) + 1);
+        count += letterBody.GetFirstCharIndexFromLine(aLine + 1) - ((startIndex + count - 1) + 1);
       }
 
       letterBody.Text = letterBody.Text.Remove(startIndex, count);
@@ -142,9 +140,9 @@ namespace SimpleMaid
     private void letterBody_SelectionChanged(object sender, EventArgs e)
     {
       if (letterBody.SelectionLength == 0)
-        allowModification = letterBody.SelectionStart > letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length;
+        allowModification = (letterBody.SelectionStart > letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length);
       else
-        allowModification = letterBody.SelectionStart >= letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length;
+        allowModification = (letterBody.SelectionStart >= letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length);
     }
 
     /*private void letterBody_MouseEnter(object sender, EventArgs e)

@@ -7,7 +7,7 @@ namespace SimpleLibrary
   {
     public static bool IsElevated()
     {
-      return (runningWindows) ? WindowsApp.IsElevated() : LinuxApp.IsElevated();
+      return runningWindows ? WindowsApp.IsElevated() : LinuxApp.IsElevated();
     }
 
     // TODO: Add cross-platform support

@@ -7,12 +7,12 @@ namespace SimpleLibrary
   {
     public static IntPtr GetConsoleWindow()
     {
-      return (runningWindows) ? WindowsNative.GetConsoleWindow() : LinuxNative.GetConsoleWindow();
+      return runningWindows ? WindowsNative.GetConsoleWindow() : LinuxNative.GetConsoleWindow();
     }
 
     public static bool ShowWindow(IntPtr hWnd, int nCmdShow)
     {
-      return (runningWindows) ? WindowsNative.ShowWindow(hWnd, nCmdShow) : LinuxNative.ShowWindow(hWnd, nCmdShow);
+      return runningWindows ? WindowsNative.ShowWindow(hWnd, nCmdShow) : LinuxNative.ShowWindow(hWnd, nCmdShow);
     }
     public const int SW_HIDE = 0;
     public const int SW_SHOW = 5;

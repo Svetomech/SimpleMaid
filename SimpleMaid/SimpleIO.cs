@@ -20,9 +20,9 @@ namespace SimpleLibrary
 
         char[] dirSeparators = { DirectorySeparatorChar, AltDirectorySeparatorChar };
 
-        return (SimplePlatform.Platform.Unix == SimplePlatform.RunningPlatform()) ?
-          String.Equals(GetFullPath(pathA).TrimEnd(dirSeparators), GetFullPath(pathB).TrimEnd(dirSeparators)) :
-          String.Equals(GetFullPath(pathA).TrimEnd(dirSeparators), GetFullPath(pathB).TrimEnd(dirSeparators), StringComparison.OrdinalIgnoreCase);
+        return (SimplePlatform.RunningPlatform() == SimplePlatform.Platform.Windows) ?
+          String.Equals(GetFullPath(pathA).TrimEnd(dirSeparators), GetFullPath(pathB).TrimEnd(dirSeparators), StringComparison.OrdinalIgnoreCase) :
+          String.Equals(GetFullPath(pathA).TrimEnd(dirSeparators), GetFullPath(pathB).TrimEnd(dirSeparators));
       }
     }
 

@@ -7,13 +7,13 @@ namespace SimpleLibrary
   {
     public enum PasswordScore
     {
-      Blank = 0,
-      VeryWeak = 1,
-      Weak = 2,
-      Fair = 3,
-      Medium = 4,
-      Strong = 5,
-      VeryStrong = 6
+      Blank,
+      VeryWeak,
+      Weak,
+      Fair,
+      Medium,
+      Strong,
+      VeryStrong
     }
 
     public static PasswordScore CheckStrength(string password)
@@ -48,7 +48,7 @@ namespace SimpleLibrary
       {
         for (int i = 2; i < lstPass.Length; ++i)
         {
-          if (lstPass[i] == lstPass[i - 1] && lstPass[i] == lstPass[i - 2] && score > 1)
+          if ((lstPass[i] == lstPass[i - 1]) && (lstPass[i] == lstPass[i - 2]) && (score > 1))
             score--;
         }
       }
