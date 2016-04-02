@@ -557,7 +557,7 @@ namespace SimpleMaid
             continue;
 
           if (starsCount + 1 < middleDiff)
-            ++starsCount;
+            starsCount++;
           else
             continue;
 
@@ -568,7 +568,7 @@ namespace SimpleMaid
         else
         {
           if (starsCount - 1 >= 0)
-            --starsCount;
+            starsCount--;
           else
             continue;
 
@@ -585,11 +585,11 @@ namespace SimpleMaid
           Console.SetCursorPosition(pos.X, pos.Y);
         }
 
-        if (starsCount == 0)
+        if (0 == starsCount)
         {
           Console.Beep();
         }
-        if (starsCount + 1 == middleDiff)
+        if (middleDiff - 1 == starsCount)
         {
           Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
           Console.Beep();
@@ -602,7 +602,7 @@ namespace SimpleMaid
     }
 
     // TODO: Get filename from Response.Header
-    private static string urlToFile(string url)
+    private static string urlToFilename(string url)
     {
       return Uri.UnescapeDataString(url.Substring(url.LastIndexOf('/') + 1));
     }
@@ -611,9 +611,7 @@ namespace SimpleMaid
     private static string decodeEncodedNonAsciiCharacters(string value)
     {
       return System.Text.RegularExpressions.Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
-          {
-            return ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString();
-          });
+        ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString());
     }
 
     #region Reports
@@ -707,9 +705,9 @@ namespace SimpleMaid
 
     private static string executeCommand(string command, ConsoleTypes console = ConsoleTypes.None)
     {
-      if (console == ConsoleTypes.None)
+      if (ConsoleTypes.None == console)
       {
-        return (runningWindows) ? ExecuteCommand(command, ConsoleTypes.CMD) : ExecuteCommand(command, ConsoleTypes.Bash);
+        return runningWindows ? ExecuteCommand(command, ConsoleTypes.CMD) : ExecuteCommand(command, ConsoleTypes.Bash);
       }
       else
       {
@@ -973,7 +971,7 @@ namespace SimpleMaid
       if ((quickDownload = (command_parts.Length == 2)) || Variables.KeywordDefault == command_parts[2])
       {
         downloadDirPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        downloadFileName = urlToFile(command_parts[1]);
+        downloadFileName = urlToFilename(command_parts[1]);
       }
       else if (command_parts.Length >= 3)
       {
