@@ -1,5 +1,6 @@
 using IniParser;
 using IniParser.Model;
+using SimpleLibrary;
 using System;
 using System.Configuration;
 using System.Diagnostics;
@@ -10,16 +11,15 @@ using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Threading;
-using SimpleLibrary;
+using static SimpleLibrary.NativeMethods;
+using static SimpleLibrary.PasswordStrength;
 using static SimpleLibrary.SimpleApp;
 using static SimpleLibrary.SimpleConsole;
 using static SimpleLibrary.SimplePlatform;
-using static SimpleLibrary.PasswordStrength;
-using static SimpleLibrary.NativeMethods;
 
 namespace SimpleMaid
 {
-  class Program
+  internal class Program
   {
     #region Properties
     public static bool Hidden { get; set; } = false;
