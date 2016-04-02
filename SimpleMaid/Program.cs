@@ -10,11 +10,12 @@ using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Threading;
-using static SimpleMaid.SimpleApp;
-using static SimpleMaid.SimpleConsole;
-using static SimpleMaid.SimpleNative;
-using static SimpleMaid.SimplePlatform;
-using static SimpleMaid.PasswordStrength;
+using SimpleLibrary;
+using static SimpleLibrary.SimpleApp;
+using static SimpleLibrary.SimpleConsole;
+using static SimpleLibrary.SimpleNative;
+using static SimpleLibrary.SimplePlatform;
+using static SimpleLibrary.PasswordStrength;
 
 namespace SimpleMaid
 {

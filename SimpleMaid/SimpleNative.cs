@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SimpleMaid
+namespace SimpleLibrary
 {
   public static class SimpleNative
   {

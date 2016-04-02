@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SimpleMaid
+namespace SimpleLibrary
 {
   public static class PasswordStrength
   {

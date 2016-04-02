@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using static Microsoft.Win32.Registry;
 
-namespace SimpleMaid
+namespace SimpleLibrary
 {
   public static class SimpleApp
   {

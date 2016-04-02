@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using static System.Console;
 
-namespace SimpleMaid
+namespace SimpleLibrary
 {
   public enum ConsoleTypes
   {

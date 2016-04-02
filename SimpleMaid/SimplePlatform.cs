@@ -1,7 +1,7 @@
 using static System.Environment;
 using static System.PlatformID;
 
-namespace SimpleMaid
+namespace SimpleLibrary
 {
   public static class SimplePlatform
   {
