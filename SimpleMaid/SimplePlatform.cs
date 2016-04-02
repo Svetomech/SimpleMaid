@@ -11,7 +11,7 @@ namespace SimpleMaid
       Unix
     }
 
-    public static Platform runningPlatform()
+    public static Platform RunningPlatform()
     {
       switch (OSVersion.Platform)
       {

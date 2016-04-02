@@ -30,8 +30,6 @@ namespace SimpleMaid
     }
 
 
-    #region Private methods
-
     private static IEnumerable<int> allIndexesOf(string str, string ofWhat)
     {
       for (int index = 0; ; index += ofWhat.Length)
@@ -42,7 +40,5 @@ namespace SimpleMaid
         yield return index;
       }
     }
-
-    #endregion
   }
 }

@@ -20,7 +20,7 @@ namespace SimpleMaid
 
         char[] dirSeparators = { DirectorySeparatorChar, AltDirectorySeparatorChar };
 
-        return (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform()) ?
+        return (SimplePlatform.Platform.Unix == SimplePlatform.RunningPlatform()) ?
           String.Equals(GetFullPath(pathA).TrimEnd(dirSeparators), GetFullPath(pathB).TrimEnd(dirSeparators)) :
           String.Equals(GetFullPath(pathA).TrimEnd(dirSeparators), GetFullPath(pathB).TrimEnd(dirSeparators), StringComparison.OrdinalIgnoreCase);
       }
@@ -70,8 +70,6 @@ namespace SimpleMaid
       }
     }
 
-
-    #region Extension methods
 
     /// <summary>
     /// Doesn't complain if paths are null; platform-independent.
@@ -124,7 +122,5 @@ namespace SimpleMaid
 
       Directory.Copy(dir, new DirectoryInfo(destDirPath), copyRootFiles);
     }
-
-    #endregion
   }
 }

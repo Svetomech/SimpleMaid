@@ -1,10 +1,59 @@
+using System;
+using System.Diagnostics;
 using static System.Console;
-using static System.String;
 
 namespace SimpleMaid
 {
+  public enum ConsoleTypes
+  {
+    CMD,
+    Powershell,
+    Bash,
+    None
+  }
+
   public static class SimpleConsole
   {
+    public static string ExecuteCommand(string command, ConsoleTypes console)
+    {
+      ProcessStartInfo procStartInfo = null;
+      switch (console)
+      {
+        case ConsoleTypes.CMD:
+          procStartInfo = new ProcessStartInfo("cmd", "/c " + command);
+          break;
+
+        case ConsoleTypes.Powershell:
+          procStartInfo = new ProcessStartInfo("powershell", "-command " + command);
+          break;
+
+        case ConsoleTypes.Bash:
+          procStartInfo = new ProcessStartInfo("/bin/bash", "-c " + command);
+          break;
+
+        case ConsoleTypes.None:
+          return null;
+
+        default:
+          throw new ArgumentException(nameof(console));
+      }
+
+      procStartInfo.RedirectStandardOutput = true;
+      procStartInfo.UseShellExecute = false;
+      procStartInfo.CreateNoWindow = true;
+
+      Process proc = new Process();
+      proc.StartInfo = procStartInfo;
+      proc.Start();
+
+      string result = proc.StandardOutput.ReadToEnd();
+
+      // HACK: Only need it because my server doesn't handle NewLine too well
+      result = result.Replace(Environment.NewLine, "\n");
+
+      return result;
+    }
+
     public static class Line
     {
       /// <summary>

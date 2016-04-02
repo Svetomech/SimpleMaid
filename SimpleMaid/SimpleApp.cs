@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using static Microsoft.Win32.Registry;
 
 namespace SimpleMaid
@@ -6,11 +7,10 @@ namespace SimpleMaid
   {
     public static bool IsElevated()
     {
-      try { using (LocalMachine.OpenSubKey("Software\\", true)) ; }
-      catch { return false; }
-      return true;
+      return (runningWindows) ? WindowsApp.IsElevated() : LinuxApp.IsElevated();
     }
 
+    // TODO: Add cross-platform support
     public static void SwitchAutorun(string appName, string appPath = null)
     {
       string regPath = null;
@@ -31,6 +31,7 @@ namespace SimpleMaid
       }
     }
 
+    // TODO: Add cross-platform support
     public static bool VerifyAutorun(string appName, string appPath)
     {
       string regPath = null;
@@ -42,5 +43,26 @@ namespace SimpleMaid
 
       return SimpleIO.Path.Equals(appPath, regPath);
     }
+
+    private static readonly bool runningWindows =
+      (SimplePlatform.RunningPlatform() == SimplePlatform.Platform.Windows);
+  }
+
+  internal static class WindowsApp
+  {
+    internal static bool IsElevated()
+    {
+      try { using (LocalMachine.OpenSubKey("Software\\", true)) ; }
+      catch { return false; }
+      return true;
+    }
+  }
+
+  internal static class LinuxApp
+  {
+    [DllImport("libc")]
+    private static extern uint getuid();
+
+    internal static bool IsElevated() => (getuid() == 0);
   }
 }

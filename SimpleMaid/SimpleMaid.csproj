@@ -57,7 +57,7 @@
     <Compile Include="frmChatWindow.Designer.cs">
       <DependentUpon>frmChatWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="NativeMethods.cs" />
+    <Compile Include="SimpleNative.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

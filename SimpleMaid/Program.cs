@@ -10,7 +10,10 @@ using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Threading;
-using static SimpleMaid.NativeMethods;
+using static SimpleMaid.SimpleApp;
+using static SimpleMaid.SimpleConsole;
+using static SimpleMaid.SimpleNative;
+using static SimpleMaid.SimplePlatform;
 using static SimpleMaid.PasswordStrength;
 
 namespace SimpleMaid
@@ -35,6 +38,8 @@ namespace SimpleMaid
     private static volatile bool busyCommandWise = false;
     private static volatile bool busyChatWise = false;
     #endregion
+    private static readonly bool runningWindows =
+      (RunningPlatform() == Platform.Windows);
     private static volatile bool internetAlive = true;
 
     #region Global settings
@@ -183,19 +188,11 @@ namespace SimpleMaid
       System.Windows.Forms.Application.EnableVisualStyles();
       Console.Clear();
 
-      #region Exit (OS/privileges check)
-      if (SimplePlatform.Platform.Unix == SimplePlatform.runningPlatform())
+      #region Exit (if running as admin/root)
+      if (IsElevated())
       {
-        reportGeneralError(resources.OSErrorMessage);
+        reportGeneralError(resources.AdminErrorMessage);
         exit();
-      }
-      else
-      {
-        if (SimpleApp.IsElevated())
-        {
-          reportGeneralError(resources.AdminErrorMessage);
-          exit();
-        }
       }
       #endregion
 
@@ -433,10 +430,13 @@ namespace SimpleMaid
       pass = machinePassword;
 
       // Enable/disable autorun
-      if (autoRun)
-        SimpleApp.SwitchAutorun(Application.ProductName, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(Application.ExecutablePath)));
-      else
-        SimpleApp.SwitchAutorun(Application.ProductName);
+      if (runningWindows)
+      {
+        if (autoRun)
+          SwitchAutorun(Application.ProductName, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(Application.ExecutablePath)));
+        else
+          SwitchAutorun(Application.ProductName);
+      }
 
       #region Update INI file
       if (firstRun || !machineConfigured || autorunArgFound || passArgFound || promptShown)
@@ -535,11 +535,11 @@ namespace SimpleMaid
 
       string middlePractical = "| " + resources.PasswordEnterTip;
       string middle = middlePractical + " |";
-      middle = middlePractical + SimpleConsole.Line.GetFilled(' ').Remove(0, middle.Length) + " |";
+      middle = middlePractical + Line.GetFilled(' ').Remove(0, middle.Length) + " |";
 
-      Console.Write("#" + SimpleConsole.Line.GetFilled('-').Remove(0, 2) + "#");
+      Console.Write("#" + Line.GetFilled('-').Remove(0, 2) + "#");
       Console.Write(middle);
-      Console.Write("#" + SimpleConsole.Line.GetFilled('-').Remove(0, 2) + "#");
+      Console.Write("#" + Line.GetFilled('-').Remove(0, 2) + "#");
       Console.SetCursorPosition(middlePractical.Length, Console.CursorTop - 2);
 
       ConsoleKeyInfo keyInfo;
@@ -573,14 +573,14 @@ namespace SimpleMaid
 
           passHolder.RemoveAt(passHolder.Length - 1);
 
-          SimpleConsole.Line.ClearCurrent();
+          Line.ClearCurrent();
           Console.Write(middlePractical);
           for (int i = 0; i < starsCount; ++i)
           {
             Console.Write('*');
           }
           var pos = new Point(Console.CursorLeft, Console.CursorTop);
-          Console.Write(SimpleConsole.Line.GetFilled(' ').Remove(0, middlePractical.Length + starsCount + " |".Length) + " |");
+          Console.Write(Line.GetFilled(' ').Remove(0, middlePractical.Length + starsCount + " |".Length) + " |");
           Console.SetCursorPosition(pos.X, pos.Y);
         }
 
@@ -620,11 +620,11 @@ namespace SimpleMaid
     {
       string middlePractical = "| " + resources.PasswordWeakHint;
       string middle = middlePractical + " |";
-      middle = middlePractical + SimpleConsole.Line.GetFilled(' ').Remove(0, middle.Length) + " |";
+      middle = middlePractical + Line.GetFilled(' ').Remove(0, middle.Length) + " |";
 
-      Console.Write("#" + SimpleConsole.Line.GetFilled('-').Remove(0, 2) + "#");
+      Console.Write("#" + Line.GetFilled('-').Remove(0, 2) + "#");
       Console.Write(middle);
-      Console.Write("#" + SimpleConsole.Line.GetFilled('-').Remove(0, 2) + "#");
+      Console.Write("#" + Line.GetFilled('-').Remove(0, 2) + "#");
       Console.CursorVisible = false;
 
       pas = null;
@@ -704,31 +704,16 @@ namespace SimpleMaid
       ChatboxExit = true;
     }
 
-    private static string executeCmdCommand(string command, bool usePowershellInstead = false)
+    private static string executeCommand(string command, ConsoleTypes console = ConsoleTypes.None)
     {
-      ProcessStartInfo procStartInfo;
-      if (!usePowershellInstead)
+      if (console == ConsoleTypes.None)
       {
-        procStartInfo = new ProcessStartInfo("cmd", "/c " + command);
+        return (runningWindows) ? ExecuteCommand(command, ConsoleTypes.CMD) : ExecuteCommand(command, ConsoleTypes.Bash);
       }
       else
       {
-        procStartInfo = new ProcessStartInfo("powershell", "-command " + command);
+        return ExecuteCommand(command, console);
       }
-
-      procStartInfo.RedirectStandardOutput = true;
-      procStartInfo.UseShellExecute = false;
-      procStartInfo.CreateNoWindow = true;
-
-      Process proc = new Process();
-      proc.StartInfo = procStartInfo;
-      proc.Start();
-
-      string result = proc.StandardOutput.ReadToEnd();
-
-      result = result.Replace(Environment.NewLine, @"\n");
-
-      return result;
     }
 
 
@@ -866,7 +851,7 @@ namespace SimpleMaid
 
         if (!isCommandSpecial)
         {
-          SetUntilSet("commands." + machine, ans + executeCmdCommand(command_parts[0]));
+          SetUntilSet("commands." + machine, ans + executeCommand(command_parts[0]));
         }
         else
         {
@@ -913,7 +898,7 @@ namespace SimpleMaid
 
               if (!isRepeatCommandSpecial)
               {
-                executeCmdCommand(command_parts_fixed[0]);
+                executeCommand(command_parts_fixed[0]);
               }
               else
               {
@@ -1011,7 +996,7 @@ namespace SimpleMaid
             }*/
 
             string unEvaluatedVariable = ev + variable + evd;
-            string evaluatedVariable = executeCmdCommand($"echo {variable}");
+            string evaluatedVariable = executeCommand($"echo {variable}");
 
             command_parts[2] = command_parts[2].Replace(unEvaluatedVariable, evaluatedVariable);
 
@@ -1090,7 +1075,7 @@ namespace SimpleMaid
       }
       command_parts[1] = command_parts[1].Replace(@"""", @"\""");
 
-      return executeCmdCommand(command_parts[1], true);
+      return executeCommand(command_parts[1], ConsoleTypes.Powershell);
     }
   }
 }
