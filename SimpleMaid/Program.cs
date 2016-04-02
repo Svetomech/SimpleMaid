@@ -325,7 +325,7 @@ namespace SimpleMaid
             ShowWindow(handle, SW_SHOW);
 
           string passwordValue;
-          while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
+          while (!isPasswordOK(passwordValue = passwordPrompt()))
           {
             reportWeakPassword(passwordValue);
           }
@@ -371,7 +371,7 @@ namespace SimpleMaid
               ShowWindow(handle, SW_SHOW);
 
             string passwordValue;
-            while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
+            while (!isPasswordOK(passwordValue = passwordPrompt()))
             {
               reportWeakPassword(passwordValue);
             }
@@ -398,7 +398,7 @@ namespace SimpleMaid
                 ShowWindow(handle, SW_SHOW);
 
               string passwordValue;
-              while (!isPasswordOK(passwordValue = new NetworkCredential(String.Empty, passwordPrompt()).Password))
+              while (!isPasswordOK(passwordValue = passwordPrompt()))
               {
                 reportWeakPassword(passwordValue);
               }
@@ -529,76 +529,9 @@ namespace SimpleMaid
     }
 
     // HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, passwordPrompt()).Password
-    private static SecureString passwordPrompt()
+    private static string passwordPrompt()
     {
-      Console.Clear();
-      Console.CursorVisible = true;
-
-      string middlePractical = "| " + resources.PasswordEnterTip;
-      string middle = middlePractical + " |";
-      middle = middlePractical + Line.GetFilled(' ').Remove(0, middle.Length) + " |";
-
-      Console.Write("#" + Line.GetFilled('-').Remove(0, 2) + "#");
-      Console.Write(middle);
-      Console.Write("#" + Line.GetFilled('-').Remove(0, 2) + "#");
-      Console.SetCursorPosition(middlePractical.Length, Console.CursorTop - 2);
-
-      ConsoleKeyInfo keyInfo;
-      var passHolder = new SecureString();
-      int starsCount = 0;
-      int middleDiff = middle.Length - middlePractical.Length;
-      while ((keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Enter)
-      {
-        if (keyInfo.Key != ConsoleKey.Backspace)
-        {
-          /*if (!((int)ki.Key >= 65 && (int)ki.Key <= 90))
-            continue;*/ // <-- stricter, but disallows digits
-          if (char.IsControl(keyInfo.KeyChar))
-            continue;
-
-          if (starsCount + 1 < middleDiff)
-            starsCount++;
-          else
-            continue;
-
-          passHolder.AppendChar(keyInfo.KeyChar);
-
-          Console.Write('*');
-        }
-        else
-        {
-          if (starsCount - 1 >= 0)
-            starsCount--;
-          else
-            continue;
-
-          passHolder.RemoveAt(passHolder.Length - 1);
-
-          Line.ClearCurrent();
-          Console.Write(middlePractical);
-          for (int i = 0; i < starsCount; ++i)
-          {
-            Console.Write('*');
-          }
-          var pos = new Point(Console.CursorLeft, Console.CursorTop);
-          Console.Write(Line.GetFilled(' ').Remove(0, middlePractical.Length + starsCount + " |".Length) + " |");
-          Console.SetCursorPosition(pos.X, pos.Y);
-        }
-
-        if (0 == starsCount)
-        {
-          Console.Beep();
-        }
-        if (middleDiff - 1 == starsCount)
-        {
-          Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
-          Console.Beep();
-        }
-      }
-
-      Console.Clear();
-
-      return passHolder;
+      return new NetworkCredential(String.Empty, PasswordPrompt(resources.PasswordEnterTip)).Password;
     }
 
     // TODO: Get filename from Response.Header
