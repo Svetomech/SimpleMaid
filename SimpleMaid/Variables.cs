@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using static SimpleMaid.PasswordStrength;
+using static SimpleLibrary.PasswordStrength;
 
 namespace SimpleMaid
 {
