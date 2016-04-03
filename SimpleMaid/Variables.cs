@@ -5,12 +5,12 @@ namespace SimpleMaid
 {
   internal static class Variables
   {
-    internal static readonly string ServerAddress = "http://apptinywebdb.appspot.com";
+    internal static readonly string ServerAddress = "https://simplemaid-server.appspot.com";
     internal static readonly NetworkCredential AccountCredentials = CredentialCache.DefaultNetworkCredentials;
 
-    internal const string ConfigName = "Configuration.ini";
     internal const string KeywordDefault = "default";
-    internal const string DefaultPassword = ".";
+    internal const string ConfigName = KeywordDefault;
+    internal const string DefaultPassword = KeywordDefault;
     internal const PasswordScore MinimalPasswordStrength = PasswordScore.Weak;
 
     internal const string PasswordArgument  = "--pass";     // SimpleMaid.exe --pass NewPassword

@@ -198,7 +198,7 @@ namespace SimpleMaid
       #endregion
 
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
-      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, Variables.ConfigName));
+      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
 
       #region Console arguments
       bool rogueArgFound = false;
@@ -277,7 +277,10 @@ namespace SimpleMaid
           Assembly.GetAssembly(typeof(FileIniDataParser)).Location };
         try
         {
-          svtFolder.CopyTo(desiredAppDirectory, false);
+          var desiredAppSubdirectory = new DirectoryInfo(Path.Combine(desiredAppDirectory.FullName, svtFolder.Name));
+
+          svtFolder.CopyTo(desiredAppSubdirectory, false);
+
           foreach (var filePath in filePaths)
           {
             File.Copy(filePath, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(filePath)), true);
@@ -304,7 +307,7 @@ namespace SimpleMaid
       bool   machineConfigured = false;
       string machineName       = createMachine();
       string machinePassword   = passArg;
-      bool   autoRun           = !autorunArgFound;
+      bool   autoRun           = autorunArgFound;
       #endregion
 
       #region Compose configuration file
