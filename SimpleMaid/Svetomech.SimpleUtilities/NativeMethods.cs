@@ -17,24 +17,24 @@ namespace Svetomech.Utilities
     public const int SW_HIDE = 0;
     public const int SW_SHOW = 5;
 
-    private static readonly bool runningWindows =
-      (SimplePlatform.RunningPlatform() == SimplePlatform.Platform.Windows);
-  }
+    private static readonly bool runningWindows = (SimplePlatform.RunningPlatform() == SimplePlatform.Platform.Windows);
 
-  internal static class WindowsNative
-  {
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    internal static extern IntPtr GetConsoleWindow();
 
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-  }
+    private static class WindowsNative
+    {
+      [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+      internal static extern IntPtr GetConsoleWindow();
 
-  // TODO: Find the actual Linux APIs equivalent to Windows ones
-  internal static class LinuxNative
-  {
-    internal static IntPtr GetConsoleWindow() => IntPtr.Zero;
+      [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+      internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    }
 
-    internal static bool ShowWindow(IntPtr hWnd, int nCmdShow) => true;
+    // TODO: Find the actual Linux APIs equivalent to Windows ones
+    private static class LinuxNative
+    {
+      internal static IntPtr GetConsoleWindow() => IntPtr.Zero;
+
+      internal static bool ShowWindow(IntPtr hWnd, int nCmdShow) => true;
+    }
   }
 }

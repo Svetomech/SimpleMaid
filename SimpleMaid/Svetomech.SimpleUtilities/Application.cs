@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Svetomech.Utilities
 {
-  internal static class Application
+  public static class Application
   {
     private static readonly Assembly assembly = Assembly.GetEntryAssembly();
     private static readonly FileVersionInfo assemblyInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -15,6 +15,7 @@ namespace Svetomech.Utilities
     public static string ProductVersion => assemblyInfo.ProductVersion;
     public static string ExecutablePath => assembly.Location;
     public static string StartupPath => Path.GetDirectoryName(assembly.Location);
-    public static string AssemblyGuid => ((GuidAttribute)assembly.GetCustomAttributes(typeof(GuidAttribute), false).GetValue(0)).Value;
+    public static string AssemblyGuid => ((GuidAttribute)assembly.GetCustomAttributes(
+      typeof(GuidAttribute), false).GetValue(0)).Value;
   }
 }

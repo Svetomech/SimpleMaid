@@ -67,6 +67,7 @@
       <DependentUpon>resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Svetomech.SimpleUtilities\SimpleConsole.cs" />
+    <Compile Include="Svetomech.SimpleUtilities\SimpleConsole.Line.cs" />
     <Compile Include="Svetomech.SimpleUtilities\SimpleIO.cs" />
     <Compile Include="Svetomech.SimpleUtilities\SimplePlatform.cs" />
     <Compile Include="Svetomech.SimpleUtilities\SimpleApp.cs" />

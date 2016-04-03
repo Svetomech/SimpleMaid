@@ -14,20 +14,27 @@ namespace Svetomech.Utilities
     public static void SwitchAutorun(string appName, string appPath = null)
     {
       string regPath = null;
-      using (var regKey = CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", false))
+
+      using (var regKey = CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
       {
         regPath = regKey.GetValue(appName)?.ToString();
       }
 
       if (SimpleIO.Path.Equals(appPath, regPath))
+      {
         return;
+      }
 
-      using (var regKey = CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run"))
+      using (var regKey = CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"))
       {
         if (appPath != null)
+        {
           regKey.SetValue(appName, appPath);
+        }
         else
+        {
           regKey.DeleteValue(appName);
+        }
       }
     }
 
@@ -36,7 +43,7 @@ namespace Svetomech.Utilities
     {
       string regPath = null;
 
-      using (var regKey = CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", false))
+      using (var regKey = CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false))
       {
         regPath = regKey.GetValue(appName)?.ToString();
       }
@@ -44,25 +51,25 @@ namespace Svetomech.Utilities
       return SimpleIO.Path.Equals(appPath, regPath);
     }
 
-    private static readonly bool runningWindows =
-      (SimplePlatform.RunningPlatform() == SimplePlatform.Platform.Windows);
-  }
+    private static readonly bool runningWindows = (SimplePlatform.RunningPlatform() == SimplePlatform.Platform.Windows);
 
-  internal static class WindowsApp
-  {
-    internal static bool IsElevated()
+
+    private static class WindowsApp
     {
-      try { using (LocalMachine.OpenSubKey("Software\\", true)) ; }
-      catch { return false; }
-      return true;
+      internal static bool IsElevated()
+      {
+        try { using (LocalMachine.OpenSubKey(@"SOFTWARE\", true)) ; }
+        catch { return false; }
+        return true;
+      }
     }
-  }
 
-  internal static class LinuxApp
-  {
-    [DllImport("libc")]
-    private static extern uint getuid();
+    private static class LinuxApp
+    {
+      [DllImport("libc")]
+      private static extern uint getuid();
 
-    internal static bool IsElevated() => (getuid() == 0);
+      internal static bool IsElevated() => (getuid() == 0);
+    }
   }
 }
