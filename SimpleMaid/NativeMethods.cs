@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Svetomech.SimpleUtilities
+namespace Svetomech.Utilities
 {
   public static class NativeMethods
   {

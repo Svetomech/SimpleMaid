@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Svetomech.SimpleUtilities
+namespace Svetomech.Utilities
 {
   public static class PasswordStrength
   {

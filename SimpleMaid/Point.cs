@@ -1,4 +1,4 @@
-﻿namespace Svetomech.SimpleUtilities
+﻿namespace Svetomech.Utilities
 {
   public struct Point
   {

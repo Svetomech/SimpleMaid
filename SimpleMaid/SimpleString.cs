@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using static System.String;
 
-namespace Svetomech.SimpleUtilities
+namespace Svetomech.Utilities
 {
   public static class SimpleString
   {

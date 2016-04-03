@@ -1,6 +1,6 @@
 using IniParser;
 using IniParser.Model;
-using Svetomech.SimpleUtilities;
+using Svetomech.Utilities;
 using System;
 using System.Configuration;
 using System.Diagnostics;
@@ -11,11 +11,11 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using static Svetomech.SimpleUtilities.NativeMethods;
-using static Svetomech.SimpleUtilities.PasswordStrength;
-using static Svetomech.SimpleUtilities.SimpleApp;
-using static Svetomech.SimpleUtilities.SimpleConsole;
-using static Svetomech.SimpleUtilities.SimplePlatform;
+using static Svetomech.Utilities.NativeMethods;
+using static Svetomech.Utilities.PasswordStrength;
+using static Svetomech.Utilities.SimpleApp;
+using static Svetomech.Utilities.SimpleConsole;
+using static Svetomech.Utilities.SimplePlatform;
 
 namespace SimpleMaid
 {

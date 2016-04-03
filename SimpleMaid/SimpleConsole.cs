@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Security;
 using static System.Console;
 
-namespace Svetomech.SimpleUtilities
+namespace Svetomech.Utilities
 {
   public enum ConsoleTypes
   {
