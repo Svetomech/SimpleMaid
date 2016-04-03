@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using static Microsoft.Win32.Registry;
 
-namespace SimpleLibrary
+namespace Svetomech.SimpleLibrary
 {
   public static class SimpleApp
   {

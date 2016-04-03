@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using static System.IO.Path;
 
-namespace SimpleLibrary
+namespace Svetomech.SimpleLibrary
 {
   public static class SimpleIO
   {

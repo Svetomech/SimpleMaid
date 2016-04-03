@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace SimpleLibrary
+namespace Svetomech.SimpleLibrary
 {
   internal static class Application
   {
