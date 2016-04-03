@@ -9,6 +9,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using static Svetomech.SimpleLibrary.NativeMethods;
 using static Svetomech.SimpleLibrary.PasswordStrength;
@@ -504,7 +505,9 @@ namespace SimpleMaid
         listIndex++;
         currentList = GetUntilGet($"machines{listIndex}");
         if (currentList.Contains(machine))
+        {
           return;
+        }
       } while (currentList.Length >= realValueLimit);
 
       string machines = currentList;
@@ -533,7 +536,7 @@ namespace SimpleMaid
     }
 
     // TODO: Get filename from Response.Header
-    private static string urlToFilename(string url)
+    private static string urlToFileName(string url)
     {
       return Uri.UnescapeDataString(url.Substring(url.LastIndexOf('/') + 1));
     }
@@ -541,7 +544,7 @@ namespace SimpleMaid
     // TODO: Implement adequate decoding
     private static string decodeEncodedNonAsciiCharacters(string value)
     {
-      return System.Text.RegularExpressions.Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
+      return Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
         ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString());
     }
 
@@ -597,8 +600,11 @@ namespace SimpleMaid
       Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.Cyan;
       Console.WriteLine(msg + "\n");
+
       if (resources.CommandStart == msg)
+      {
         Console.Beep();
+      }
     }
 
     private static void reportThreadStop(string msg)
@@ -606,8 +612,11 @@ namespace SimpleMaid
       Console.BackgroundColor = ConsoleColor.Black;
       Console.ForegroundColor = ConsoleColor.Red;
       Console.WriteLine(msg + "\n");
+
       if (resources.CommandStop == msg)
+      {
         Console.Beep();
+      }
     }
     #endregion
 
@@ -649,19 +658,19 @@ namespace SimpleMaid
 
     private static void resurrectDeadThreads()
     {
-      if (null != connectionThread && !connectionThread.IsAlive)
+      if (connectionThread != null && !connectionThread.IsAlive)
       {
         connectionThread = new Thread(handleConnection);
         connectionThread.IsBackground = true;
         connectionThread.Start();
       }
-      if (busyCommandWise && null != commandThread && !commandThread.IsAlive)
+      if (busyCommandWise && commandThread != null && !commandThread.IsAlive)
       {
         commandThread = new Thread(awaitCommands);
         commandThread.IsBackground = true;
         commandThread.Start();
       }
-      if (busyChatWise && null != chatThread && !chatThread.IsAlive)
+      if (busyChatWise && chatThread != null && !chatThread.IsAlive)
       {
         chatThread = new Thread(serveMessages);
         chatThread.IsBackground = true;
@@ -680,7 +689,9 @@ namespace SimpleMaid
         if (resources.WebErrorMessage != Set($"time.{machine}" /* PUN NOT INTENDED */, $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
           if (!internetAlive)
+          {
             resurrectDeadThreads();
+          }
 
           internetAlive = true;
         }
@@ -700,7 +711,7 @@ namespace SimpleMaid
           busyCommandWise = !busyCommandWise;
           SetUntilSet(machine, String.Empty);
 
-          if (busyCommandWise && null != commandThread && !commandThread.IsAlive)
+          if (busyCommandWise && commandThread != null && !commandThread.IsAlive)
           {
             commandThread = new Thread(awaitCommands);
             commandThread.IsBackground = true;
@@ -722,15 +733,17 @@ namespace SimpleMaid
       string ans = Variables.AnswerPrefix;
       char sep = Variables.CommandsSeparator;
 
-      string sRemoteMessage = null;
-      string sPreviousRemoteMessage = null;
+      string remoteMessage = null;
+      string previousRemoteMessage = null;
 
       while (busyChatWise && internetAlive)
       {
-        if (sRemoteMessage != null)
+        if (remoteMessage != null)
+        {
           Thread.Sleep(Variables.GeneralDelay);
+        }
 
-        sRemoteMessage = GetUntilGet("messages." + machine);
+        remoteMessage = GetUntilGet("messages." + machine);
 
         if (!String.IsNullOrWhiteSpace(UserChatMessage))
         {
@@ -738,17 +751,19 @@ namespace SimpleMaid
           UserChatMessage = null;
         }
 
-        if (sRemoteMessage == sPreviousRemoteMessage || String.Empty == sRemoteMessage || sRemoteMessage.StartsWith(ans))
+        if (remoteMessage == previousRemoteMessage || String.Empty == remoteMessage || remoteMessage.StartsWith(ans))
+        {
           continue;
+        }
 
-        sPreviousRemoteMessage = sRemoteMessage;
+        previousRemoteMessage = remoteMessage;
 
         // TODO: частный случай m, ещё две то есть
         // TODO: ChatCommand = message_aprts[1];
         #region Parsing message
-        string[] message_parts = sRemoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
+        string[] messageParts = remoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
-        SupportChatMessage = message_parts[0];
+        SupportChatMessage = messageParts[0];
         #endregion
       }
 
@@ -762,30 +777,31 @@ namespace SimpleMaid
       string ans = Variables.AnswerPrefix;
       char sep = Variables.CommandsSeparator;
 
-      string sRemoteCommand = null;
+      string remoteCommand = null;
 
       while (busyCommandWise && internetAlive)
       {
-        if (sRemoteCommand != null)
+        if (remoteCommand != null)
+        {
           Thread.Sleep(Variables.GeneralDelay);
+        }
+          
 
-        sRemoteCommand = GetUntilGet("commands." + machine);
+        remoteCommand = GetUntilGet("commands." + machine);
 
-        if (String.Empty == sRemoteCommand || sRemoteCommand.StartsWith(ans))
+        if (String.Empty == remoteCommand || remoteCommand.StartsWith(ans))
+        {
           continue;
+        }
 
         #region Parsing command
-        string[] command_parts = sRemoteCommand.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
+        string[] commandParts = remoteCommand.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
-        bool isCommandSpecial = (command_parts[0] != sRemoteCommand);
+        bool isCommandSpecial = (commandParts[0] != remoteCommand);
 
-        if (!isCommandSpecial)
+        if (isCommandSpecial)
         {
-          SetUntilSet("commands." + machine, ans + executeCommand(command_parts[0]));
-        }
-        else
-        {
-          char specialCommandIdentifier = command_parts[0].ToCharArray()[0];
+          char specialCommandIdentifier = commandParts[0].ToCharArray()[0];
 
           switch (specialCommandIdentifier)
           {
@@ -803,28 +819,28 @@ namespace SimpleMaid
               break;
 
             case Variables.DownloadCommand:
-              SetUntilSet("commands." + machine, ans + downloadCommand(command_parts));
+              SetUntilSet("commands." + machine, ans + downloadCommand(commandParts));
               break;
 
             case Variables.MessageCommand:
-              SetUntilSet("commands." + machine, ans + messageCommand(command_parts));
+              SetUntilSet("commands." + machine, ans + messageCommand(commandParts));
               break;
 
             case Variables.PowershellCommand:
-              SetUntilSet("commands." + machine, ans + powershellCommand(command_parts));
+              SetUntilSet("commands." + machine, ans + powershellCommand(commandParts));
               break;
 
             case Variables.RepeatCommand:
-              if (command_parts.Length < 2)
+              if (commandParts.Length < 2)
                 goto default;
 
-              string[] command_parts_fixed = new string[command_parts.Length - 1];
-              for (int i = 1; i < command_parts.Length; ++i)
+              string[] command_parts_fixed = new string[commandParts.Length - 1];
+              for (int i = 1; i < commandParts.Length; ++i)
               {
-                command_parts_fixed[i - 1] = command_parts[i];
+                command_parts_fixed[i - 1] = commandParts[i];
               }
 
-              bool isRepeatCommandSpecial = ($"{command_parts[0]}{sep}{command_parts_fixed[0]}" != sRemoteCommand);
+              bool isRepeatCommandSpecial = ($"{commandParts[0]}{sep}{command_parts_fixed[0]}" != remoteCommand);
 
               if (!isRepeatCommandSpecial)
               {
@@ -845,16 +861,20 @@ namespace SimpleMaid
                     break;
 
                   default:
-                    reportGeneralError(resources.WrongCommandErrMsg + sRemoteCommand);
+                    reportGeneralError(resources.WrongCommandErrMsg + remoteCommand);
                     break;
                 }
               }
               break;
 
             default:
-              reportGeneralError(resources.WrongCommandErrMsg + sRemoteCommand);
+              reportGeneralError(resources.WrongCommandErrMsg + remoteCommand);
               break;
           }
+        }
+        else
+        {
+          SetUntilSet("commands." + machine, ans + executeCommand(commandParts[0]));
         }
         #endregion
       }
@@ -870,7 +890,10 @@ namespace SimpleMaid
 
     private static string hideCommand()
     {
-      if (Program.Hidden) return Variables.GeneralOKMsg;
+      if (Program.Hidden)
+      {
+        return Variables.GeneralOKMsg;
+      }
 
       ShowWindow(handle, SW_HIDE);
       Program.Hidden = true;
@@ -880,7 +903,11 @@ namespace SimpleMaid
 
     private static string showCommand()
     {
-      if (!Program.Hidden) return Variables.GeneralOKMsg;
+      if (!Program.Hidden)
+      {
+        return Variables.GeneralOKMsg;
+      }
+        
 
       ShowWindow(handle, SW_SHOW);
       Program.Hidden = false;
@@ -888,35 +915,35 @@ namespace SimpleMaid
       return Variables.GeneralOKMsg;
     }
 
-    private static string downloadCommand(string[] command_parts)
+    private static string downloadCommand(string[] commandParts)
     {
-      if (command_parts.Length < 2)
+      if (commandParts.Length < 2)
       {
         return Variables.IncompleteCommandErrMsg;
       }
 
-      string downloadDirPath = null;
+      string downloadDirectoryPath = null;
       string downloadFileName = null;
 
       bool quickDownload;
-      if ((quickDownload = (command_parts.Length == 2)) || Variables.KeywordDefault == command_parts[2])
+      if ((quickDownload = (commandParts.Length == 2)) || Variables.KeywordDefault == commandParts[2])
       {
-        downloadDirPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        downloadFileName = urlToFilename(command_parts[1]);
+        downloadDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        downloadFileName = urlToFileName(commandParts[1]);
       }
-      else if (command_parts.Length >= 3)
+      else if (commandParts.Length >= 3)
       {
         string ev = Variables.EvaluateCmdVariable;
         char evd = char.Parse(Variables.EvaluateCmdVariableEnd);
 
-        if (command_parts[2].Contains(ev))
+        if (commandParts[2].Contains(ev))
         {
-          var indexesOfCmdVariables = command_parts[2].AllIndexesOf(ev);
+          var indexesOfCmdVariables = commandParts[2].AllIndexesOf(ev);
 
           int diff = 0;
           foreach (int index in indexesOfCmdVariables)
           {
-            string variable = command_parts[2].Pacmanise(index + ev.Length - diff, evd);
+            string variable = commandParts[2].Pacmanise(index + ev.Length - diff, evd);
 
             if (variable.Contains(" "))
             {
@@ -924,28 +951,28 @@ namespace SimpleMaid
               return null;
             }
 
-            string unEvaluatedVariable = ev + variable + evd;
+            string unevaluatedVariable = ev + variable + evd;
             string evaluatedVariable = executeCommand($"echo {variable}");
 
-            command_parts[2] = command_parts[2].Replace(unEvaluatedVariable, evaluatedVariable);
+            commandParts[2] = commandParts[2].Replace(unevaluatedVariable, evaluatedVariable);
 
-            diff += unEvaluatedVariable.Length - evaluatedVariable.Length;
+            diff += unevaluatedVariable.Length - evaluatedVariable.Length;
           }
         }
 
-        downloadDirPath = Path.GetDirectoryName(command_parts[2]);
-        downloadFileName = Path.GetFileName(command_parts[2]);
+        downloadDirectoryPath = Path.GetDirectoryName(commandParts[2]);
+        downloadFileName = Path.GetFileName(commandParts[2]);
       }
 
-      Directory.CreateDirectory(downloadDirPath);
+      Directory.CreateDirectory(downloadDirectoryPath);
 
       // TODO: Use my FTP
-      string downloadFilePath = Path.Combine(downloadDirPath, downloadFileName);
+      string downloadFilePath = Path.Combine(downloadDirectoryPath, downloadFileName);
       using (var wc = new WebClient())
       {
         try
         {
-          wc.DownloadFile(new Uri(command_parts[1]), downloadFilePath);
+          wc.DownloadFile(new Uri(commandParts[1]), downloadFilePath);
         }
         catch (Exception exc)
         {
@@ -954,14 +981,17 @@ namespace SimpleMaid
       }
 
       if (quickDownload)
-        Process.Start(downloadDirPath);
+      {
+        Process.Start(downloadDirectoryPath);
+      }
+        
 
       return downloadFilePath;
     }
 
-    private static string messageCommand(string[] command_parts)
+    private static string messageCommand(string[] commandParts)
     {
-      if (ChatboxWindow == null || ChatboxWindow.IsDisposed)
+      if (null == ChatboxWindow || ChatboxWindow.IsDisposed)
       {
         var chatboxThread = new Thread(openChatWindow);
         chatboxThread.IsBackground = true;
@@ -972,7 +1002,7 @@ namespace SimpleMaid
           Thread.Sleep(1000);
         }
 
-        if (busyChatWise && null != chatThread && !chatThread.IsAlive)
+        if (busyChatWise && chatThread != null && !chatThread.IsAlive)
         {
           chatThread = new Thread(serveMessages);
           chatThread.IsBackground = true;
@@ -987,20 +1017,20 @@ namespace SimpleMaid
       return $"{Variables.MessageCommand},{ChatboxWindow.Visible}";
     }
 
-    private static string powershellCommand(string[] command_parts)
+    private static string powershellCommand(string[] commandParts)
     {
-      if (command_parts.Length < 2)
+      if (commandParts.Length < 2)
       {
         return Variables.IncompleteCommandErrMsg;
       }
 
-      for (int i = 2; i < command_parts.Length; ++i)
+      for (int i = 2; i < commandParts.Length; ++i)
       {
-        command_parts[1] += "; " + command_parts[i];
+        commandParts[1] += "; " + commandParts[i];
       }
-      command_parts[1] = command_parts[1].Replace(@"""", @"\""");
+      commandParts[1] = commandParts[1].Replace(@"""", @"\""");
 
-      return executeCommand(command_parts[1], ConsoleTypes.Powershell);
+      return executeCommand(commandParts[1], ConsoleTypes.Powershell);
     }
   }
 }
