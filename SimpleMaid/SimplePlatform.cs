@@ -1,7 +1,7 @@
 using static System.Environment;
 using static System.PlatformID;
 
-namespace Svetomech.SimpleLibrary
+namespace Svetomech.SimpleUtilities
 {
   public static class SimplePlatform
   {
