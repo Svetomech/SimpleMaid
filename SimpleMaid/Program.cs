@@ -963,25 +963,21 @@ namespace SimpleMaid
     {
       if (ChatboxWindow == null || ChatboxWindow.IsDisposed)
       {
-        #region 3.5 - ChatBox Thread
         var chatboxThread = new Thread(openChatWindow);
         chatboxThread.IsBackground = true;
         chatboxThread.Start();
-        #endregion
 
         while (null == ChatboxWindow || !ChatboxWindow.Visible)
         {
           Thread.Sleep(1000);
         }
 
-        #region 4 - Chat Thread
         if (busyChatWise && null != chatThread && !chatThread.IsAlive)
         {
           chatThread = new Thread(serveMessages);
           chatThread.IsBackground = true;
           chatThread.Start();
         }
-        #endregion
       }
       else
       {
