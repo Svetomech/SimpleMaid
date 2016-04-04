@@ -57,7 +57,25 @@ namespace Svetomech.Utilities
 
     /* HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, PasswordPrompt("Enter a password: ")).Password;
          N.B.! It's really dirty, kills the purpose of using a SecureString and doesn't even work in Mono */
-    public static string PasswordPrompt(string hintMessage)
+    public static SecureString PasswordPrompt(string hintMessage)
+    {
+      var pass = new SecureString();
+
+      passwordPromptBasic(hintMessage, ref pass);
+
+      return pass;
+    }
+
+    public static string UnsecurePasswordPrompt(string hintMessage)
+    {
+      string pass = String.Empty;
+
+      passwordPromptBasic(hintMessage, ref pass);
+
+      return pass;
+    }
+
+    private static void passwordPromptBasic<T>(string hintMessage, ref T password)
     {
       Clear();
       CursorVisible = true;
@@ -71,10 +89,22 @@ namespace Svetomech.Utilities
       Write($"#{Line.GetFilled('-').Remove(0, 2)}#");
       SetCursorPosition(middlePractical.Length, CursorTop - 2);
 
-      ConsoleKeyInfo keyInfo;
-      var passHolder = String.Empty;
+      SecureString passHolder = null;
+      string unsecurePassHolder = null;
+      if (password.GetType() == typeof(SecureString))
+      {
+        passHolder = new SecureString();
+      }
+      else
+      {
+        unsecurePassHolder = String.Empty;
+      }
+      bool useSecureHolder = (passHolder != null);
+
       int starsCount = 0;
       int middleDiff = middle.Length - middlePractical.Length;
+
+      ConsoleKeyInfo keyInfo;
       while ((keyInfo = ReadKey(true)).Key != ConsoleKey.Enter)
       {
         if (keyInfo.Key != ConsoleKey.Backspace)
@@ -95,7 +125,15 @@ namespace Svetomech.Utilities
             continue;
           }
 
-          passHolder += keyInfo.KeyChar;
+          if (useSecureHolder)
+          {
+            passHolder.AppendChar(keyInfo.KeyChar);
+          }
+          else
+          {
+            unsecurePassHolder += keyInfo.KeyChar;
+          }
+          
 
           Write('*');
         }
@@ -110,7 +148,14 @@ namespace Svetomech.Utilities
             continue;
           }
 
-          passHolder.Remove(passHolder.Length - 1);
+          if (useSecureHolder)
+          {
+            passHolder.RemoveAt(passHolder.Length - 1);
+          }
+          else
+          {
+            unsecurePassHolder.Remove(unsecurePassHolder.Length - 1, 1);
+          }
 
           Line.ClearCurrent();
           Write(middlePractical);
@@ -136,7 +181,7 @@ namespace Svetomech.Utilities
 
       Clear();
 
-      return passHolder;
+      password = useSecureHolder ? (T)(object)passHolder : (T)(object)unsecurePassHolder;
     }
   }
 }
