@@ -93,7 +93,8 @@ namespace SimpleMaid
         return resources.WebErrorMessage;
       }
 
-      Console.BackgroundColor = ConsoleColor.Black;
+      // Console.BackgroundColor = ConsoleColor.Black;
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.Gray;
       Console.WriteLine($"SET  {tag}  {value}\n");
 
@@ -155,7 +156,8 @@ namespace SimpleMaid
       value = value.Replace(@"\\", @"\");
       value = WebUtility.HtmlDecode(value);
 
-      Console.BackgroundColor = ConsoleColor.Black;
+      // Console.BackgroundColor = ConsoleColor.Black;
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.DarkGreen;
       Console.WriteLine($"GET  {tag}  {value}\n");
 
@@ -535,7 +537,7 @@ namespace SimpleMaid
 
     private static string passwordPrompt()
     {
-      return new NetworkCredential(String.Empty, PasswordPrompt(resources.PasswordEnterTip)).Password;
+      return PasswordPrompt(resources.PasswordEnterTip);
     }
 
     // TODO: Get filename from Response.Header
@@ -586,21 +588,24 @@ namespace SimpleMaid
 
     private static void reportWebError()
     {
-      Console.BackgroundColor = ConsoleColor.Black;
+      // Console.BackgroundColor = ConsoleColor.Black;
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.DarkYellow;
       Console.WriteLine(resources.WebErrorMessage + "\n");
     }
 
     private static void reportPastSelf()
     {
-      Console.BackgroundColor = ConsoleColor.Black;
+      // Console.BackgroundColor = ConsoleColor.Black;
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.DarkMagenta;
       Console.WriteLine(resources.PastSins + "\n");
     }
 
     private static void reportThreadStart(string msg)
     {
-      Console.BackgroundColor = ConsoleColor.Black;
+      // Console.BackgroundColor = ConsoleColor.Black;
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.Cyan;
       Console.WriteLine(msg + "\n");
 
@@ -612,7 +617,8 @@ namespace SimpleMaid
 
     private static void reportThreadStop(string msg)
     {
-      Console.BackgroundColor = ConsoleColor.Black;
+      // Console.BackgroundColor = ConsoleColor.Black;
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.Red;
       Console.WriteLine(msg + "\n");
 
@@ -955,7 +961,15 @@ namespace SimpleMaid
             }
 
             string unevaluatedVariable = ev + variable + evd;
-            string evaluatedVariable = executeCommand($"echo {variable}");
+            string evaluatedVariable;
+            if (runningWindows)
+            {
+              evaluatedVariable = executeCommand($"echo {variable}", ConsoleTypes.CMD);
+            }
+            else
+            {
+              evaluatedVariable = executeCommand($"", ConsoleTypes.Bash);
+            }
 
             commandParts[2] = commandParts[2].Replace(unevaluatedVariable, evaluatedVariable);
 

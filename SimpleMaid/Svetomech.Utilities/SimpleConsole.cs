@@ -57,7 +57,7 @@ namespace Svetomech.Utilities
 
     /* HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, PasswordPrompt("Enter a password: ")).Password;
          N.B.! It's really dirty, kills the purpose of using a SecureString and doesn't even work in Mono */
-    public static SecureString PasswordPrompt(string hintMessage)
+    public static string PasswordPrompt(string hintMessage)
     {
       Clear();
       CursorVisible = true;
@@ -72,7 +72,7 @@ namespace Svetomech.Utilities
       SetCursorPosition(middlePractical.Length, CursorTop - 2);
 
       ConsoleKeyInfo keyInfo;
-      var passHolder = new SecureString();
+      var passHolder = String.Empty;
       int starsCount = 0;
       int middleDiff = middle.Length - middlePractical.Length;
       while ((keyInfo = ReadKey(true)).Key != ConsoleKey.Enter)
@@ -95,7 +95,7 @@ namespace Svetomech.Utilities
             continue;
           }
 
-          passHolder.AppendChar(keyInfo.KeyChar);
+          passHolder += keyInfo.KeyChar;
 
           Write('*');
         }
@@ -110,7 +110,7 @@ namespace Svetomech.Utilities
             continue;
           }
 
-          passHolder.RemoveAt(passHolder.Length - 1);
+          passHolder.Remove(passHolder.Length - 1);
 
           Line.ClearCurrent();
           Write(middlePractical);
