@@ -147,6 +147,11 @@ namespace SimpleMaid
 
     private static string powershellCommand(string[] commandParts)
     {
+      if (!runningWindows)
+      {
+        return Variables.PowershellLinuxErrMsg;
+      }
+
       if (commandParts.Length < 2)
       {
         return Variables.IncompleteCommandErrMsg;

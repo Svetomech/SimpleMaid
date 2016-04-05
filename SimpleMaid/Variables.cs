@@ -23,6 +23,7 @@ namespace SimpleMaid
     internal const char CommandsSeparator = ';';
     internal const string AnswerPrefix = "A: ";
     internal const string GeneralOKMsg = "OK!";
+    internal const string PowershellLinuxErrMsg = "https://github.com/Microsoft/PowerShell-DSC-for-Linux";
     internal const string IncompleteCommandErrMsg = "One good turn deserves another.";
     internal const string EvaluateVariable = "eval<";
     internal const string EvaluateVariableEnd = ">";
