@@ -61,8 +61,8 @@ namespace SimpleMaid
       }
       else if (commandParts.Length >= 3)
       {
-        string ev = Variables.EvaluateCmdVariable;
-        char evd = char.Parse(Variables.EvaluateCmdVariableEnd);
+        string ev = Variables.EvaluateVariable;
+        char evd = char.Parse(Variables.EvaluateVariableEnd);
 
         if (commandParts[2].Contains(ev))
         {

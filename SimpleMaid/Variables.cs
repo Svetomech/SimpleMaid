@@ -24,16 +24,16 @@ namespace SimpleMaid
     internal const string AnswerPrefix = "A: ";
     internal const string GeneralOKMsg = "OK!";
     internal const string IncompleteCommandErrMsg = "One good turn deserves another.";
-    internal const string EvaluateCmdVariable = "eval<";
-    internal const string EvaluateCmdVariableEnd = ">";
+    internal const string EvaluateVariable = "eval<";
+    internal const string EvaluateVariableEnd = ">";
 
     internal const char QuitCommand       = 'q';
     internal const char HideCommand       = 'h';
     internal const char ShowCommand       = 's';
     internal const char DownloadCommand   = 'd';
-    internal const char MessageCommand    = 'm';
+    internal const char MessageCommand    = 'm'; // TODO: Add Linux support
     internal const char PowershellCommand = 'p';
-    internal const char RepeatCommand     = 'r';
+    internal const char RepeatCommand     = 'r'; // TODO: Optimize Linux experience
 
     internal const int GeneralDelay       = 1000; // [milliseconds]
     internal const int GeneralCloseDelay  = 2000; // [milliseconds]
