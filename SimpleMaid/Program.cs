@@ -45,6 +45,7 @@ namespace SimpleMaid
     internal static volatile string ChatCommand;
 
 
+    // TODO: Set&Get vs SetUntilSet&GetUntilGet - clarify use cases
     private static string Set(string tag, string value)
     {
       tag = $"{Application.ProductName}_{tag}";
