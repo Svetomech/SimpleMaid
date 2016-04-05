@@ -37,11 +37,11 @@ namespace SimpleMaid
       Console.WriteLine(resources.WebErrorMessage + "\n");
     }
 
-    private static void reportGeneralError(string msg)
+    private static void reportGeneralError(string message)
     {
       Console.BackgroundColor = ConsoleColor.Blue;
       Console.ForegroundColor = ConsoleColor.White;
-      Console.WriteLine(msg + "\n");
+      Console.WriteLine(message + "\n");
 
       if (Program.Hidden)
       {
@@ -52,25 +52,25 @@ namespace SimpleMaid
       }
     }
 
-    private static void reportThreadStart(string msg)
+    private static void reportThreadStart(string message)
     {
       resetConsoleColor();
       Console.ForegroundColor = ConsoleColor.Cyan;
-      Console.WriteLine(msg + "\n");
+      Console.WriteLine(message + "\n");
 
-      if (resources.CommandStart == msg)
+      if (resources.CommandStart == message)
       {
         Console.Beep();
       }
     }
 
-    private static void reportThreadStop(string msg)
+    private static void reportThreadStop(string message)
     {
       resetConsoleColor();
       Console.ForegroundColor = ConsoleColor.Red;
-      Console.WriteLine(msg + "\n");
+      Console.WriteLine(message + "\n");
 
-      if (resources.CommandStop == msg)
+      if (resources.CommandStop == message)
       {
         Console.Beep();
       }
