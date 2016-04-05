@@ -171,6 +171,7 @@ namespace SimpleMaid
     }
 
 
+    // TODO: Remove regions, refactor
     [STAThread]
     private static void Main(string[] args)
     {
@@ -483,7 +484,8 @@ namespace SimpleMaid
       {
         var now = DateTime.Now;
 
-        if (resources.WebErrorMessage != Set($"time.{machine}" /* PUN NOT INTENDED */, $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
+        if (resources.WebErrorMessage != Set($"time.{machine}" /* PUN NOT INTENDED */,
+          $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
           if (!internetAlive)
           {
@@ -532,7 +534,6 @@ namespace SimpleMaid
         {
           Thread.Sleep(Variables.GeneralDelay);
         }
-          
 
         remoteCommand = GetUntilGet("commands." + machine);
 
@@ -541,7 +542,6 @@ namespace SimpleMaid
           continue;
         }
 
-        #region Parsing command
         string[] commandParts = remoteCommand.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
         bool isCommandSpecial = (commandParts[0] != remoteCommand);
@@ -623,7 +623,6 @@ namespace SimpleMaid
         {
           SetUntilSet("commands." + machine, ans + executeCommand(commandParts[0]));
         }
-        #endregion
       }
 
       reportThreadStop(resources.CommandStop);
