@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.Commands.cs" />
+    <Compile Include="Program.Helpers.cs" />
+    <Compile Include="Program.Reports.cs" />
     <Compile Include="Svetomech.Utilities\Application.cs" />
     <Compile Include="Svetomech.Utilities\PasswordStrength.cs" />
     <Compile Include="frmChatWindow.cs">

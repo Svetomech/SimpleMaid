@@ -3,59 +3,46 @@ using IniParser.Model;
 using Svetomech.Utilities;
 using System;
 using System.Configuration;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using static Svetomech.Utilities.NativeMethods;
-using static Svetomech.Utilities.PasswordStrength;
 using static Svetomech.Utilities.SimpleApp;
-using static Svetomech.Utilities.SimpleConsole;
 using static Svetomech.Utilities.SimplePlatform;
 
 namespace SimpleMaid
 {
-  internal class Program
+  internal static partial class Program
   {
-    #region Properties
-    public static bool Hidden { get; set; } = false;
-    public static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
-    #endregion
+    private static bool Hidden { get; set; } = false;
+    private static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
 
     private static DirectoryInfo desiredAppDirectory;
     private static FileInfo mainConfigFile;
-    private static IntPtr handle;
-    private static Mutex  programMutex;
+    private static IntPtr mainWindowHandle;
+    private static Mutex singleInstance;
 
-    #region Global threads
     private static Thread connectionThread;
     private static Thread commandThread;
     private static Thread chatThread;
-
     private static volatile bool busyCommandWise = false;
     private static volatile bool busyChatWise = false;
-    #endregion
-    private static readonly bool runningWindows =
-      (RunningPlatform() == Platform.Windows);
+
+    private static readonly bool runningWindows = (RunningPlatform() == Platform.Windows);
     private static volatile bool internetAlive = true;
 
-    #region Global settings
-    // TODO: Get rid of these
+    // TODO: Get rid of these two
     private static volatile string machine;
     private static volatile string pass;
-    #endregion
 
-    #region Across forms
-    public static frmChatWindow ChatboxWindow = null;
-    public static volatile bool ChatboxExit = false;
-    public static volatile string SupportChatMessage;
-    public static volatile string UserChatMessage;
-    public static volatile string ChatCommand;
-    #endregion
+    internal static frmChatWindow ChatboxWindow = null;
+    internal static volatile bool ChatboxExit = false;
+    internal static volatile string SupportChatMessage;
+    internal static volatile string UserChatMessage;
+    internal static volatile string ChatCommand;
 
 
     private static string Set(string tag, string value)
@@ -184,7 +171,7 @@ namespace SimpleMaid
 
 
     [STAThread]
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
       System.Windows.Forms.Application.EnableVisualStyles();
       Console.Clear();
@@ -247,11 +234,11 @@ namespace SimpleMaid
       #endregion
 
       #region Hide window (if autorun)
-      handle = GetConsoleWindow();
+      mainWindowHandle = GetConsoleWindow();
       bool inDesiredDir = desiredAppDirectory.IsEqualTo(Application.StartupPath);
       if (inDesiredDir || rogueArgFound)
       {
-        ShowWindow(handle, SW_HIDE);
+        ShowWindow(mainWindowHandle, SW_HIDE);
         Program.Hidden = true;
       }
       #endregion
@@ -261,8 +248,8 @@ namespace SimpleMaid
 
       // TODO: Move so it happens AFTER startup directory management
       #region Exit (if already running)
-      programMutex = new Mutex(false, "Local\\" + Application.AssemblyGuid);
-      if (!programMutex.WaitOne(0, false))
+      singleInstance = new Mutex(false, "Local\\" + Application.AssemblyGuid);
+      if (!singleInstance.WaitOne(0, false))
       {
         reportPastSelf();
         exit();
@@ -325,18 +312,18 @@ namespace SimpleMaid
         if (!isPasswordOK(machinePassword))
         {
           if (Program.Hidden)
-            ShowWindow(handle, SW_SHOW);
+            ShowWindow(mainWindowHandle, SW_SHOW);
 
           string passwordValue;
           while (!isPasswordOK(passwordValue = passwordPrompt()))
           {
-            reportWeakPassword(passwordValue);
+            reportWeakPassword();
           }
           configuration["Service"].AddKey("sMachinePassword", passwordValue);
           promptShown = true;
 
           if (Program.Hidden)
-            ShowWindow(handle, SW_HIDE);
+            ShowWindow(mainWindowHandle, SW_HIDE);
         }
         else
         {
@@ -371,19 +358,19 @@ namespace SimpleMaid
           if (!isPasswordOK(machinePassword))
           {
             if (Program.Hidden)
-              ShowWindow(handle, SW_SHOW);
+              ShowWindow(mainWindowHandle, SW_SHOW);
 
             string passwordValue;
             while (!isPasswordOK(passwordValue = passwordPrompt()))
             {
-              reportWeakPassword(passwordValue);
+              reportWeakPassword();
             }
             configuration["Service"]["sMachinePassword"] = passwordValue;
             promptShown = true;
             machinePassword = configuration["Service"]["sMachinePassword"];
 
             if (Program.Hidden)
-              ShowWindow(handle, SW_HIDE);
+              ShowWindow(mainWindowHandle, SW_HIDE);
           }
         }
         else
@@ -398,19 +385,19 @@ namespace SimpleMaid
             if (!isPasswordOK(machinePassword))
             {
               if (Program.Hidden)
-                ShowWindow(handle, SW_SHOW);
+                ShowWindow(mainWindowHandle, SW_SHOW);
 
               string passwordValue;
               while (!isPasswordOK(passwordValue = passwordPrompt()))
               {
-                reportWeakPassword(passwordValue);
+                reportWeakPassword();
               }
               configuration["Service"]["sMachinePassword"] = passwordValue;
               promptShown = true;
               machinePassword = configuration["Service"]["sMachinePassword"];
 
               if (Program.Hidden)
-                ShowWindow(handle, SW_HIDE);
+                ShowWindow(mainWindowHandle, SW_HIDE);
             }
           }
         }
@@ -485,214 +472,6 @@ namespace SimpleMaid
     }
 
 
-    private static void exit()
-    {
-      Thread.Sleep(Variables.GeneralCloseDelay);
-      Environment.Exit(0);
-    }
-
-    private static string createMachine()
-    {
-      return Guid.NewGuid().ToString();
-    }
-
-    private static void configureMachine()
-    {
-      int valueLength = machine.Length + 1; // Variables.MachinesDelimiter
-      int realValueLimit = (int) Math.Floor(Variables.IndividualValueLimit / valueLength) * valueLength;
-
-      int listIndex = -1;
-      string currentList;
-      do
-      {
-        listIndex++;
-        currentList = GetUntilGet($"machines{listIndex}");
-        if (currentList.Contains(machine))
-        {
-          return;
-        }
-      } while (currentList.Length >= realValueLimit);
-
-      string machines = currentList;
-
-      SetUntilSet($"machines{listIndex}", $"{machines}{machine}{Variables.MachinesDelimiter}");
-    }
-
-    private static bool isNameOK(string name)
-    {
-      Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
-      return Guid.TryParse(name, out temp);
-    }
-
-    private static bool isPasswordOK(string password)
-    {
-      var strength = CheckStrength(password);
-
-      Program.State = $"{resources.MainWindowTitle} [{nameof(PasswordStrength)}: {strength}]";
-
-      return (strength >= Variables.MinimalPasswordStrength);
-    }
-
-    private static string passwordPrompt()
-    {
-      return UnsecurePasswordPrompt(resources.PasswordEnterTip);
-    }
-
-    // TODO: Get filename from Response.Header
-    private static string urlToFileName(string url)
-    {
-      return Uri.UnescapeDataString(url.Substring(url.LastIndexOf('/') + 1));
-    }
-
-    // TODO: Implement adequate decoding
-    private static string decodeEncodedNonAsciiCharacters(string value)
-    {
-      return Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
-        ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString());
-    }
-
-    private static void resetConsoleColor()
-    {
-      if (runningWindows)
-      {
-        Console.BackgroundColor = ConsoleColor.Black;
-      }
-      else
-      {
-        Console.ResetColor();
-      }
-    }
-
-    #region Reports
-    private static void reportWeakPassword(string pas)
-    {
-      string middlePractical = "| " + resources.PasswordWeakHint;
-      string middle = middlePractical + " |";
-      middle = middlePractical + Line.GetFilled(' ').Remove(0, middle.Length) + " |";
-
-      Console.Write("#" + Line.GetFilled('-').Remove(0, 2) + "#");
-      Console.Write(middle);
-      Console.Write("#" + Line.GetFilled('-').Remove(0, 2) + "#");
-      Console.CursorVisible = false;
-
-      pas = null;
-      Thread.Sleep(Variables.PasswordWeakDelay);
-
-      Console.CursorVisible = true;
-    }
-
-    private static void reportGeneralError(string msg)
-    {
-      Console.BackgroundColor = ConsoleColor.Blue;
-      Console.ForegroundColor = ConsoleColor.White;
-      Console.WriteLine(msg + "\n");
-
-      if (Program.Hidden)
-      {
-        ShowWindow(handle, SW_SHOW);
-        Console.Beep();
-        Thread.Sleep(Variables.GeneralCloseDelay);
-        ShowWindow(handle, SW_HIDE);
-      }
-    }
-
-    private static void reportWebError()
-    {
-      resetConsoleColor();
-      Console.ForegroundColor = ConsoleColor.DarkYellow;
-      Console.WriteLine(resources.WebErrorMessage + "\n");
-    }
-
-    private static void reportPastSelf()
-    {
-      resetConsoleColor();
-      Console.ForegroundColor = ConsoleColor.DarkMagenta;
-      Console.WriteLine(resources.PastSins + "\n");
-    }
-
-    private static void reportThreadStart(string msg)
-    {
-      resetConsoleColor();
-      Console.ForegroundColor = ConsoleColor.Cyan;
-      Console.WriteLine(msg + "\n");
-
-      if (resources.CommandStart == msg)
-      {
-        Console.Beep();
-      }
-    }
-
-    private static void reportThreadStop(string msg)
-    {
-      resetConsoleColor();
-      Console.ForegroundColor = ConsoleColor.Red;
-      Console.WriteLine(msg + "\n");
-
-      if (resources.CommandStop == msg)
-      {
-        Console.Beep();
-      }
-    }
-    #endregion
-
-    private static void openChatWindow()
-    {
-      busyChatWise = true;
-
-      ChatboxWindow = new frmChatWindow();
-      ChatboxWindow.ShowDialog();
-
-      // ! code below only executes after ChatboxWindow is closed
-
-      ChatboxExit = false;
-
-      busyChatWise = false;
-
-      SetUntilSet($"commands.{machine}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
-    }
-
-    private static void closeChatWindow()
-    {
-      busyChatWise = false;
-
-      ChatboxExit = true;
-    }
-
-    private static string executeCommand(string command, ConsoleTypes console = ConsoleTypes.None)
-    {
-      if (ConsoleTypes.None == console)
-      {
-        return runningWindows ? ExecuteCommand(command, ConsoleTypes.CMD) : ExecuteCommand(command, ConsoleTypes.Bash);
-      }
-      else
-      {
-        return ExecuteCommand(command, console);
-      }
-    }
-
-
-    private static void resurrectDeadThreads()
-    {
-      if (connectionThread != null && !connectionThread.IsAlive)
-      {
-        connectionThread = new Thread(handleConnection);
-        connectionThread.IsBackground = true;
-        connectionThread.Start();
-      }
-      if (busyCommandWise && commandThread != null && !commandThread.IsAlive)
-      {
-        commandThread = new Thread(awaitCommands);
-        commandThread.IsBackground = true;
-        commandThread.Start();
-      }
-      if (busyChatWise && chatThread != null && !chatThread.IsAlive)
-      {
-        chatThread = new Thread(serveMessages);
-        chatThread.IsBackground = true;
-        chatThread.Start();
-      }
-    }
-
     private static void sendMachineTime()
     {
       reportThreadStart(resources.TimeStart);
@@ -726,63 +505,13 @@ namespace SimpleMaid
           busyCommandWise = !busyCommandWise;
           SetUntilSet(machine, String.Empty);
 
-          if (busyCommandWise && commandThread != null && !commandThread.IsAlive)
-          {
-            commandThread = new Thread(awaitCommands);
-            commandThread.IsBackground = true;
-            commandThread.Start();
-          }
+          resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
         }
 
         Thread.Sleep(Variables.GeneralDelay);
       }
 
       reportThreadStop(resources.ConnectionStop);
-    }
-
-    // TODO: Resolve colission - user and support sending messages simultaneously
-    private static void serveMessages()
-    {
-      reportThreadStart(resources.ChatStart);
-
-      string ans = Variables.AnswerPrefix;
-      char sep = Variables.CommandsSeparator;
-
-      string remoteMessage = null;
-      string previousRemoteMessage = null;
-
-      while (busyChatWise && internetAlive)
-      {
-        if (remoteMessage != null)
-        {
-          Thread.Sleep(Variables.GeneralDelay);
-        }
-
-        remoteMessage = GetUntilGet("messages." + machine);
-
-        if (!String.IsNullOrWhiteSpace(UserChatMessage))
-        {
-          SetUntilSet("messages." + machine, ans + UserChatMessage);
-          UserChatMessage = null;
-        }
-
-        if (remoteMessage == previousRemoteMessage || String.Empty == remoteMessage || remoteMessage.StartsWith(ans))
-        {
-          continue;
-        }
-
-        previousRemoteMessage = remoteMessage;
-
-        // TODO: частный случай m, ещё две то есть
-        // TODO: ChatCommand = message_aprts[1];
-        #region Parsing message
-        string[] messageParts = remoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
-
-        SupportChatMessage = messageParts[0];
-        #endregion
-      }
-
-      reportThreadStop(resources.ChatStop);
     }
 
     private static void awaitCommands()
@@ -897,155 +626,49 @@ namespace SimpleMaid
       reportThreadStop(resources.CommandStop);
     }
 
-
-    private static void exitCommand()
+    // TODO: Resolve colission - user and support sending messages simultaneously
+    private static void serveMessages()
     {
-      Environment.Exit(0);
-    }
+      reportThreadStart(resources.ChatStart);
 
-    private static string hideCommand()
-    {
-      if (Program.Hidden)
+      string ans = Variables.AnswerPrefix;
+      char sep = Variables.CommandsSeparator;
+
+      string remoteMessage = null;
+      string previousRemoteMessage = null;
+
+      while (busyChatWise && internetAlive)
       {
-        return Variables.GeneralOKMsg;
-      }
-
-      ShowWindow(handle, SW_HIDE);
-      Program.Hidden = true;
-
-      return Variables.GeneralOKMsg;
-    }
-
-    private static string showCommand()
-    {
-      if (!Program.Hidden)
-      {
-        return Variables.GeneralOKMsg;
-      }
-        
-
-      ShowWindow(handle, SW_SHOW);
-      Program.Hidden = false;
-
-      return Variables.GeneralOKMsg;
-    }
-
-    private static string downloadCommand(string[] commandParts)
-    {
-      if (commandParts.Length < 2)
-      {
-        return Variables.IncompleteCommandErrMsg;
-      }
-
-      string downloadDirectoryPath = null;
-      string downloadFileName = null;
-
-      bool quickDownload;
-      if ((quickDownload = (commandParts.Length == 2)) || Variables.KeywordDefault == commandParts[2])
-      {
-        downloadDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        downloadFileName = urlToFileName(commandParts[1]);
-      }
-      else if (commandParts.Length >= 3)
-      {
-        string ev = Variables.EvaluateCmdVariable;
-        char evd = char.Parse(Variables.EvaluateCmdVariableEnd);
-
-        if (commandParts[2].Contains(ev))
+        if (remoteMessage != null)
         {
-          var indexesOfCmdVariables = commandParts[2].AllIndexesOf(ev);
-
-          int diff = 0;
-          foreach (int index in indexesOfCmdVariables)
-          {
-            string variable = commandParts[2].Pacmanise(index + ev.Length - diff, evd);
-
-            if (variable.Contains(" "))
-            {
-              reportGeneralError(resources.InjectionErrorMessage);
-              return null;
-            }
-
-            string unevaluatedVariable = ev + variable + evd;
-            string evaluatedVariable = executeCommand($"echo {variable}");
-
-            commandParts[2] = commandParts[2].Replace(unevaluatedVariable, evaluatedVariable);
-
-            diff += unevaluatedVariable.Length - evaluatedVariable.Length;
-          }
+          Thread.Sleep(Variables.GeneralDelay);
         }
 
-        downloadDirectoryPath = Path.GetDirectoryName(commandParts[2]);
-        downloadFileName = Path.GetFileName(commandParts[2]);
-      }
+        remoteMessage = GetUntilGet("messages." + machine);
 
-      Directory.CreateDirectory(downloadDirectoryPath);
-
-      // TODO: Use my FTP
-      string downloadFilePath = Path.Combine(downloadDirectoryPath, downloadFileName);
-      using (var wc = new WebClient())
-      {
-        try
+        if (!String.IsNullOrWhiteSpace(UserChatMessage))
         {
-          wc.DownloadFile(new Uri(commandParts[1]), downloadFilePath);
-        }
-        catch (Exception exc)
-        {
-          return exc.Message;
-        }
-      }
-
-      if (quickDownload)
-      {
-        Process.Start(downloadDirectoryPath);
-      }
-        
-
-      return downloadFilePath;
-    }
-
-    private static string messageCommand(string[] commandParts)
-    {
-      if (null == ChatboxWindow || ChatboxWindow.IsDisposed)
-      {
-        var chatboxThread = new Thread(openChatWindow);
-        chatboxThread.IsBackground = true;
-        chatboxThread.Start();
-
-        while (null == ChatboxWindow || !ChatboxWindow.Visible)
-        {
-          Thread.Sleep(1000);
+          SetUntilSet("messages." + machine, ans + UserChatMessage);
+          UserChatMessage = null;
         }
 
-        if (busyChatWise && chatThread != null && !chatThread.IsAlive)
+        if (remoteMessage == previousRemoteMessage || String.Empty == remoteMessage || remoteMessage.StartsWith(ans))
         {
-          chatThread = new Thread(serveMessages);
-          chatThread.IsBackground = true;
-          chatThread.Start();
+          continue;
         }
-      }
-      else
-      {
-        closeChatWindow();
-      }
 
-      return $"{Variables.MessageCommand},{ChatboxWindow.Visible}";
-    }
+        previousRemoteMessage = remoteMessage;
 
-    private static string powershellCommand(string[] commandParts)
-    {
-      if (commandParts.Length < 2)
-      {
-        return Variables.IncompleteCommandErrMsg;
+        // TODO: частный случай m, ещё две то есть
+        // TODO: ChatCommand = message_aprts[1];
+        #region Parsing message
+        string[] messageParts = remoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
+
+        SupportChatMessage = messageParts[0];
+        #endregion
       }
 
-      for (int i = 2; i < commandParts.Length; ++i)
-      {
-        commandParts[1] += "; " + commandParts[i];
-      }
-      commandParts[1] = commandParts[1].Replace(@"""", @"\""");
-
-      return executeCommand(commandParts[1], ConsoleTypes.Powershell);
+      reportThreadStop(resources.ChatStop);
     }
   }
 }
