@@ -151,7 +151,7 @@ namespace SimpleMaid
 
     private static void SetUntilSet(string tag, string value)
     {
-      while (resources.WebErrorMessage == Set(tag, value))
+      while (internetAlive && resources.WebErrorMessage == Set(tag, value))
       {
         Thread.Sleep(Variables.GeneralDelay);
       }
@@ -159,9 +159,9 @@ namespace SimpleMaid
 
     private static string GetUntilGet(string tag)
     {
-      string value;
+      string value = resources.WebErrorMessage;
 
-      while (resources.WebErrorMessage == (value = Get(tag)))
+      while (internetAlive && resources.WebErrorMessage == (value = Get(tag)))
       {
         Thread.Sleep(Variables.GeneralDelay);
       }
@@ -413,10 +413,9 @@ namespace SimpleMaid
         {
           if (!internetAlive)
           {
+            internetAlive = true;
             resurrectDeadThreads();
           }
-
-          internetAlive = true;
         }
 
         Thread.Sleep(Variables.GeneralDelay - now.Millisecond);
