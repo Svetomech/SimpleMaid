@@ -35,9 +35,8 @@ namespace SimpleMaid
     private static readonly bool runningWindows = (RunningPlatform() == Platform.Windows);
     private static volatile bool internetAlive = true;
 
-    // TODO: Get rid of these two
-    private static volatile string machine;
-    private static volatile string pass;
+    private static volatile string machineName;
+    private static volatile string machinePassword;
 
     internal static frmChatWindow ChatboxWindow = null;
     internal static volatile bool ChatboxExit = false;
@@ -289,8 +288,8 @@ namespace SimpleMaid
       IniData configuration;
 
       bool   machineConfigured = false;
-      string machineName       = createMachine();
-      string machinePassword   = passArg;
+             machineName       = createMachine();
+             machinePassword   = passArg;
       bool   autoRun           = autorunArgFound;
 
       bool firstRun;
@@ -364,10 +363,6 @@ namespace SimpleMaid
         config_parser.WriteFile(mainConfigFile.FullName, configuration, Encoding.UTF8);
       }
 
-      // TODO: Get rid of these
-      machine = machineName;
-      pass = machinePassword;
-
 
       if (runningWindows)
       {
@@ -413,7 +408,7 @@ namespace SimpleMaid
       {
         var now = DateTime.Now;
 
-        if (resources.WebErrorMessage != Set($"time.{machine}" /* PUN NOT INTENDED */,
+        if (resources.WebErrorMessage != Set($"time.{machineName}" /* PUN NOT INTENDED */,
           $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
           if (!internetAlive)
@@ -434,10 +429,10 @@ namespace SimpleMaid
 
       while (busyConnectionWise && internetAlive)
       {
-        if (Get(machine) == pass)
+        if (Get(machineName) == machinePassword)
         {
           busyCommandWise = !busyCommandWise;
-          SetUntilSet(machine, String.Empty);
+          SetUntilSet(machineName, String.Empty);
 
           resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
         }
@@ -464,7 +459,7 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        remoteCommand = GetUntilGet("commands." + machine);
+        remoteCommand = GetUntilGet("commands." + machineName);
 
         if (String.Empty == remoteCommand || remoteCommand.StartsWith(ans))
         {
@@ -482,28 +477,28 @@ namespace SimpleMaid
           switch (specialCommandIdentifier)
           {
             case Variables.QuitCommand:
-              SetUntilSet("commands." + machine, ans + Variables.GeneralOKMsg);
+              SetUntilSet("commands." + machineName, ans + Variables.GeneralOKMsg);
               exitCommand();
               break;
 
             case Variables.HideCommand:
-              SetUntilSet("commands." + machine, ans + hideCommand());
+              SetUntilSet("commands." + machineName, ans + hideCommand());
               break;
 
             case Variables.ShowCommand:
-              SetUntilSet("commands." + machine, ans + showCommand());
+              SetUntilSet("commands." + machineName, ans + showCommand());
               break;
 
             case Variables.DownloadCommand:
-              SetUntilSet("commands." + machine, ans + downloadCommand(commandParts));
+              SetUntilSet("commands." + machineName, ans + downloadCommand(commandParts));
               break;
 
             case Variables.MessageCommand:
-              SetUntilSet("commands." + machine, ans + messageCommand(commandParts));
+              SetUntilSet("commands." + machineName, ans + messageCommand(commandParts));
               break;
 
             case Variables.PowershellCommand:
-              SetUntilSet("commands." + machine, ans + powershellCommand(commandParts));
+              SetUntilSet("commands." + machineName, ans + powershellCommand(commandParts));
               break;
 
             case Variables.RepeatCommand:
@@ -550,7 +545,7 @@ namespace SimpleMaid
         }
         else
         {
-          SetUntilSet("commands." + machine, ans + executeCommand(commandParts[0]));
+          SetUntilSet("commands." + machineName, ans + executeCommand(commandParts[0]));
         }
       }
 
@@ -575,11 +570,11 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        remoteMessage = GetUntilGet("messages." + machine);
+        remoteMessage = GetUntilGet("messages." + machineName);
 
         if (!String.IsNullOrWhiteSpace(UserChatMessage))
         {
-          SetUntilSet("messages." + machine, ans + UserChatMessage);
+          SetUntilSet("messages." + machineName, ans + UserChatMessage);
           UserChatMessage = null;
         }
 

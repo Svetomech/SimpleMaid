@@ -25,7 +25,7 @@ namespace SimpleMaid
 
     private static void configureMachine()
     {
-      int valueLength = machine.Length + 1; // Variables.MachinesDelimiter
+      int valueLength = machineName.Length + 1; // Variables.MachinesDelimiter
       int realValueLimit = (int)Math.Floor(Variables.IndividualValueLimit / valueLength) * valueLength;
 
       int listIndex = -1;
@@ -34,7 +34,7 @@ namespace SimpleMaid
       {
         listIndex++;
         currentList = GetUntilGet($"machines{listIndex}");
-        if (currentList.Contains(machine))
+        if (currentList.Contains(machineName))
         {
           return;
         }
@@ -42,7 +42,7 @@ namespace SimpleMaid
 
       string machines = currentList;
 
-      SetUntilSet($"machines{listIndex}", $"{machines}{machine}{Variables.MachinesDelimiter}");
+      SetUntilSet($"machines{listIndex}", $"{machines}{machineName}{Variables.MachinesDelimiter}");
     }
 
     private static bool isNameOK(string name)
@@ -161,7 +161,7 @@ namespace SimpleMaid
 
       busyChatWise = false;
 
-      SetUntilSet($"commands.{machine}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
+      SetUntilSet($"commands.{machineName}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
     }
 
     private static void closeChatWindow()
