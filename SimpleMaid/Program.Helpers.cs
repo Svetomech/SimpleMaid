@@ -113,9 +113,9 @@ namespace SimpleMaid
 
     private static void resurrectDeadThreads()
     {
-      Thread[] threads = { connectionThread, commandThread, chatThread };
-      Action[] starts  = { handleConnection, awaitCommands, serveMessages };
-      bool[]   flags   = { true, busyCommandWise, busyChatWise };
+      Thread[] threads = { connectionThread,   commandThread,   chatThread };
+      Action[] starts  = { handleConnection,   awaitCommands,   serveMessages };
+      bool[]   flags   = { busyConnectionWise, busyCommandWise, busyChatWise };
 
       for (int i = 0; i < threads.Length; ++i)
       {

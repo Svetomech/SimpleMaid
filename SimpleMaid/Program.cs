@@ -28,6 +28,7 @@ namespace SimpleMaid
     private static Thread connectionThread;
     private static Thread commandThread;
     private static Thread chatThread;
+    private static volatile bool busyConnectionWise = true;
     private static volatile bool busyCommandWise = false;
     private static volatile bool busyChatWise = false;
 
@@ -498,7 +499,7 @@ namespace SimpleMaid
     {
       reportThreadStart(resources.ConnectionStart);
 
-      while (internetAlive)
+      while (busyConnectionWise && internetAlive)
       {
         if (Get(machine) == pass)
         {
