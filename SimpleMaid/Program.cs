@@ -185,8 +185,10 @@ namespace SimpleMaid
       }
       #endregion
 
-      desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
-      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName, (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
+      desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
+        Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
+      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName,
+        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
 
       #region Console arguments
       bool rogueArgFound = false;
