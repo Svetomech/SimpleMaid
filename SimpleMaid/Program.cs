@@ -171,27 +171,26 @@ namespace SimpleMaid
     }
 
 
-    // TODO: Remove regions, refactor
     [STAThread]
     private static void Main(string[] args)
     {
       System.Windows.Forms.Application.EnableVisualStyles();
       Console.Clear();
 
-      #region Exit (if running as admin/root)
+
       if (IsElevated())
       {
         reportGeneralError(resources.AdminErrorMessage);
         exit();
       }
-      #endregion
+
 
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
         Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
       mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName,
         (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
 
-      #region Console arguments
+
       bool rogueArgFound = false;
       bool autorunArgFound = false;
       bool passArgFound = false; // <-- only need it for clarity
@@ -235,9 +234,8 @@ namespace SimpleMaid
           }
         }
       }
-      #endregion
 
-      #region Hide window (if autorun)
+
       mainWindowHandle = GetConsoleWindow();
       bool inDesiredDir = desiredAppDirectory.IsEqualTo(Application.StartupPath);
       if (inDesiredDir || rogueArgFound)
@@ -245,22 +243,20 @@ namespace SimpleMaid
         ShowWindow(mainWindowHandle, SW_HIDE);
         Program.Hidden = true;
       }
-      #endregion
 
-      // Localization
+
       CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg);
 
+
       // TODO: Move so it happens AFTER startup directory management
-      #region Exit (if already running)
       singleInstance = new Mutex(false, "Local\\" + Application.AssemblyGuid);
       if (!singleInstance.WaitOne(0, false))
       {
         reportPastSelf();
         exit();
       }
-      #endregion
 
-      #region Startup directory management
+
       if (!inDesiredDir)
       {
         var svtFolder = new DirectoryInfo(ConfigurationManager.AppSettings["SvtFolderName"]);
@@ -287,7 +283,6 @@ namespace SimpleMaid
           // 4. exit
         }
       }
-      #endregion
 
 
       var config_parser = new FileIniDataParser();
@@ -357,21 +352,6 @@ namespace SimpleMaid
         }
       }
 
-
-      // TODO: Get rid of these
-      machine = machineName;
-      pass = machinePassword;
-
-      // Enable/disable autorun
-      if (runningWindows)
-      {
-        if (autoRun)
-          SwitchAutorun(Application.ProductName, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(Application.ExecutablePath)));
-        else
-          SwitchAutorun(Application.ProductName);
-      }
-
-      #region Update INI file
       if (firstRun || !machineConfigured || autorunArgFound || passArgFound || promptShown)
       {
         if (!machineConfigured)
@@ -383,32 +363,43 @@ namespace SimpleMaid
 
         config_parser.WriteFile(mainConfigFile.FullName, configuration, Encoding.UTF8);
       }
-      #endregion
 
-      #region 1 - Time Thread
+      // TODO: Get rid of these
+      machine = machineName;
+      pass = machinePassword;
+
+
+      if (runningWindows)
+      {
+        if (autoRun)
+        {
+          SwitchAutorun(Application.ProductName, Path.Combine(desiredAppDirectory.FullName,
+            Path.GetFileName(Application.ExecutablePath)));
+        }
+        else
+        {
+          SwitchAutorun(Application.ProductName);
+        }
+      }
+
+
       var timeThread = new Thread(sendMachineTime);
       timeThread.IsBackground = true;
       timeThread.Start();
-      #endregion
       Thread.Sleep(1000);
 
-      #region 2 - Connection Thread
       connectionThread = new Thread(handleConnection);
       connectionThread.IsBackground = true;
       connectionThread.Start();
-      #endregion
 
-      #region 3 - Command Thread
       commandThread = new Thread(awaitCommands);
       commandThread.IsBackground = true;
       // Starts in a different place
-      #endregion
 
-      #region 4 - Chat Thread
       chatThread = new Thread(serveMessages);
       chatThread.IsBackground = true;
       // Starts in a different place
-      #endregion
+
 
       timeThread.Join();
     }
