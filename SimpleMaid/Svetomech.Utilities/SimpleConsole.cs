@@ -56,7 +56,7 @@ namespace Svetomech.Utilities
     }
 
     /* HACK (to get the actual value, not an object): new NetworkCredential(String.Empty, PasswordPrompt("Enter a password: ")).Password;
-         N.B.! It's really dirty, kills the purpose of using a SecureString and doesn't even work in Mono. Better use Unsecure method. */
+         N.B.! It's really dirty, kills the purpose of using a SecureString and doesn't even work in Mono. Better use Insecure method. */
     public static SecureString PasswordPrompt(string hintMessage)
     {
       var pass = new SecureString();
@@ -66,7 +66,7 @@ namespace Svetomech.Utilities
       return pass;
     }
 
-    public static string UnsecurePasswordPrompt(string hintMessage)
+    public static string InsecurePasswordPrompt(string hintMessage)
     {
       string pass = String.Empty;
 

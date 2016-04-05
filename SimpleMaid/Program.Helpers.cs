@@ -62,7 +62,7 @@ namespace SimpleMaid
 
     private static string passwordPrompt()
     {
-      return UnsecurePasswordPrompt(resources.PasswordEnterTip);
+      return InsecurePasswordPrompt(resources.PasswordEnterTip);
     }
 
     // TODO: Unite these two into validatePassword
