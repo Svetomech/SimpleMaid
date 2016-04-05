@@ -289,61 +289,37 @@ namespace SimpleMaid
       }
       #endregion
 
-      #region Necessary INI declarations
+
       var config_parser = new FileIniDataParser();
       IniData configuration;
-      #endregion
 
-      #region Settings to read
       bool   machineConfigured = false;
       string machineName       = createMachine();
       string machinePassword   = passArg;
       bool   autoRun           = autorunArgFound;
-      #endregion
 
-      #region Compose configuration file
       bool firstRun;
       bool promptShown = false;
       if (firstRun = !mainConfigFile.Exists)
       {
         configuration = new IniData();
-
         configuration.Sections.AddSection("Service");
+
 
         configuration["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
         configuration["Service"].AddKey("sMachineName", machineName);
-        #region configuration["Service"].AddKey("sMachinePassword", machinePassword);
-        if (!isPasswordOK(machinePassword))
-        {
-          if (Program.Hidden)
-            ShowWindow(mainWindowHandle, SW_SHOW);
 
-          string passwordValue;
-          while (!isPasswordOK(passwordValue = passwordPrompt()))
-          {
-            reportWeakPassword();
-          }
-          configuration["Service"].AddKey("sMachinePassword", passwordValue);
-          promptShown = true;
+        validateMemoryPassword(ref configuration, ref machinePassword, ref promptShown);
 
-          if (Program.Hidden)
-            ShowWindow(mainWindowHandle, SW_HIDE);
-        }
-        else
-        {
-          configuration["Service"].AddKey("sMachinePassword", machinePassword);
-        }
-        #endregion
-        #region configuration["Service"].AddKey("bAutoRun", autoRun.ToString());
         configuration["Service"].AddKey("bAutoRun", autoRun.ToString());
-        #endregion
       }
       else
       {
         configuration = config_parser.ReadFile(mainConfigFile.FullName, Encoding.UTF8);
 
+
         machineConfigured = bool.Parse(configuration["Service"]["bMachineConfigured"]);
-        #region machineName = configuration["Service"]["sMachineName"];
+
         if (isNameOK(configuration["Service"]["sMachineName"]))
         {
           machineName = configuration["Service"]["sMachineName"];
@@ -353,72 +329,34 @@ namespace SimpleMaid
           configuration["Service"]["sMachineName"] = machineName;
           machineConfigured = false;
         }
-        #endregion
-        #region machinePassword = configuration["Service"]["sMachinePassword"];
-        machinePassword = configuration["Service"]["sMachinePassword"];
 
         if (!passArgFound)
         {
-          if (!isPasswordOK(machinePassword))
-          {
-            if (Program.Hidden)
-              ShowWindow(mainWindowHandle, SW_SHOW);
-
-            string passwordValue;
-            while (!isPasswordOK(passwordValue = passwordPrompt()))
-            {
-              reportWeakPassword();
-            }
-            configuration["Service"]["sMachinePassword"] = passwordValue;
-            promptShown = true;
-            machinePassword = configuration["Service"]["sMachinePassword"];
-
-            if (Program.Hidden)
-              ShowWindow(mainWindowHandle, SW_HIDE);
-          }
+          validateConfigPassword(ref configuration, ref machinePassword, ref promptShown);
         }
         else
         {
-          if (isPasswordOK(passArg))
+          if (isPasswordOK(machinePassword))
           {
-            configuration["Service"]["sMachinePassword"] = passArg;
-            machinePassword = configuration["Service"]["sMachinePassword"];
+            configuration["Service"]["sMachinePassword"] = machinePassword;
           }
           else
           {
-            if (!isPasswordOK(machinePassword))
-            {
-              if (Program.Hidden)
-                ShowWindow(mainWindowHandle, SW_SHOW);
-
-              string passwordValue;
-              while (!isPasswordOK(passwordValue = passwordPrompt()))
-              {
-                reportWeakPassword();
-              }
-              configuration["Service"]["sMachinePassword"] = passwordValue;
-              promptShown = true;
-              machinePassword = configuration["Service"]["sMachinePassword"];
-
-              if (Program.Hidden)
-                ShowWindow(mainWindowHandle, SW_HIDE);
-            }
+            validateConfigPassword(ref configuration, ref machinePassword, ref promptShown);
           }
         }
-        #endregion
-        #region autoRun = bool.Parse(configuration["Service"]["bAutoRun"])
+
         if (!autorunArgFound)
         {
           autoRun = bool.Parse(configuration["Service"]["bAutoRun"]);
         }
         else
         {
-          configuration["Service"]["bAutoRun"] = (!bool.Parse(configuration["Service"]["bAutoRun"])).ToString();
-          autoRun = bool.Parse(configuration["Service"]["bAutoRun"]);
+          autoRun = !bool.Parse(configuration["Service"]["bAutoRun"]);
+          configuration["Service"]["bAutoRun"] = autoRun.ToString();
         }
-        #endregion
       }
-      #endregion
+
 
       // TODO: Get rid of these
       machine = machineName;

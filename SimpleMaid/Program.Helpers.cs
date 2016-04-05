@@ -1,10 +1,12 @@
-﻿using Svetomech.Utilities;
+﻿using IniParser.Model;
+using Svetomech.Utilities;
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using static Svetomech.Utilities.PasswordStrength;
 using static Svetomech.Utilities.SimpleConsole;
+using static Svetomech.Utilities.NativeMethods;
 
 namespace SimpleMaid
 {
@@ -61,6 +63,64 @@ namespace SimpleMaid
     private static string passwordPrompt()
     {
       return UnsecurePasswordPrompt(resources.PasswordEnterTip);
+    }
+
+    private static void validateMemoryPassword(ref IniData configuration, ref string machinePassword,
+      ref bool promptShown)
+    {
+      if (isPasswordOK(machinePassword))
+      {
+        configuration["Service"].AddKey("sMachinePassword", machinePassword);
+      }
+      else
+      {
+        if (Program.Hidden)
+        {
+          ShowWindow(mainWindowHandle, SW_SHOW);
+        }
+
+        while (!isPasswordOK(machinePassword = passwordPrompt()))
+        {
+          reportWeakPassword();
+        }
+        promptShown = true;
+
+        configuration["Service"].AddKey("sMachinePassword", machinePassword);
+
+        if (Program.Hidden)
+        {
+          ShowWindow(mainWindowHandle, SW_HIDE);
+        }
+      }
+    }
+
+    private static void validateConfigPassword(ref IniData configuration, ref string machinePassword,
+      ref bool promptShown)
+    {
+      if (isPasswordOK(configuration["Service"]["sMachinePassword"]))
+      {
+        machinePassword = configuration["Service"]["sMachinePassword"];
+      }
+      else
+      {
+        if (Program.Hidden)
+        {
+          ShowWindow(mainWindowHandle, SW_SHOW);
+        }
+
+        while (!isPasswordOK(machinePassword = passwordPrompt()))
+        {
+          reportWeakPassword();
+        }
+        promptShown = true;
+
+        configuration["Service"]["sMachinePassword"] = machinePassword;
+
+        if (Program.Hidden)
+        {
+          ShowWindow(mainWindowHandle, SW_HIDE);
+        }
+      }
     }
 
     private static void resetConsoleColor()
