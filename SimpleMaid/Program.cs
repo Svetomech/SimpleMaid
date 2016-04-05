@@ -93,7 +93,7 @@ namespace SimpleMaid
         return resources.WebErrorMessage;
       }
 
-      Console.BackgroundColor = ConsoleColor.Black;
+      resetConsoleColor();
       Console.ForegroundColor = ConsoleColor.Gray;
       Console.WriteLine($"SET  {tag}  {value}\n");
 
@@ -155,7 +155,7 @@ namespace SimpleMaid
       value = value.Replace(@"\\", @"\");
       value = WebUtility.HtmlDecode(value);
 
-      Console.BackgroundColor = ConsoleColor.Black;
+      resetConsoleColor();
       Console.ForegroundColor = ConsoleColor.DarkGreen;
       Console.WriteLine($"GET  {tag}  {value}\n");
 
@@ -535,7 +535,7 @@ namespace SimpleMaid
 
     private static string passwordPrompt()
     {
-      return new NetworkCredential(String.Empty, PasswordPrompt(resources.PasswordEnterTip)).Password;
+      return UnsecurePasswordPrompt(resources.PasswordEnterTip);
     }
 
     // TODO: Get filename from Response.Header
@@ -549,6 +549,18 @@ namespace SimpleMaid
     {
       return Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
         ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString());
+    }
+
+    private static void resetConsoleColor()
+    {
+      if (runningWindows)
+      {
+        Console.BackgroundColor = ConsoleColor.Black;
+      }
+      else
+      {
+        Console.ResetColor();
+      }
     }
 
     #region Reports
@@ -586,21 +598,21 @@ namespace SimpleMaid
 
     private static void reportWebError()
     {
-      Console.BackgroundColor = ConsoleColor.Black;
+      resetConsoleColor();
       Console.ForegroundColor = ConsoleColor.DarkYellow;
       Console.WriteLine(resources.WebErrorMessage + "\n");
     }
 
     private static void reportPastSelf()
     {
-      Console.BackgroundColor = ConsoleColor.Black;
+      resetConsoleColor();
       Console.ForegroundColor = ConsoleColor.DarkMagenta;
       Console.WriteLine(resources.PastSins + "\n");
     }
 
     private static void reportThreadStart(string msg)
     {
-      Console.BackgroundColor = ConsoleColor.Black;
+      resetConsoleColor();
       Console.ForegroundColor = ConsoleColor.Cyan;
       Console.WriteLine(msg + "\n");
 
@@ -612,7 +624,7 @@ namespace SimpleMaid
 
     private static void reportThreadStop(string msg)
     {
-      Console.BackgroundColor = ConsoleColor.Black;
+      resetConsoleColor();
       Console.ForegroundColor = ConsoleColor.Red;
       Console.WriteLine(msg + "\n");
 
