@@ -65,6 +65,7 @@ namespace SimpleMaid
       return UnsecurePasswordPrompt(resources.PasswordEnterTip);
     }
 
+    // TODO: Unite these two into validatePassword
     private static void validateMemoryPassword(ref IniData configuration, ref string machinePassword,
       ref bool promptShown)
     {
@@ -93,7 +94,6 @@ namespace SimpleMaid
         }
       }
     }
-
     private static void validateConfigPassword(ref IniData configuration, ref string machinePassword,
       ref bool promptShown)
     {
