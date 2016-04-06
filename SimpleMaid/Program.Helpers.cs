@@ -66,8 +66,7 @@ namespace SimpleMaid
     }
 
     // TODO: Unite these two into validatePassword
-    private static void validateMemoryPassword(ref IniData configuration, ref string machinePassword,
-      ref bool promptShown)
+    private static void validateMemoryPassword(ref IniData configuration, ref bool promptShown)
     {
       if (isPasswordOK(machinePassword))
       {
@@ -94,8 +93,7 @@ namespace SimpleMaid
         }
       }
     }
-    private static void validateConfigPassword(ref IniData configuration, ref string machinePassword,
-      ref bool promptShown)
+    private static void validateConfigPassword(ref IniData configuration, ref bool promptShown)
     {
       if (isPasswordOK(configuration["Service"]["sMachinePassword"]))
       {

@@ -304,7 +304,7 @@ namespace SimpleMaid
         configuration["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
         configuration["Service"].AddKey("sMachineName", machineName);
 
-        validateMemoryPassword(ref configuration, ref machinePassword, ref promptShown);
+        validateMemoryPassword(ref configuration, ref promptShown);
 
         configuration["Service"].AddKey("bAutoRun", autoRun.ToString());
       }
@@ -327,7 +327,7 @@ namespace SimpleMaid
 
         if (!passArgFound)
         {
-          validateConfigPassword(ref configuration, ref machinePassword, ref promptShown);
+          validateConfigPassword(ref configuration, ref promptShown);
         }
         else
         {
@@ -337,7 +337,7 @@ namespace SimpleMaid
           }
           else
           {
-            validateConfigPassword(ref configuration, ref machinePassword, ref promptShown);
+            validateConfigPassword(ref configuration, ref promptShown);
           }
         }
 
