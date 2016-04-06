@@ -15,7 +15,7 @@ namespace SimpleMaid
 
     internal const string PasswordArgument  = "--pass";     // SimpleMaid.exe --pass NewPassword
     internal const string AutorunArgument   = "--autorun";  // SimpleMaid.exe --autorun
-    internal const string LanguageArgument  = "--lang";     // SimpleMaid.exe --lang ru, SimpleMaid.exe --lang ru-RU
+    internal const string LanguageArgument  = "--lang";     // SimpleMaid.exe --lang ru
     internal const string RogueArgument     = "--rogue";    // SimpleMaid.exe --rogue
 
     internal const double IndividualValueLimit = 500; // (characters)
