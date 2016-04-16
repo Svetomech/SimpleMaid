@@ -22,6 +22,8 @@ namespace SimpleMaid
 
     private static DirectoryInfo desiredAppDirectory;
     private static FileInfo mainConfigFile;
+    private static FileIniDataParser mainConfigParser;
+    private static IniData mainConfigData;
     private static IntPtr mainWindowHandle;
     private static Mutex singleInstance;
 
@@ -285,8 +287,7 @@ namespace SimpleMaid
       }
 
 
-      var config_parser = new FileIniDataParser();
-      IniData configuration;
+      mainConfigParser = new FileIniDataParser();
 
       bool   machineConfigured = false;
              machineName       = createMachine();
@@ -297,58 +298,58 @@ namespace SimpleMaid
       bool promptShown = false;
       if (firstRun = !mainConfigFile.Exists)
       {
-        configuration = new IniData();
-        configuration.Sections.AddSection("Service");
+        mainConfigData = new IniData();
+        mainConfigData.Sections.AddSection("Service");
 
 
-        configuration["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
-        configuration["Service"].AddKey("sMachineName", machineName);
+        mainConfigData["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
+        mainConfigData["Service"].AddKey("sMachineName", machineName);
 
-        validateMemoryPassword(ref configuration, ref promptShown);
+        validateMemoryPassword(ref mainConfigData, ref promptShown);
 
-        configuration["Service"].AddKey("bAutoRun", autoRun.ToString());
+        mainConfigData["Service"].AddKey("bAutoRun", autoRun.ToString());
       }
       else
       {
-        configuration = config_parser.ReadFile(mainConfigFile.FullName, Encoding.UTF8);
+        mainConfigData = mainConfigParser.ReadFile(mainConfigFile.FullName, Encoding.UTF8);
 
 
-        machineConfigured = bool.Parse(configuration["Service"]["bMachineConfigured"]);
+        machineConfigured = bool.Parse(mainConfigData["Service"]["bMachineConfigured"]);
 
-        if (isNameOK(configuration["Service"]["sMachineName"]))
+        if (isNameOK(mainConfigData["Service"]["sMachineName"]))
         {
-          machineName = configuration["Service"]["sMachineName"];
+          machineName = mainConfigData["Service"]["sMachineName"];
         }
         else
         {
-          configuration["Service"]["sMachineName"] = machineName;
+          mainConfigData["Service"]["sMachineName"] = machineName;
           machineConfigured = false;
         }
 
         if (!passArgFound)
         {
-          validateConfigPassword(ref configuration, ref promptShown);
+          validateConfigPassword(ref mainConfigData, ref promptShown);
         }
         else
         {
           if (isPasswordOK(machinePassword))
           {
-            configuration["Service"]["sMachinePassword"] = machinePassword;
+            mainConfigData["Service"]["sMachinePassword"] = machinePassword;
           }
           else
           {
-            validateConfigPassword(ref configuration, ref promptShown);
+            validateConfigPassword(ref mainConfigData, ref promptShown);
           }
         }
 
         if (!autorunArgFound)
         {
-          autoRun = bool.Parse(configuration["Service"]["bAutoRun"]);
+          autoRun = bool.Parse(mainConfigData["Service"]["bAutoRun"]);
         }
         else
         {
-          autoRun = !bool.Parse(configuration["Service"]["bAutoRun"]);
-          configuration["Service"]["bAutoRun"] = autoRun.ToString();
+          autoRun = !bool.Parse(mainConfigData["Service"]["bAutoRun"]);
+          mainConfigData["Service"]["bAutoRun"] = autoRun.ToString();
         }
       }
 
@@ -358,10 +359,10 @@ namespace SimpleMaid
         {
           configureMachine();
           machineConfigured = true;
-          configuration["Service"]["bMachineConfigured"] = machineConfigured.ToString();
+          mainConfigData["Service"]["bMachineConfigured"] = machineConfigured.ToString();
         }
 
-        config_parser.WriteFile(mainConfigFile.FullName, configuration, Encoding.UTF8);
+        mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
       }
 
 
@@ -437,6 +438,15 @@ namespace SimpleMaid
           resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
         }
 
+        if (!String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]))
+        {
+          busyCommandWise = !busyCommandWise;
+
+          // if
+          resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
+          // else
+        }
+
         Thread.Sleep(Variables.GeneralDelay);
       }
 
@@ -505,21 +515,24 @@ namespace SimpleMaid
               if (commandParts.Length < 2)
                 goto default;
 
-              string[] command_parts_fixed = new string[commandParts.Length - 1];
+              mainConfigData["Service"].AddKey("sLogonCommand", remoteCommand);
+              mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
+
+              string[] commandPartsFixed = new string[commandParts.Length - 1];
               for (int i = 1; i < commandParts.Length; ++i)
               {
-                command_parts_fixed[i - 1] = commandParts[i];
+                commandPartsFixed[i - 1] = commandParts[i];
               }
 
-              bool isRepeatCommandSpecial = ($"{commandParts[0]}{sep}{command_parts_fixed[0]}" != remoteCommand);
+              bool isRepeatCommandSpecial = ($"{commandParts[0]}{sep}{commandPartsFixed[0]}" != remoteCommand);
 
               if (!isRepeatCommandSpecial)
               {
-                executeCommand(command_parts_fixed[0]);
+                executeCommand(commandPartsFixed[0]);
               }
               else
               {
-                char specialRepeatCommandIdentifier = command_parts_fixed[0].ToCharArray()[0];
+                char specialRepeatCommandIdentifier = commandPartsFixed[0].ToCharArray()[0];
 
                 switch (specialRepeatCommandIdentifier)
                 {
@@ -528,7 +541,7 @@ namespace SimpleMaid
                     break;
 
                   case Variables.PowershellCommand:
-                    powershellCommand(command_parts_fixed);
+                    powershellCommand(commandPartsFixed);
                     break;
 
                   default:
