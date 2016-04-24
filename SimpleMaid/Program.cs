@@ -430,21 +430,20 @@ namespace SimpleMaid
 
       while (busyConnectionWise && internetAlive)
       {
-        if (Get(machineName) == machinePassword)
+        bool logonManually = Get(machineName) == machinePassword;
+
+        if (logonManually || !String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]))
         {
+          if (logonManually)
+          {
+            mainConfigData["Service"]["sLogonCommand"] = String.Empty;
+            mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
+          }
+
           busyCommandWise = !busyCommandWise;
           SetUntilSet(machineName, String.Empty);
 
           resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
-        }
-
-        if (!String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]))
-        {
-          busyCommandWise = !busyCommandWise;
-
-          // if
-          resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
-          // else
         }
 
         Thread.Sleep(Variables.GeneralDelay);
@@ -484,6 +483,11 @@ namespace SimpleMaid
         {
           char specialCommandIdentifier = commandParts[0].ToCharArray()[0];
 
+          if (!String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]))
+          {
+            specialCommandIdentifier = Variables.RepeatCommand;
+          }
+
           switch (specialCommandIdentifier)
           {
             case Variables.QuitCommand:
@@ -515,8 +519,15 @@ namespace SimpleMaid
               if (commandParts.Length < 2)
                 goto default;
 
-              mainConfigData["Service"].AddKey("sLogonCommand", remoteCommand);
-              mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
+              if (String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]))
+              {
+                mainConfigData["Service"]["sLogonCommand"] = remoteCommand;
+                mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
+              }
+              else if (remoteCommand != mainConfigData["Service"]["sLogonCommand"])
+              {
+                goto default;
+              }
 
               string[] commandPartsFixed = new string[commandParts.Length - 1];
               for (int i = 1; i < commandParts.Length; ++i)
