@@ -17,13 +17,11 @@ namespace SimpleMaid
 {
   internal static partial class Program
   {
-    private static bool Hidden { get; set; } = false;
-    private static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
+    public static bool Hidden { get; set; } = false;
+    public static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
 
     private static DirectoryInfo desiredAppDirectory;
-    private static FileInfo mainConfigFile;
-    private static FileIniDataParser mainConfigParser;
-    private static IniData mainConfigData;
+    private static mainConfiguration mainConfig;
     private static IntPtr mainWindowHandle;
     private static Mutex singleInstance;
 
@@ -36,9 +34,6 @@ namespace SimpleMaid
 
     private static readonly bool runningWindows = (RunningPlatform() == Platform.Windows);
     private static volatile bool internetAlive = true;
-
-    private static volatile string machineName;
-    private static volatile string machinePassword;
 
     internal static frmChatWindow ChatboxWindow = null;
     internal static volatile bool ChatboxExit = false;
@@ -189,8 +184,6 @@ namespace SimpleMaid
 
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
         Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
-      mainConfigFile = new FileInfo(Path.Combine(desiredAppDirectory.FullName,
-        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
 
 
       bool rogueArgFound = false;
@@ -287,45 +280,23 @@ namespace SimpleMaid
       }
 
 
-      mainConfigParser = new FileIniDataParser();
-
-      bool   machineConfigured = false;
-             machineName       = createMachine();
-             machinePassword   = passArg;
-      bool   autoRun           = autorunArgFound;
+      mainConfig = new mainConfiguration(Path.Combine(desiredAppDirectory.FullName,
+        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
 
       bool firstRun;
-      bool promptShown = false;
-      if (firstRun = !mainConfigFile.Exists)
+      //bool promptShown = false;
+      if (firstRun = !mainConfig.Exists)
       {
-        mainConfigData = new IniData();
-        mainConfigData.Sections.AddSection("Service");
+        mainConfig.machineConfigured = false;
+        mainConfig.machineName = createMachine();
 
+        //mainConfig.machinePassword = passArg;
+        //validateMemoryPassword(ref mainConfigData, ref promptShown);
 
-        mainConfigData["Service"].AddKey("bMachineConfigured", machineConfigured.ToString());
-        mainConfigData["Service"].AddKey("sMachineName", machineName);
-
-        validateMemoryPassword(ref mainConfigData, ref promptShown);
-
-        mainConfigData["Service"].AddKey("bAutoRun", autoRun.ToString());
+        mainConfig.autoRun = autorunArgFound;
       }
       else
       {
-        mainConfigData = mainConfigParser.ReadFile(mainConfigFile.FullName, Encoding.UTF8);
-
-
-        machineConfigured = bool.Parse(mainConfigData["Service"]["bMachineConfigured"]);
-
-        if (isNameOK(mainConfigData["Service"]["sMachineName"]))
-        {
-          machineName = mainConfigData["Service"]["sMachineName"];
-        }
-        else
-        {
-          mainConfigData["Service"]["sMachineName"] = machineName;
-          machineConfigured = false;
-        }
-
         if (!passArgFound)
         {
           validateConfigPassword(ref mainConfigData, ref promptShown);
@@ -342,14 +313,9 @@ namespace SimpleMaid
           }
         }
 
-        if (!autorunArgFound)
+        if (autorunArgFound)
         {
-          autoRun = bool.Parse(mainConfigData["Service"]["bAutoRun"]);
-        }
-        else
-        {
-          autoRun = !bool.Parse(mainConfigData["Service"]["bAutoRun"]);
-          mainConfigData["Service"]["bAutoRun"] = autoRun.ToString();
+          mainConfig.autoRun = !mainConfig.autoRun;
         }
       }
 
