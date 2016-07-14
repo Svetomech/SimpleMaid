@@ -127,7 +127,7 @@ namespace SimpleMaid
 
         while (null == ChatboxWindow || !ChatboxWindow.Visible)
         {
-          Thread.Sleep(1000);
+          Thread.Sleep(Variables.GeneralDelay);
         }
 
         if (busyChatWise && chatThread != null && !chatThread.IsAlive)
