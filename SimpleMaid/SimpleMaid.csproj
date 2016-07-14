@@ -82,7 +82,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="DefaultSimpleMaid.ini" />
+    <None Include="mainConfigurationDefault.ini" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

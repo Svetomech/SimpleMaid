@@ -26,11 +26,19 @@ namespace SimpleMaid
       else
       {
         data = new IniData();
-        data.Sections.AddSection("Service");
+
+        string mainSectionName = "Service";
+        data.Sections.AddSection(mainSectionName);
+
+        data[mainSectionName]["bMachineConfigured"] = "False";
+        data[mainSectionName]["sMachineName"]       = "default";
+        data[mainSectionName]["sMachinePassword"]   = "default";
+        data[mainSectionName]["bAutoRun"]           = "False";
+        data[mainSectionName]["sLogonCommand"]      = String.Empty;
       }
     }
 
-    public bool Exists => file.Exists;
+    public bool ExistsLocally => file.Exists;
 
 
     public bool machineConfigured
@@ -71,12 +79,13 @@ namespace SimpleMaid
     {
       set
       {
-        
+        //validateMemoryPassword(ref mainConfigData, ref promptShown); если не Exists
+        //validateConfigPassword(ref mainConfigData, ref promptShown); если Exists
       }
 
       get
       {
-        
+        //validateConfigPassword(ref mainConfigData, ref promptShown); если Exists
       }
     }
 
@@ -101,6 +110,8 @@ namespace SimpleMaid
     }*/
 
     //update
+
+    //merge
 
     //promptshown?
 

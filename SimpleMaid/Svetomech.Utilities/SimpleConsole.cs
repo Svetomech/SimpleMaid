@@ -90,14 +90,14 @@ namespace Svetomech.Utilities
       SetCursorPosition(middlePractical.Length, CursorTop - 2);
 
       SecureString passHolder = null;
-      string unsecurePassHolder = null;
+      string insecurePassHolder = null;
       if (password.GetType() == typeof(SecureString))
       {
         passHolder = new SecureString();
       }
       else
       {
-        unsecurePassHolder = String.Empty;
+        insecurePassHolder = String.Empty;
       }
       bool useSecureHolder = (passHolder != null);
 
@@ -131,7 +131,7 @@ namespace Svetomech.Utilities
           }
           else
           {
-            unsecurePassHolder += keyInfo.KeyChar;
+            insecurePassHolder += keyInfo.KeyChar;
           }
           
 
@@ -154,7 +154,7 @@ namespace Svetomech.Utilities
           }
           else
           {
-            unsecurePassHolder.Remove(unsecurePassHolder.Length - 1, 1);
+            insecurePassHolder.Remove(insecurePassHolder.Length - 1, 1);
           }
 
           Line.ClearCurrent();
@@ -181,7 +181,7 @@ namespace Svetomech.Utilities
 
       Clear();
 
-      password = useSecureHolder ? (T)(object)passHolder : (T)(object)unsecurePassHolder;
+      password = useSecureHolder ? (T)(object)passHolder : (T)(object)insecurePassHolder;
     }
   }
 }

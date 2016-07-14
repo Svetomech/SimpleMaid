@@ -285,15 +285,13 @@ namespace SimpleMaid
 
       bool firstRun;
       //bool promptShown = false;
-      if (firstRun = !mainConfig.Exists)
+      if (firstRun = !mainConfig.ExistsLocally)
       {
-        mainConfig.machineConfigured = false;
-        mainConfig.machineName = createMachine();
-
-        //mainConfig.machinePassword = passArg;
-        //validateMemoryPassword(ref mainConfigData, ref promptShown);
-
+        //
+        //
+        mainConfig.machinePassword = passArg;
         mainConfig.autoRun = autorunArgFound;
+        //
       }
       else
       {
@@ -493,6 +491,13 @@ namespace SimpleMaid
               else if (remoteCommand != mainConfigData["Service"]["sLogonCommand"])
               {
                 goto default;
+                //////////////////////////////////////////////////////////////////////////////
+                ////////////////////////////////////
+                /////////////////////////////////////////////////////////////////////////
+                ///////////////////////////////////////
+                /////////////////////////////////////////////////////////////////////////////////
+                ///////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////////////////
               }
 
               string[] commandPartsFixed = new string[commandParts.Length - 1];
