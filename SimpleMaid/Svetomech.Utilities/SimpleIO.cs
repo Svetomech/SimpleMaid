@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using static System.IO.Path;
 
 namespace Svetomech.Utilities
@@ -70,6 +71,48 @@ namespace Svetomech.Utilities
       }
     }
 
+    public static class File
+    {
+      public static bool IsLocked(FileInfo file)
+      {
+        FileStream stream = null;
+
+        try
+        {
+          stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+        }
+        catch (IOException)
+        {
+          return true;
+        }
+        finally
+        {
+          if (null != stream)
+            stream.Close();
+        }
+
+        return false;
+      }
+
+      public static bool IsLocked(string filePath)
+      {
+        return IsLocked(new FileInfo(filePath));
+      }
+
+      public static bool FitsMask(FileInfo file, string fileMask)
+      {
+        string pattern = '^' + Regex.Escape(fileMask.Replace(".", "__DOT__").Replace("*", "__STAR__").Replace("?", "__QM__"))
+          .Replace("__DOT__", "[.]").Replace("__STAR__", ".*").Replace("__QM__", ".") + '$';
+
+        return new Regex(pattern, RegexOptions.IgnoreCase).IsMatch(file.Name);
+      }
+
+      public static bool FitsMask(string fileName, string fileMask)
+      {
+        return FitsMask(new FileInfo(fileName), fileMask);
+      }
+    }
+
 
     /// <summary>
     /// Doesn't complain if paths are null; platform-independent.
@@ -121,6 +164,22 @@ namespace Svetomech.Utilities
         throw new ArgumentNullException(nameof(dir));
 
       Directory.Copy(dir, new DirectoryInfo(destDirPath), copyRootFiles);
+    }
+
+    public static bool IsLocked(this FileInfo file)
+    {
+      if (null == file)
+        throw new ArgumentNullException(nameof(file));
+
+      return File.IsLocked(file);
+    }
+
+    public static bool FitsMask(this FileInfo file, string fileMask)
+    {
+      if (null == file)
+        throw new ArgumentNullException(nameof(file));
+
+      return File.FitsMask(file, fileMask);
     }
   }
 }
