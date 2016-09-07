@@ -53,16 +53,12 @@
     <Compile Include="Program.Commands.cs" />
     <Compile Include="Program.Helpers.cs" />
     <Compile Include="Program.Reports.cs" />
-    <Compile Include="Svetomech.Utilities\Application.cs" />
-    <Compile Include="Svetomech.Utilities\PasswordStrength.cs" />
     <Compile Include="frmChatWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmChatWindow.Designer.cs">
       <DependentUpon>frmChatWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Svetomech.Utilities\NativeMethods.cs" />
-    <Compile Include="Svetomech.Utilities\Point.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="resources.Designer.cs">
@@ -70,12 +66,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Svetomech.Utilities\SimpleConsole.cs" />
-    <Compile Include="Svetomech.Utilities\SimpleConsole.Line.cs" />
-    <Compile Include="Svetomech.Utilities\SimpleIO.cs" />
-    <Compile Include="Svetomech.Utilities\SimplePlatform.cs" />
-    <Compile Include="Svetomech.Utilities\SimpleApp.cs" />
-    <Compile Include="Svetomech.Utilities\SimpleString.cs" />
     <Compile Include="Variables.cs" />
   </ItemGroup>
   <ItemGroup>
