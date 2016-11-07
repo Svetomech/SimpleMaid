@@ -1,20 +1,18 @@
 ﻿using IniParser;
 using IniParser.Model;
-using Svetomech.Utilities;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
-using static Svetomech.Utilities.PasswordStrength;
 
 namespace SimpleMaid
 {
-  internal class mainConfiguration
+  internal class MainConfiguration
   {
-    private FileInfo file;
-    private FileIniDataParser parser;
-    private IniData data;
+    internal bool ExistsLocally => file.Exists;
+    internal string ParserLocation => Assembly.GetAssembly(typeof(FileIniDataParser)).Location;
 
-    public mainConfiguration(string fileName)
+    internal MainConfiguration(string fileName)
     {
       file = new FileInfo(fileName);
       parser = new FileIniDataParser();
@@ -27,30 +25,59 @@ namespace SimpleMaid
       {
         data = new IniData();
 
-        string mainSectionName = "Service";
-        data.Sections.AddSection(mainSectionName);
+        mainSection = "Service";
+        machineConfiguredKey = "bMachineConfigured";
+        machineNameKey       = "sMachineName";
+        machinePasswordKey   = "sMachinePassword";
+        autoRunKey           = "bAutoRun";
+        loginCommandKey      = "sLoginCommand";
 
-        data[mainSectionName]["bMachineConfigured"] = "False";
-        data[mainSectionName]["sMachineName"]       = "default";
-        data[mainSectionName]["sMachinePassword"]   = "default";
-        data[mainSectionName]["bAutoRun"]           = "False";
-        data[mainSectionName]["sLogonCommand"]      = String.Empty;
+        data.Sections.AddSection(mainSection);
+        data[mainSection][machineConfiguredKey] = "False";
+        data[mainSection][machineNameKey]       = "default";
+        data[mainSection][machinePasswordKey]   = "default";
+        data[mainSection][autoRunKey]           = "False";
+        data[mainSection][loginCommandKey]      = String.Empty;
       }
     }
 
-    public bool ExistsLocally => file.Exists;
+    internal void Update()
+    {
+      // Do I need this?
+    }
+
+    internal void Save()
+    {
+      if (machineConfigured)
+      {
+        return;
+      }
+
+      // Actually save file
+    }
+
+    private FileInfo file;
+    private FileIniDataParser parser;
+    private IniData data;
+
+    private string mainSection;
+    private string machineConfiguredKey;
+    private string machineNameKey;
+    private string machinePasswordKey;
+    private string autoRunKey;
+    private string loginCommandKey;
 
 
     public bool machineConfigured
     {
       set
       {
-        data["Service"]["bMachineConfigured"] = value.ToString();
+        data[mainSection][machineConfiguredKey] = value.ToString();
       }
 
       get
       {
-        return (bool.Parse(data["Service"]["bMachineConfigured"]));
+        return (bool.Parse(data[mainSection][machineConfiguredKey]));
       }
     }
 
@@ -60,18 +87,18 @@ namespace SimpleMaid
       {
         machineConfigured = false;
 
-        data["Service"]["sMachineName"] = value;
+        data[mainSection][machineNameKey] = value;
       }
 
       get
       {
         Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
-        if (!Guid.TryParse(data["Service"]["sMachineName"], out temp))
+        if (!Guid.TryParse(data[mainSection][machineNameKey], out temp))
         {
           machineName = ;
         }
 
-        return data["Service"]["sMachineName"];
+        return data[mainSection][machineNameKey];
       }
     }
 
@@ -104,10 +131,10 @@ namespace SimpleMaid
       }
     }
 
-    /*public string logonCommand
+    public string loginCommand
     {
 
-    }*/
+    }
 
     //update
 
@@ -115,6 +142,6 @@ namespace SimpleMaid
 
     //promptshown?
 
-    // !String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]) - logonAutomatically, logon to login
+    // !String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]) - logonAutomatically
   }
 }

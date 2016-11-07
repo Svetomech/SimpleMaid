@@ -1,198 +1,70 @@
-using IniParser;
-using IniParser.Model;
 using Svetomech.Utilities;
 using System;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
-using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading;
-using static Svetomech.Utilities.NativeMethods;
-using static Svetomech.Utilities.SimpleApp;
 using static Svetomech.Utilities.SimplePlatform;
 
 namespace SimpleMaid
 {
   internal static partial class Program
   {
-    public static bool Hidden { get; set; } = false;
-    public static string State { set { Console.Title = $"{Application.ProductName}: {value}"; } }
+    public static string State
+    {
+      set
+      {
+        Console.Title = $"{Application.ProductName}: {value}";
+      }
+
+      get
+      {
+        return Console.Title.Substring(Console.Title.IndexOf(':') + 2);
+      }
+    }
+
+    internal static frmChatWindow ChatboxWindow;
+    internal static bool ChatboxExit;
+    internal static string SupportChatMessage;
+    internal static string UserChatMessage;
+    internal static string ChatCommand;
 
     private static DirectoryInfo desiredAppDirectory;
-    private static mainConfiguration mainConfig;
-    private static IntPtr mainWindowHandle;
+    private static MainConfiguration mainConfig;
+    private static Window mainWindow;
     private static Mutex singleInstance;
 
     private static Thread connectionThread;
     private static Thread commandThread;
     private static Thread chatThread;
-    private static volatile bool busyConnectionWise = true;
-    private static volatile bool busyCommandWise = false;
-    private static volatile bool busyChatWise = false;
+    private static bool busyConnectionWise;
+    private static bool busyCommandWise;
+    private static bool busyChatWise;
 
     private static readonly bool runningWindows = (RunningPlatform() == Platform.Windows);
     private static volatile bool internetAlive = true;
 
-    internal static frmChatWindow ChatboxWindow = null;
-    internal static volatile bool ChatboxExit = false;
-    internal static volatile string SupportChatMessage;
-    internal static volatile string UserChatMessage;
-    internal static volatile string ChatCommand;
-
-
-    // TODO: Set&Get vs SetUntilSet&GetUntilGet - clarify use cases
-    private static string Set(string tag, string value)
-    {
-      tag = $"{Application.ProductName}_{tag}";
-
-      var encoding = new UTF8Encoding();
-      byte[] requestBody = encoding.GetBytes($"tag={tag}&value={value}&fmt=html");
-
-      var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/storeavalue");
-      request.Method = "POST";
-      request.Credentials = Variables.AccountCredentials;
-      request.ContentType = "application/x-www-form-urlencoded";
-      request.ContentLength = requestBody.Length;
-      request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1";
-
-      try
-      {
-        using (var requestStream = request.GetRequestStream())
-        {
-          requestStream.Write(requestBody, 0, requestBody.Length);
-        }
-      }
-      catch (WebException)
-      {
-        reportWebError();
-        internetAlive = false;
-        return resources.WebErrorMessage;
-      }
-      try { using (var response = request.GetResponse()) ;}
-      catch (WebException)
-      {
-        reportWebError();
-        internetAlive = false;
-        return resources.WebErrorMessage;
-      }
-
-      resetConsoleColor();
-      Console.ForegroundColor = ConsoleColor.Gray;
-      Console.WriteLine($"SET  {tag}  {value}\n");
-
-      return String.Empty;
-    }
-
-    private static string Get(string tag)
-    {
-      tag = $"{Application.ProductName}_{tag}";
-
-      string value;
-
-      var encoding = new UTF8Encoding();
-      byte[] requestBody = encoding.GetBytes($"tag={tag}&fmt=html");
-
-      var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/getvalue");
-      request.Method = "POST";
-      request.Credentials = Variables.AccountCredentials;
-      request.ContentType = "application/x-www-form-urlencoded";
-      request.ContentLength = requestBody.Length;
-      request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1";
-
-      try
-      {
-        using (var requestStream = request.GetRequestStream())
-        {
-          requestStream.Write(requestBody, 0, requestBody.Length);
-        }
-      }
-      catch (WebException)
-      {
-        reportWebError();
-        internetAlive = false;
-        return resources.WebErrorMessage;
-      }
-
-      // TODO: Refactor
-      try
-      {
-        using (var response = request.GetResponse())
-        using (var responseStream = response.GetResponseStream())
-        using (var sr = new StreamReader(responseStream))
-        {
-          value = sr.ReadToEnd();
-          value = value.Substring(value.IndexOf(tag) + tag.Length + 4);
-          value = value.Remove(value.IndexOf("\""));
-        }
-      }
-      catch (WebException)
-      {
-        reportWebError();
-        internetAlive = false;
-        return resources.WebErrorMessage;
-      }
-
-      // TODO: Rewrite - problems with decoding
-      value = decodeEncodedNonAsciiCharacters(value);
-      value = value.Replace(@"\/", @"/");
-      value = value.Replace(@"\\", @"\");
-      value = WebUtility.HtmlDecode(value);
-
-      resetConsoleColor();
-      Console.ForegroundColor = ConsoleColor.DarkGreen;
-      Console.WriteLine($"GET  {tag}  {value}\n");
-
-      return value;
-    }
-
-    private static void SetUntilSet(string tag, string value)
-    {
-      while (internetAlive && resources.WebErrorMessage == Set(tag, value))
-      {
-        Thread.Sleep(Variables.GeneralDelay);
-      }
-    }
-
-    private static string GetUntilGet(string tag)
-    {
-      string value = resources.WebErrorMessage;
-
-      while (internetAlive && resources.WebErrorMessage == (value = Get(tag)))
-      {
-        Thread.Sleep(Variables.GeneralDelay);
-      }
-
-      return value;
-    }
-
-
-    [STAThread]
     private static void Main(string[] args)
     {
-      System.Windows.Forms.Application.EnableVisualStyles();
+      // Some initialisation work
       Console.Clear();
+      System.Windows.Forms.Application.EnableVisualStyles();
+      ChatboxWindow = null;
+      ChatboxExit = false;
 
-
-      if (IsElevated())
+      // Forbid executing as admin/root
+      if (SimpleApp.IsElevated())
       {
         reportGeneralError(resources.AdminErrorMessage);
         exit();
       }
 
-
-      desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
-        Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
-
-
-      bool rogueArgFound = false;
-      bool autorunArgFound = false;
-      bool passArgFound = false; // <-- only need it for clarity
-      bool langArgFound = false; // <-- only need it for clarity
-
-      string passArg = Variables.DefaultPassword;
-      string langArg = CultureInfo.InstalledUICulture.Name;
+      // Highly optimised console arguments' searching
+      var rogueArg = new ConsoleArgument(false);
+      var autorunArg = new ConsoleArgument(false);
+      var langArg = new ConsoleArgument(false, CultureInfo.InstalledUICulture.Name);
+      var passArg = new ConsoleArgument(false, Variables.DefaultPassword);
 
       if (args.Length >= 1)
       {
@@ -200,50 +72,57 @@ namespace SimpleMaid
 
         for (int i = 0; i < args.Length; ++i)
         {
-          if (!rogueArgFound && (rogueArgFound = (args[i] == Variables.RogueArgument)))
-            adjustedLength--;
-
-          if (!autorunArgFound && (autorunArgFound = (args[i] == Variables.AutorunArgument)))
-            adjustedLength--;
-
-          if (adjustedLength >= 2)
+          if (!rogueArg.Found && (rogueArg.Found = (args[i] == Variables.RogueArgument)))
           {
-            if (!passArgFound && (args[i] == Variables.PasswordArgument))
-            {
-              passArg = (passArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : passArg;
+            adjustedLength--;
+          }
 
-              if (passArgFound)
-                adjustedLength -= 2;
-              else
-                adjustedLength--;
-            }
-            else if (!langArgFound && (args[i] == Variables.LanguageArgument))
-            {
-              langArg = (langArgFound = (i + 1 < adjustedLength)) ? args[i + 1] : langArg;
+          if (!autorunArg.Found && (autorunArg.Found = (args[i] == Variables.AutorunArgument)))
+          {
+            adjustedLength--;
+          }
 
-              if (langArgFound)
-                adjustedLength -= 2;
-              else
-                adjustedLength--;
-            }
+          if (adjustedLength < 2)
+          {
+            break;
+          }
+
+          if (!langArg.Found && (args[i] == Variables.LanguageArgument))
+          {
+            langArg.Value = (langArg.Found = (i + 1 < adjustedLength)) ? args[i + 1] : langArg.Value;
+
+            adjustedLength -= langArg.Found ? 2 : 1;
+          }
+          else if (!passArg.Found && (args[i] == Variables.PasswordArgument))
+          {
+            passArg.Value = (passArg.Found = (i + 1 < adjustedLength)) ? args[i + 1] : passArg.Value;
+
+            adjustedLength -= passArg.Found ? 2 : 1;
           }
         }
       }
 
+      // Generate app directory path in a cross-platform way
+      desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
+        Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
 
-      mainWindowHandle = GetConsoleWindow();
+      // Initialize main config file based on app directory
+      mainConfig = new MainConfiguration(Path.Combine(desiredAppDirectory.FullName,
+        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
+
+      // Don't show main window if app was autorun
+      mainWindow = NativeMethods.GetConsoleWindow();
       bool inDesiredDir = desiredAppDirectory.IsEqualTo(Application.StartupPath);
-      if (inDesiredDir || rogueArgFound)
+      if (inDesiredDir || rogueArg.Found)
       {
-        ShowWindow(mainWindowHandle, SW_HIDE);
-        Program.Hidden = true;
+        mainWindow.Hide();
       }
 
-
-      CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg);
-
+      // Localize app strings according to resources.xx
+      CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg.Value);
 
       // TODO: Move so it happens AFTER startup directory management
+      // Close app if there is another instance running
       singleInstance = new Mutex(false, "Local\\" + Application.AssemblyGuid);
       if (!singleInstance.WaitOne(0, false))
       {
@@ -251,24 +130,28 @@ namespace SimpleMaid
         exit();
       }
 
-
+      // TODO: Only do it once per version
+      // TODO: Handle exceptions
+      // Copy files required for app to run locally
       if (!inDesiredDir)
       {
-        var svtFolder = new DirectoryInfo(ConfigurationManager.AppSettings["SvtFolderName"]);
         string[] filePaths = { Application.ExecutablePath, ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath,
-          Assembly.GetAssembly(typeof(FileIniDataParser)).Location };
+          mainConfig.ParserLocation };
+
+        var langFolder = new DirectoryInfo(ConfigurationManager.AppSettings[Variables.LangFolderKey]);
+
         try
         {
-          var desiredAppSubdirectory = new DirectoryInfo(Path.Combine(desiredAppDirectory.FullName, svtFolder.Name));
-
-          svtFolder.CopyTo(desiredAppSubdirectory, false);
-
           foreach (var filePath in filePaths)
           {
             File.Copy(filePath, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(filePath)), true);
           }
+
+          var desiredAppSubdirectory = new DirectoryInfo(Path.Combine(desiredAppDirectory.FullName, langFolder.Name));
+
+          langFolder.CopyTo(desiredAppSubdirectory, false);
         }
-        catch //unauthorized, io, notsupported
+        catch // unauthorized, io, notsupported
         {
           // 1. stop other instance using guid technique
           //   if there is no other instance running, (?recursive or ?continue)
@@ -279,9 +162,6 @@ namespace SimpleMaid
         }
       }
 
-
-      mainConfig = new mainConfiguration(Path.Combine(desiredAppDirectory.FullName,
-        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
 
       bool firstRun;
       //bool promptShown = false;
@@ -351,15 +231,16 @@ namespace SimpleMaid
 
       connectionThread = new Thread(handleConnection);
       connectionThread.IsBackground = true;
+      busyConnectionWise = true;
       connectionThread.Start();
 
       commandThread = new Thread(awaitCommands);
       commandThread.IsBackground = true;
-      // Starts in a different place
+      busyCommandWise = false;
 
       chatThread = new Thread(serveMessages);
       chatThread.IsBackground = true;
-      // Starts in a different place
+      busyChatWise = false;
 
 
       timeThread.Join();

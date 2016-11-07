@@ -12,9 +12,134 @@ namespace SimpleMaid
 {
   internal static partial class Program
   {
+    // TODO: Set&Get vs SetUntilSet&GetUntilGet - clarify use cases
+    private static string Set(string tag, string value)
+    {
+      tag = $"{Application.ProductName}_{tag}";
+
+      var encoding = new UTF8Encoding();
+      byte[] requestBody = encoding.GetBytes($"tag={tag}&value={value}&fmt=html");
+
+      var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/storeavalue");
+      request.Method = "POST";
+      request.Credentials = Variables.Credentials;
+      request.ContentType = "application/x-www-form-urlencoded";
+      request.ContentLength = requestBody.Length;
+      request.UserAgent = Variables.UserAgent;
+
+      try
+      {
+        using (var requestStream = request.GetRequestStream())
+        {
+          requestStream.Write(requestBody, 0, requestBody.Length);
+        }
+      }
+      catch (WebException)
+      {
+        reportWebError();
+        internetAlive = false;
+        return resources.WebErrorMessage;
+      }
+      try { using (var response = request.GetResponse()) ; }
+      catch (WebException)
+      {
+        reportWebError();
+        internetAlive = false;
+        return resources.WebErrorMessage;
+      }
+
+      resetConsoleColor();
+      Console.ForegroundColor = ConsoleColor.Gray;
+      Console.WriteLine($"SET  {tag}  {value}\n");
+
+      return String.Empty;
+    }
+
+    private static string Get(string tag)
+    {
+      tag = $"{Application.ProductName}_{tag}";
+
+      string value;
+
+      var encoding = new UTF8Encoding();
+      byte[] requestBody = encoding.GetBytes($"tag={tag}&fmt=html");
+
+      var request = (HttpWebRequest)WebRequest.Create($"{Variables.ServerAddress}/getvalue");
+      request.Method = "POST";
+      request.Credentials = Variables.Credentials;
+      request.ContentType = "application/x-www-form-urlencoded";
+      request.ContentLength = requestBody.Length;
+      request.UserAgent = Variables.UserAgent;
+
+      try
+      {
+        using (var requestStream = request.GetRequestStream())
+        {
+          requestStream.Write(requestBody, 0, requestBody.Length);
+        }
+      }
+      catch (WebException)
+      {
+        reportWebError();
+        internetAlive = false;
+        return resources.WebErrorMessage;
+      }
+
+      // TODO: Refactor
+      try
+      {
+        using (var response = request.GetResponse())
+        using (var responseStream = response.GetResponseStream())
+        using (var sr = new StreamReader(responseStream))
+        {
+          value = sr.ReadToEnd();
+          value = value.Substring(value.IndexOf(tag) + tag.Length + 4);
+          value = value.Remove(value.IndexOf("\""));
+        }
+      }
+      catch (WebException)
+      {
+        reportWebError();
+        internetAlive = false;
+        return resources.WebErrorMessage;
+      }
+
+      // TODO: Rewrite - problems with decoding
+      value = decodeEncodedNonAsciiCharacters(value);
+      value = value.Replace(@"\/", @"/");
+      value = value.Replace(@"\\", @"\");
+      value = WebUtility.HtmlDecode(value);
+
+      resetConsoleColor();
+      Console.ForegroundColor = ConsoleColor.DarkGreen;
+      Console.WriteLine($"GET  {tag}  {value}\n");
+
+      return value;
+    }
+
+    private static void SetUntilSet(string tag, string value)
+    {
+      while (internetAlive && resources.WebErrorMessage == Set(tag, value))
+      {
+        Thread.Sleep(Variables.GeneralDelay);
+      }
+    }
+
+    private static string GetUntilGet(string tag)
+    {
+      string value = resources.WebErrorMessage;
+
+      while (internetAlive && resources.WebErrorMessage == (value = Get(tag)))
+      {
+        Thread.Sleep(Variables.GeneralDelay);
+      }
+
+      return value;
+    }
+
     private static void exit()
     {
-      Thread.Sleep(Variables.GeneralCloseDelay);
+      Thread.Sleep(Variables.WindowCloseDelay);
       Environment.Exit(0);
     }
 
