@@ -47,7 +47,7 @@ namespace SimpleMaid
       {
         ShowWindow(mainWindowHandle, SW_SHOW);
         Console.Beep();
-        Thread.Sleep(Variables.GeneralCloseDelay);
+        Thread.Sleep(Variables.WindowCloseDelay);
         ShowWindow(mainWindowHandle, SW_HIDE);
       }
     }
