@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
-using static Svetomech.Utilities.NativeMethods;
 using static Svetomech.Utilities.SimpleConsole;
 
 namespace SimpleMaid
@@ -18,27 +17,24 @@ namespace SimpleMaid
 
     private static string hideCommand()
     {
-      if (Program.Hidden)
+      if (!mainWindow.IsShown)
       {
         return Variables.GeneralOKMsg;
       }
 
-      ShowWindow(mainWindowHandle, SW_HIDE);
-      Program.Hidden = true;
+      mainWindow.Hide();
 
       return Variables.GeneralOKMsg;
     }
 
     private static string showCommand()
     {
-      if (!Program.Hidden)
+      if (mainWindow.IsShown)
       {
         return Variables.GeneralOKMsg;
       }
 
-
-      ShowWindow(mainWindowHandle, SW_SHOW);
-      Program.Hidden = false;
+      mainWindow.Show();
 
       return Variables.GeneralOKMsg;
     }
@@ -113,7 +109,6 @@ namespace SimpleMaid
         Process.Start(downloadDirectoryPath);
       }
 
-
       return downloadFilePath;
     }
 
@@ -130,12 +125,7 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        if (busyChatWise && chatThread != null && !chatThread.IsAlive)
-        {
-          chatThread = new Thread(serveMessages);
-          chatThread.IsBackground = true;
-          chatThread.Start();
-        }
+        resurrectDeadThread(ref chatThread, serveMessages, busyChatWise);
       }
       else
       {
@@ -147,11 +137,6 @@ namespace SimpleMaid
 
     private static string powershellCommand(string[] commandParts)
     {
-      if (!runningWindows)
-      {
-        return Variables.PowershellLinuxErrMsg;
-      }
-
       if (commandParts.Length < 2)
       {
         return Variables.IncompleteCommandErrMsg;
@@ -163,14 +148,14 @@ namespace SimpleMaid
       }
       commandParts[1] = commandParts[1].Replace(@"""", @"\""");
 
-      return executeCommand(commandParts[1], ConsoleTypes.Powershell);
+      return ExecuteCommand(commandParts[1], ConsoleType.Powershell);
     }
 
-    private static string executeCommand(string command, ConsoleTypes console = ConsoleTypes.None)
+    private static string executeCommand(string command, ConsoleType console = ConsoleType.None)
     {
-      if (ConsoleTypes.None == console)
+      if (ConsoleType.None == console)
       {
-        return runningWindows ? ExecuteCommand(command, ConsoleTypes.CMD) : ExecuteCommand(command, ConsoleTypes.Bash);
+        return runningWindows ? ExecuteCommand(command, ConsoleType.CMD) : ExecuteCommand(command, ConsoleType.Bash);
       }
       else
       {
