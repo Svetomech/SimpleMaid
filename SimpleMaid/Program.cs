@@ -103,13 +103,17 @@ namespace SimpleMaid
         }
       }
 
+      // Setting application file names
+      string desiredAppName = ConsoleApplication.ProductName;
+      string realAppName = Path.GetFileName(ConsoleApplication.ExecutablePath);
+
       // Generate app directory path in a cross-platform way
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
-        Environment.SpecialFolder.LocalApplicationData), ConsoleApplication.CompanyName, ConsoleApplication.ProductName));
+        Environment.SpecialFolder.LocalApplicationData), ConsoleApplication.CompanyName, desiredAppName));
 
       // Initialize main config file based on app directory
       mainConfig = new MainConfiguration(Path.Combine(desiredAppDirectory.FullName,
-        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{ConsoleApplication.ProductName}.ini"));
+        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{desiredAppName}.ini"));
 
       // Don't show main window if app was autorun
       mainWindow = NativeMethods.GetConsoleWindow();
@@ -211,12 +215,11 @@ namespace SimpleMaid
 
       if (mainConfig.AutoRun)
       {
-        App.SwitchAutorun(ConsoleApplication.ProductName, Path.Combine(desiredAppDirectory.FullName,
-          Path.GetFileName(ConsoleApplication.ExecutablePath)), true);
+        App.SwitchAutorun(desiredAppName, Path.Combine(desiredAppDirectory.FullName, realAppName), true);
       }
       else
       {
-        App.SwitchAutorun(ConsoleApplication.ProductName);
+        App.SwitchAutorun(desiredAppName);
       }
 
 
