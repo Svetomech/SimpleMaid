@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using static Svetomech.Utilities.NativeMethods;
 using static Svetomech.Utilities.SimpleConsole;
 
 namespace SimpleMaid
@@ -43,12 +42,12 @@ namespace SimpleMaid
       Console.ForegroundColor = ConsoleColor.White;
       Console.WriteLine(message + "\n");
 
-      if (Program.Hidden)
+      if (!mainWindow.IsShown)
       {
-        ShowWindow(mainWindowHandle, SW_SHOW);
+        mainWindow.Show();
         Console.Beep();
         Thread.Sleep(Variables.WindowCloseDelay);
-        ShowWindow(mainWindowHandle, SW_HIDE);
+        mainWindow.Hide();
       }
     }
 
