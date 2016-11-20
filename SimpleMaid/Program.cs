@@ -211,17 +211,14 @@ namespace SimpleMaid
       }
 
 
-      if (runningWindows)
+      if (mainConfig.autoRun)
       {
-        if (autoRun)
-        {
-          SwitchAutorun(Application.ProductName, Path.Combine(desiredAppDirectory.FullName,
-            Path.GetFileName(Application.ExecutablePath)));
-        }
-        else
-        {
-          SwitchAutorun(Application.ProductName);
-        }
+        App.SwitchAutorun(ConsoleApplication.ProductName, Path.Combine(desiredAppDirectory.FullName,
+          Path.GetFileName(ConsoleApplication.ExecutablePath)), true);
+      }
+      else
+      {
+        App.SwitchAutorun(ConsoleApplication.ProductName);
       }
 
 
