@@ -136,8 +136,8 @@ namespace SimpleMaid
       // Copy files required for app to run locally
       if (!inDesiredDir)
       {
-        string[] filePaths = { ConsoleApplication.ExecutablePath, ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath,
-          mainConfig.ParserLocation };
+        string[] filePaths = { ConsoleApplication.ExecutablePath, mainConfig.ParserLocation,
+          ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath };
 
         var langFolder = new DirectoryInfo(ConfigurationManager.AppSettings[Variables.LangFolderKey]);
 
@@ -164,9 +164,9 @@ namespace SimpleMaid
       }
 
 
-      bool firstRun;
+      bool firstRun = !mainConfig.ExistsLocally;
       //bool promptShown = false;
-      if (firstRun = !mainConfig.ExistsLocally)
+      if (firstRun)
       {
         //
         //
