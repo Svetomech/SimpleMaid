@@ -124,7 +124,7 @@ namespace SimpleMaid
 
       // TODO: Move so it happens AFTER startup directory management
       // Close app if there is another instance running
-      singleInstance = new Mutex(false, "Local\\" + ConsoleApplication.AssemblyGuid);
+      singleInstance = new Mutex(false, $@"Local\{ConsoleApplication.AssemblyGuid}");
       if (!singleInstance.WaitOne(0, false))
       {
         reportPastSelf();
@@ -132,7 +132,6 @@ namespace SimpleMaid
       }
 
       // TODO: Only do it once per version
-      // TODO: Handle exceptions
       // Copy files required for app to run locally
       if (!inDesiredDir)
       {
@@ -140,6 +139,7 @@ namespace SimpleMaid
           ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath };
 
         var langFolder = new DirectoryInfo(ConfigurationManager.AppSettings[Variables.LangFolderKey]);
+        var desiredAppSubdirectory = new DirectoryInfo(Path.Combine(desiredAppDirectory.FullName, langFolder.Name));
 
         try
         {
@@ -147,8 +147,6 @@ namespace SimpleMaid
           {
             File.Copy(filePath, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(filePath)), true);
           }
-
-          var desiredAppSubdirectory = new DirectoryInfo(Path.Combine(desiredAppDirectory.FullName, langFolder.Name));
 
           langFolder.CopyTo(desiredAppSubdirectory, false);
         }
