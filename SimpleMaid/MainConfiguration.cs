@@ -133,7 +133,8 @@ namespace SimpleMaid
 
     internal string LoginCommand
     {
-
+      set;
+      get;
     }
 
     //update
