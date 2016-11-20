@@ -276,18 +276,15 @@ namespace SimpleMaid
 
       while (busyConnectionWise && internetAlive)
       {
-        bool logonManually = Get(machineName) == machinePassword;
+        bool remotePasswordAccepted = Get(mainConfig.MachineName) == mainConfig.MachinePassword;
+        bool localCommandSupplied = !String.IsNullOrWhiteSpace(mainConfig.LoginCommand);
 
-        if (logonManually || !String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]))
+        if (remotePasswordAccepted || localCommandSupplied)
         {
-          if (logonManually)
-          {
-            mainConfigData["Service"]["sLogonCommand"] = String.Empty;
-            mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
-          }
+          mainConfig.LoginCommand = remotePasswordAccepted ? String.Empty : mainConfig.LoginCommand;
 
           busyCommandWise = !busyCommandWise;
-          SetUntilSet(machineName, String.Empty);
+          SetUntilSet(mainConfig.MachineName, String.Empty);
 
           resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
         }
