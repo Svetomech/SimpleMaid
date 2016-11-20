@@ -170,8 +170,8 @@ namespace SimpleMaid
       {
         //
         //
-        mainConfig.machinePassword = passArg;
-        mainConfig.autoRun = autorunArgFound;
+        mainConfig.MachinePassword = passArg;
+        mainConfig.AutoRun = autorunArgFound;
         //
       }
       else
@@ -194,7 +194,7 @@ namespace SimpleMaid
 
         if (autorunArgFound)
         {
-          mainConfig.autoRun = !mainConfig.autoRun;
+          mainConfig.AutoRun = !mainConfig.AutoRun;
         }
       }
 
@@ -211,7 +211,7 @@ namespace SimpleMaid
       }
 
 
-      if (mainConfig.autoRun)
+      if (mainConfig.AutoRun)
       {
         App.SwitchAutorun(ConsoleApplication.ProductName, Path.Combine(desiredAppDirectory.FullName,
           Path.GetFileName(ConsoleApplication.ExecutablePath)), true);

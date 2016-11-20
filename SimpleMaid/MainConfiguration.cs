@@ -48,7 +48,7 @@ namespace SimpleMaid
 
     internal void Save()
     {
-      if (machineConfigured)
+      if (MachineConfigured)
       {
         return;
       }
@@ -68,7 +68,7 @@ namespace SimpleMaid
     private string loginCommandKey;
 
 
-    public bool machineConfigured
+    internal bool MachineConfigured
     {
       set
       {
@@ -81,11 +81,11 @@ namespace SimpleMaid
       }
     }
 
-    public string machineName
+    internal string MachineName
     {
       set
       {
-        machineConfigured = false;
+        MachineConfigured = false;
 
         data[mainSection][machineNameKey] = value;
       }
@@ -95,14 +95,14 @@ namespace SimpleMaid
         Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
         if (!Guid.TryParse(data[mainSection][machineNameKey], out temp))
         {
-          machineName = ;
+          MachineName = ;
         }
 
         return data[mainSection][machineNameKey];
       }
     }
 
-    public string machinePassword
+    internal string MachinePassword
     {
       set
       {
@@ -116,11 +116,11 @@ namespace SimpleMaid
       }
     }
 
-    public bool autoRun
+    internal bool AutoRun
     {
       set
       {
-        machineConfigured = false;
+        MachineConfigured = false;
 
         data["Service"]["bAutoRun"] = value.ToString();
       }
@@ -131,7 +131,7 @@ namespace SimpleMaid
       }
     }
 
-    public string loginCommand
+    internal string LoginCommand
     {
 
     }
