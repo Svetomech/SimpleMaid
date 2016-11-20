@@ -206,7 +206,7 @@ namespace SimpleMaid
         mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
       }
 
-
+      // Add or remove autorun entry if required
       if (mainConfig.AutoRun)
       {
         App.SwitchAutorun(desiredAppName, Path.Combine(desiredAppDirectory.FullName, realAppName), true);
@@ -216,27 +216,36 @@ namespace SimpleMaid
         App.SwitchAutorun(desiredAppName);
       }
 
-
+      // Initialize & start main thread
       var timeThread = new Thread(sendMachineTime);
       timeThread.IsBackground = true;
       timeThread.Start();
-      Thread.Sleep(1000);
 
+      Thread.Sleep(Variables.GeneralDelay); // needed
+
+      // Initialize & start connection thread
       connectionThread = new Thread(handleConnection);
       connectionThread.IsBackground = true;
       busyConnectionWise = true;
       connectionThread.Start();
 
+      // Initialize command thread
       commandThread = new Thread(awaitCommands);
       commandThread.IsBackground = true;
       busyCommandWise = false;
 
+      // Initialize chat thread
       chatThread = new Thread(serveMessages);
       chatThread.IsBackground = true;
       busyChatWise = false;
 
-
+      // Do not close app - go on in main thread
       timeThread.Join();
+
+      /*              |
+                      |
+                      V
+       */
     }
 
 
