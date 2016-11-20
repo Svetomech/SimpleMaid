@@ -1,4 +1,5 @@
 using Svetomech.Utilities;
+using Svetomech.Utilities.Types;
 using System;
 using System.Configuration;
 using System.Globalization;
@@ -15,7 +16,7 @@ namespace SimpleMaid
     {
       set
       {
-        Console.Title = $"{Application.ProductName}: {value}";
+        Console.Title = $"{ConsoleApplication.ProductName}: {value}";
       }
 
       get
@@ -54,7 +55,7 @@ namespace SimpleMaid
       ChatboxExit = false;
 
       // Forbid executing as admin/root
-      if (SimpleApp.IsElevated())
+      if (App.IsElevated())
       {
         reportGeneralError(resources.AdminErrorMessage);
         exit();
@@ -104,15 +105,15 @@ namespace SimpleMaid
 
       // Generate app directory path in a cross-platform way
       desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
-        Environment.SpecialFolder.LocalApplicationData), Application.CompanyName, Application.ProductName));
+        Environment.SpecialFolder.LocalApplicationData), ConsoleApplication.CompanyName, ConsoleApplication.ProductName));
 
       // Initialize main config file based on app directory
       mainConfig = new MainConfiguration(Path.Combine(desiredAppDirectory.FullName,
-        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{Application.ProductName}.ini"));
+        (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{ConsoleApplication.ProductName}.ini"));
 
       // Don't show main window if app was autorun
       mainWindow = NativeMethods.GetConsoleWindow();
-      bool inDesiredDir = desiredAppDirectory.IsEqualTo(Application.StartupPath);
+      bool inDesiredDir = desiredAppDirectory.IsEqualTo(ConsoleApplication.StartupPath);
       if (inDesiredDir || rogueArg.Found)
       {
         mainWindow.Hide();
@@ -123,7 +124,7 @@ namespace SimpleMaid
 
       // TODO: Move so it happens AFTER startup directory management
       // Close app if there is another instance running
-      singleInstance = new Mutex(false, "Local\\" + Application.AssemblyGuid);
+      singleInstance = new Mutex(false, "Local\\" + ConsoleApplication.AssemblyGuid);
       if (!singleInstance.WaitOne(0, false))
       {
         reportPastSelf();
@@ -135,7 +136,7 @@ namespace SimpleMaid
       // Copy files required for app to run locally
       if (!inDesiredDir)
       {
-        string[] filePaths = { Application.ExecutablePath, ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath,
+        string[] filePaths = { ConsoleApplication.ExecutablePath, ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath,
           mainConfig.ParserLocation };
 
         var langFolder = new DirectoryInfo(ConfigurationManager.AppSettings[Variables.LangFolderKey]);
