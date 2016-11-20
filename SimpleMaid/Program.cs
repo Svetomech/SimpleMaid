@@ -248,7 +248,6 @@ namespace SimpleMaid
        */
     }
 
-
     private static void sendMachineTime()
     {
       reportThreadStart(resources.TimeStart);
@@ -257,7 +256,7 @@ namespace SimpleMaid
       {
         var now = DateTime.Now;
 
-        if (resources.WebErrorMessage != Set($"time.{machineName}" /* PUN NOT INTENDED */,
+        if (resources.WebErrorMessage != Set($"time.{mainConfig.MachineName}",
           $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
           if (!internetAlive)
