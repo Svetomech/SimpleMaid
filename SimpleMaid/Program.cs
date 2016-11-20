@@ -311,7 +311,7 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        remoteCommand = GetUntilGet("commands." + machineName);
+        remoteCommand = GetUntilGet($"commands.{mainConfig.MachineName}");
 
         if (String.Empty == remoteCommand || remoteCommand.StartsWith(ans))
         {
@@ -320,13 +320,14 @@ namespace SimpleMaid
 
         string[] commandParts = remoteCommand.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
-        bool isCommandSpecial = (commandParts[0] != remoteCommand);
+        bool isCommandSpecial = (commandParts?[0] != remoteCommand);
 
         if (isCommandSpecial)
         {
-          char specialCommandIdentifier = commandParts[0].ToCharArray()[0];
+          char? specialCommandIdentifier = commandParts?[0]?[0];
 
-          if (!String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]))
+          bool localCommandSupplied = !String.IsNullOrWhiteSpace(mainConfig.LoginCommand);
+          if (localCommandSupplied)
           {
             specialCommandIdentifier = Variables.RepeatCommand;
           }
@@ -334,66 +335,56 @@ namespace SimpleMaid
           switch (specialCommandIdentifier)
           {
             case Variables.QuitCommand:
-              SetUntilSet("commands." + machineName, ans + Variables.GeneralOKMsg);
+              SetUntilSet($"commands.{mainConfig.MachineName}", ans + Variables.GeneralOKMsg);
               exitCommand();
               break;
 
             case Variables.HideCommand:
-              SetUntilSet("commands." + machineName, ans + hideCommand());
+              SetUntilSet($"commands.{mainConfig.MachineName}", ans + hideCommand());
               break;
 
             case Variables.ShowCommand:
-              SetUntilSet("commands." + machineName, ans + showCommand());
+              SetUntilSet($"commands.{mainConfig.MachineName}", ans + showCommand());
               break;
 
             case Variables.DownloadCommand:
-              SetUntilSet("commands." + machineName, ans + downloadCommand(commandParts));
+              SetUntilSet($"commands.{mainConfig.MachineName}", ans + downloadCommand(commandParts));
               break;
 
             case Variables.MessageCommand:
-              SetUntilSet("commands." + machineName, ans + messageCommand(commandParts));
+              SetUntilSet($"commands.{mainConfig.MachineName}", ans + messageCommand(commandParts));
               break;
 
             case Variables.PowershellCommand:
-              SetUntilSet("commands." + machineName, ans + powershellCommand(commandParts));
+              SetUntilSet($"commands.{mainConfig.MachineName}", ans + powershellCommand(commandParts));
               break;
 
             case Variables.RepeatCommand:
               if (commandParts.Length < 2)
-                goto default;
-
-              if (String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]))
-              {
-                mainConfigData["Service"]["sLogonCommand"] = remoteCommand;
-                mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
-              }
-              else if (remoteCommand != mainConfigData["Service"]["sLogonCommand"])
               {
                 goto default;
-                //////////////////////////////////////////////////////////////////////////////
-                ////////////////////////////////////
-                /////////////////////////////////////////////////////////////////////////
-                ///////////////////////////////////////
-                /////////////////////////////////////////////////////////////////////////////////
-                ///////////////////////////////////////////////////
-                //////////////////////////////////////////////////////////////////////////////////
               }
 
-              string[] commandPartsFixed = new string[commandParts.Length - 1];
+              if (!localCommandSupplied)
+              {
+                mainConfig.LoginCommand = remoteCommand;
+              }
+              else if (remoteCommand != mainConfig.LoginCommand)
+              {
+                goto default;
+              }
+
+              string[] repeatCommandParts = new string[commandParts.Length - 1];
               for (int i = 1; i < commandParts.Length; ++i)
               {
-                commandPartsFixed[i - 1] = commandParts[i];
+                repeatCommandParts[i - 1] = commandParts[i];
               }
 
-              bool isRepeatCommandSpecial = ($"{commandParts[0]}{sep}{commandPartsFixed[0]}" != remoteCommand);
+              bool isRepeatCommandSpecial = $"{commandParts?[0]}{sep}{repeatCommandParts?[0]}" != remoteCommand;
 
-              if (!isRepeatCommandSpecial)
+              if (isRepeatCommandSpecial)
               {
-                executeCommand(commandPartsFixed[0]);
-              }
-              else
-              {
-                char specialRepeatCommandIdentifier = commandPartsFixed[0].ToCharArray()[0];
+                char? specialRepeatCommandIdentifier = repeatCommandParts?[0]?[0];
 
                 switch (specialRepeatCommandIdentifier)
                 {
@@ -402,13 +393,17 @@ namespace SimpleMaid
                     break;
 
                   case Variables.PowershellCommand:
-                    powershellCommand(commandPartsFixed);
+                    powershellCommand(repeatCommandParts);
                     break;
 
                   default:
                     reportGeneralError(resources.WrongCommandErrMsg + remoteCommand);
                     break;
                 }
+              }
+              else
+              {
+                executeCommand(repeatCommandParts?[0]);
               }
               break;
 
@@ -419,7 +414,7 @@ namespace SimpleMaid
         }
         else
         {
-          SetUntilSet("commands." + machineName, ans + executeCommand(commandParts[0]));
+          SetUntilSet($"commands.{mainConfig.MachineName}", ans + executeCommand(commandParts?[0]));
         }
       }
 
