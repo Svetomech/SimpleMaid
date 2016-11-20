@@ -126,7 +126,6 @@ namespace SimpleMaid
       // Localize app strings according to resources.xx
       CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg.Value);
 
-      // TODO: Move so it happens AFTER startup directory management
       // Close app if there is another instance running
       singleInstance = new Mutex(false, $@"Local\{ConsoleApplication.AssemblyGuid}");
       if (!singleInstance.WaitOne(0, false))
@@ -135,9 +134,8 @@ namespace SimpleMaid
         exit();
       }
 
-      // TODO: Only do it once per version
       // Copy files required for app to run locally
-      if (!inDesiredDir)
+      if (!inDesiredDir && mainConfig.AutoRun)
       {
         string[] filePaths = { ConsoleApplication.ExecutablePath, mainConfig.ParserLocation,
           ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath };
@@ -154,14 +152,10 @@ namespace SimpleMaid
 
           langFolder.CopyTo(desiredAppSubdirectory, false);
         }
-        catch // unauthorized, io, notsupported
+        catch (Exception e)
         {
-          // 1. stop other instance using guid technique
-          //   if there is no other instance running, (?recursive or ?continue)
-          // 2. try to copy again
-          //   if unlucky, (?recursive or ?continue)
-          // 3. start that instance (?with a delay through .bat file)
-          // 4. exit
+          reportGeneralError(e.Message);
+          exit();
         }
       }
 
