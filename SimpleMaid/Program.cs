@@ -320,7 +320,7 @@ namespace SimpleMaid
 
         string[] commandParts = remoteCommand.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
-        bool isCommandSpecial = (commandParts?[0] != remoteCommand);
+        bool isCommandSpecial = commandParts?[0] != remoteCommand;
 
         if (isCommandSpecial)
         {
@@ -439,11 +439,11 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        remoteMessage = GetUntilGet("messages." + machineName);
+        remoteMessage = GetUntilGet($"messages.{mainConfig.MachineName}");
 
         if (!String.IsNullOrWhiteSpace(UserChatMessage))
         {
-          SetUntilSet("messages." + machineName, ans + UserChatMessage);
+          SetUntilSet($"messages.{mainConfig.MachineName}", ans + UserChatMessage);
           UserChatMessage = null;
         }
 
@@ -454,13 +454,13 @@ namespace SimpleMaid
 
         previousRemoteMessage = remoteMessage;
 
-        // TODO: частный случай m, ещё две то есть
-        // TODO: ChatCommand = message_aprts[1];
-        #region Parsing message
         string[] messageParts = remoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
         SupportChatMessage = messageParts[0];
-        #endregion
+        //ChatCommand = message_parts[1];
+        // m;
+        // m;message
+        // m;message;command
       }
 
       reportThreadStop(resources.ChatStop);
