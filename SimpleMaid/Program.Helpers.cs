@@ -286,8 +286,6 @@ namespace SimpleMaid
       ChatboxExit = false;
 
       busyChatWise = false;
-
-      SetUntilSet($"commands.{mainConfig.MachineName}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
     }
 
     private static void closeChatWindow()
