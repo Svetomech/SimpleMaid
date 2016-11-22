@@ -114,6 +114,14 @@ namespace SimpleMaid
 
     private static string messageCommand(string[] commandParts)
     {
+      if (commandParts.Length < 2)
+      {
+        return Variables.IncompleteCommandErrMsg;
+      }
+
+      SupportChatMessage = commandParts?[1];
+      ChatCommand = (commandParts.Length >= 3) ? commandParts?[2] : ChatCommand;
+
       if (null == ChatboxWindow || ChatboxWindow.IsDisposed)
       {
         var chatboxThread = new Thread(openChatWindow);
