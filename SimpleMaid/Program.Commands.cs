@@ -159,7 +159,7 @@ namespace SimpleMaid
       return ExecuteCommand(commandParts[1], ConsoleType.Powershell);
     }
 
-    private static string executeCommand(string command, ConsoleType console = ConsoleType.None)
+    internal static string executeCommand(string command, ConsoleType console = ConsoleType.None)
     {
       if (ConsoleType.None == console)
       {
