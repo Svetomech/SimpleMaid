@@ -456,11 +456,13 @@ namespace SimpleMaid
 
         string[] messageParts = remoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
-        SupportChatMessage = messageParts[0];
-        //ChatCommand = message_parts[1];
-        // m;
-        // m;message
-        // m;message;command
+        if (messageParts.Length < 1)
+        {
+          continue;
+        }
+
+        SupportChatMessage = messageParts?[0];
+        ChatCommand = (messageParts.Length >= 2) ? messageParts?[1] : ChatCommand;
       }
 
       reportThreadStop(resources.ChatStop);
