@@ -152,9 +152,9 @@ namespace SimpleMaid
 
           langFolder.CopyTo(desiredAppSubdirectory, false);
         }
-        catch (Exception e)
+        catch (Exception exc)
         {
-          reportGeneralError(e.Message);
+          reportGeneralError(exc.Message);
           exit();
         }
       }
