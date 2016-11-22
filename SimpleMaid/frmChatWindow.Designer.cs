@@ -34,6 +34,7 @@
       this.btnHelpingHoof = new System.Windows.Forms.Button();
       this.btnBidFarewell = new System.Windows.Forms.Button();
       this.tmrSpikeAssistance = new System.Windows.Forms.Timer(this.components);
+      this.tmrHelpingHoofBlink = new System.Windows.Forms.Timer(this.components);
       this.SuspendLayout();
       // 
       // letterBody
@@ -46,7 +47,6 @@
       this.letterBody.Text = "CelestAI: Hello, Gregory.\nYou: What?";
       this.letterBody.SelectionChanged += new System.EventHandler(this.letterBody_SelectionChanged);
       this.letterBody.KeyDown += new System.Windows.Forms.KeyEventHandler(this.letterBody_KeyDown);
-      //this.letterBody.MouseEnter += new System.EventHandler(this.letterBody_MouseEnter);
       // 
       // btnSendLetter
       // 
@@ -86,6 +86,11 @@
       this.tmrSpikeAssistance.Enabled = true;
       this.tmrSpikeAssistance.Tick += new System.EventHandler(this.tmrSpikeAssistance_Tick);
       // 
+      // tmrHelpingHoofBlink
+      // 
+      this.tmrHelpingHoofBlink.Interval = 2000;
+      this.tmrHelpingHoofBlink.Tick += new System.EventHandler(this.tmrHelpingHoofBlink_Tick);
+      // 
       // frmChatWindow
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -118,5 +123,6 @@
     private System.Windows.Forms.Button btnHelpingHoof;
     private System.Windows.Forms.Button btnBidFarewell;
     private System.Windows.Forms.Timer tmrSpikeAssistance;
+    private System.Windows.Forms.Timer tmrHelpingHoofBlink;
   }
 }

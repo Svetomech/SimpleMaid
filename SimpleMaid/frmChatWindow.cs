@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SimpleMaid
@@ -14,6 +15,7 @@ namespace SimpleMaid
     private static string userName;
     private static string supportName;
     private static string emptyLine;
+    private static Color originalColor;
 
     private void frmChatWindow_Load(object sender, EventArgs e)
     {
@@ -22,6 +24,7 @@ namespace SimpleMaid
       userName = (configUserName != Variables.KeywordDefault) ? configUserName : Environment.UserName;
       supportName = resources.SupportName;
       emptyLine = $"{userName}: ";
+      originalColor = btnHelpingHoof.BackColor;
 
       this.Text = $"{Application.ProductName}: {resources.ChatWindowTitle}";
       letterBody.Text = emptyLine;
@@ -70,8 +73,18 @@ namespace SimpleMaid
 
       if (Program.ChatCommand != null)
       {
-        // enable btnHelpingHoof, then start blinking
+        btnHelpingHoof.Enabled = true;
+        tmrHelpingHoofBlink.Start();
+
+        Program.ChatCommand = null;
       }
+    }
+
+    private void tmrHelpingHoofBlink_Tick(object sender, EventArgs e)
+    {
+      bool original = btnHelpingHoof.BackColor == originalColor;
+
+      btnHelpingHoof.BackColor = (original) ? ProfessionalColors.ButtonSelectedHighlight : originalColor;
     }
 
 
@@ -113,11 +126,13 @@ namespace SimpleMaid
       this.Close();
     }
 
+    // TODO: Generalize using command parsing from awaitCommands
     private void btnHelpingHoof_Click(object sender, EventArgs e)
     {
-      // Program.cs
-      // executeCmdCommand - easy
-      // anyCommand - hard (generalize "Parsing command" from "Await commands" region)
+      Program.executeCommand(Program.ChatCommand);
+
+      tmrHelpingHoofBlink.Stop();
+      btnHelpingHoof.Enabled = false;
     }
 
     private static bool allowModification = true;
