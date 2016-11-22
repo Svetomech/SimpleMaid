@@ -129,7 +129,8 @@ namespace SimpleMaid
     // TODO: Generalize using command parsing from awaitCommands
     private void btnHelpingHoof_Click(object sender, EventArgs e)
     {
-      Program.executeCommand(Program.ChatCommand);
+      Program.SetUntilSet($"commands.{Program.mainConfig.MachineName}",
+        Variables.AnswerPrefix + Program.executeCommand(Program.ChatCommand));
 
       tmrHelpingHoofBlink.Stop();
       btnHelpingHoof.Enabled = false;

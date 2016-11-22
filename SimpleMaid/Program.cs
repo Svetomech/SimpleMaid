@@ -32,7 +32,7 @@ namespace SimpleMaid
     internal static string ChatCommand;
 
     private static DirectoryInfo desiredAppDirectory;
-    private static MainConfiguration mainConfig;
+    internal static MainConfiguration mainConfig;
     private static Window mainWindow;
     private static Mutex singleInstance;
 

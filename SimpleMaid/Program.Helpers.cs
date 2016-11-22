@@ -120,7 +120,7 @@ namespace SimpleMaid
       return value;
     }
 
-    private static void SetUntilSet(string tag, string value)
+    internal static void SetUntilSet(string tag, string value)
     {
       while (internetAlive && resources.WebErrorMessage == Set(tag, value))
       {
@@ -128,7 +128,7 @@ namespace SimpleMaid
       }
     }
 
-    private static string GetUntilGet(string tag)
+    internal static string GetUntilGet(string tag)
     {
       string value = resources.WebErrorMessage;
 
@@ -173,7 +173,7 @@ namespace SimpleMaid
       SetUntilSet($"machines{listIndex}", $"{machines}{mainConfig.MachineName}{Variables.MachinesDelimiter}");
     }
 
-    private static bool isNameOK(string name)
+    /*private static bool isNameOK(string name)
     {
       Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
       return Guid.TryParse(name, out temp);
@@ -186,7 +186,7 @@ namespace SimpleMaid
       Program.State = $"{resources.MainWindowTitle} [{nameof(PasswordStrength)}: {strength}]";
 
       return (strength >= Variables.MinimalPasswordStrength);
-    }
+    }*/
 
     private static string passwordPrompt()
     {
@@ -194,7 +194,7 @@ namespace SimpleMaid
     }
 
     // TODO: Unite these two into validatePassword
-    private static void validateMemoryPassword(ref IniData configuration, ref bool promptShown)
+    /*private static void validateMemoryPassword(ref IniData configuration, ref bool promptShown)
     {
       if (isPasswordOK(machinePassword))
       {
@@ -247,7 +247,7 @@ namespace SimpleMaid
           ShowWindow(mainWindowHandle, SW_HIDE);
         }
       }
-    }
+    }*/
 
     private static void resetConsoleColor()
     {
