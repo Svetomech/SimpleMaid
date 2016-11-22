@@ -7,6 +7,9 @@ using System.Threading;
 using static Svetomech.Utilities.PasswordStrength;
 using static Svetomech.Utilities.SimpleConsole;
 using static Svetomech.Utilities.NativeMethods;
+using System.Text;
+using System.Net;
+using System.IO;
 
 namespace SimpleMaid
 {
@@ -15,7 +18,7 @@ namespace SimpleMaid
     // TODO: Set&Get vs SetUntilSet&GetUntilGet - clarify use cases
     private static string Set(string tag, string value)
     {
-      tag = $"{Application.ProductName}_{tag}";
+      tag = $"{ConsoleApplication.ProductName}_{tag}";
 
       var encoding = new UTF8Encoding();
       byte[] requestBody = encoding.GetBytes($"tag={tag}&value={value}&fmt=html");
@@ -57,7 +60,7 @@ namespace SimpleMaid
 
     private static string Get(string tag)
     {
-      tag = $"{Application.ProductName}_{tag}";
+      tag = $"{ConsoleApplication.ProductName}_{tag}";
 
       string value;
 
@@ -150,7 +153,7 @@ namespace SimpleMaid
 
     private static void configureMachine()
     {
-      int valueLength = machineName.Length + 1; // Variables.MachinesDelimiter
+      int valueLength = mainConfig.MachineName.Length + 1; // Variables.MachinesDelimiter
       int realValueLimit = (int)Math.Floor(Variables.IndividualValueLimit / valueLength) * valueLength;
 
       int listIndex = -1;
@@ -159,7 +162,7 @@ namespace SimpleMaid
       {
         listIndex++;
         currentList = GetUntilGet($"machines{listIndex}");
-        if (currentList.Contains(machineName))
+        if (currentList.Contains(mainConfig.MachineName))
         {
           return;
         }
@@ -167,7 +170,7 @@ namespace SimpleMaid
 
       string machines = currentList;
 
-      SetUntilSet($"machines{listIndex}", $"{machines}{machineName}{Variables.MachinesDelimiter}");
+      SetUntilSet($"machines{listIndex}", $"{machines}{mainConfig.MachineName}{Variables.MachinesDelimiter}");
     }
 
     private static bool isNameOK(string name)
@@ -284,7 +287,7 @@ namespace SimpleMaid
 
       busyChatWise = false;
 
-      SetUntilSet($"commands.{machineName}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
+      SetUntilSet($"commands.{mainConfig.MachineName}", $"{Variables.AnswerPrefix}{Variables.MessageCommand},{ChatboxWindow.Visible}");
     }
 
     private static void closeChatWindow()
