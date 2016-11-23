@@ -10,6 +10,18 @@ namespace SimpleMaid
 {
   internal static partial class Program
   {
+    internal static string RunCommand(string command, ConsoleType console = ConsoleType.None)
+    {
+      if (ConsoleType.None == console)
+      {
+        return runningWindows ? ExecuteCommand(command, ConsoleType.CMD) : ExecuteCommand(command, ConsoleType.Bash);
+      }
+      else
+      {
+        return ExecuteCommand(command, console);
+      }
+    }
+
     private static void exitCommand()
     {
       Environment.Exit(0);
@@ -76,7 +88,7 @@ namespace SimpleMaid
             }
 
             string unevaluatedVariable = ev + variable + evd;
-            string evaluatedVariable = executeCommand($"echo {variable}");
+            string evaluatedVariable = RunCommand($"echo {variable}");
 
             commandParts[2] = commandParts[2].Replace(unevaluatedVariable, evaluatedVariable);
 
@@ -157,18 +169,6 @@ namespace SimpleMaid
       commandParts[1] = commandParts[1].Replace(@"""", @"\""");
 
       return ExecuteCommand(commandParts[1], ConsoleType.Powershell);
-    }
-
-    internal static string executeCommand(string command, ConsoleType console = ConsoleType.None)
-    {
-      if (ConsoleType.None == console)
-      {
-        return runningWindows ? ExecuteCommand(command, ConsoleType.CMD) : ExecuteCommand(command, ConsoleType.Bash);
-      }
-      else
-      {
-        return ExecuteCommand(command, console);
-      }
     }
   }
 }
