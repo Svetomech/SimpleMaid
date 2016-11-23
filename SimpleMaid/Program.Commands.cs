@@ -17,24 +17,24 @@ namespace SimpleMaid
 
     private static string hideCommand()
     {
-      if (!mainWindow.IsShown)
+      if (!MainWindow.IsShown)
       {
         return Variables.GeneralOKMsg;
       }
 
-      mainWindow.Hide();
+      MainWindow.Hide();
 
       return Variables.GeneralOKMsg;
     }
 
     private static string showCommand()
     {
-      if (mainWindow.IsShown)
+      if (MainWindow.IsShown)
       {
         return Variables.GeneralOKMsg;
       }
 
-      mainWindow.Show();
+      MainWindow.Show();
 
       return Variables.GeneralOKMsg;
     }

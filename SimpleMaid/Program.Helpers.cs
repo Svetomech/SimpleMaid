@@ -16,7 +16,27 @@ namespace SimpleMaid
   internal static partial class Program
   {
     // TODO: Set&Get vs SetUntilSet&GetUntilGet - clarify use cases
-    private static string Set(string tag, string value)
+    internal static void SetUntilSet(string tag, string value)
+    {
+      while (internetAlive && resources.WebErrorMessage == set(tag, value))
+      {
+        Thread.Sleep(Variables.GeneralDelay);
+      }
+    }
+
+    internal static string GetUntilGet(string tag)
+    {
+      string value = resources.WebErrorMessage;
+
+      while (internetAlive && resources.WebErrorMessage == (value = get(tag)))
+      {
+        Thread.Sleep(Variables.GeneralDelay);
+      }
+
+      return value;
+    }
+
+    private static string set(string tag, string value)
     {
       tag = $"{ConsoleApplication.ProductName}_{tag}";
 
@@ -58,7 +78,7 @@ namespace SimpleMaid
       return String.Empty;
     }
 
-    private static string Get(string tag)
+    private static string get(string tag)
     {
       tag = $"{ConsoleApplication.ProductName}_{tag}";
 
@@ -120,26 +140,6 @@ namespace SimpleMaid
       return value;
     }
 
-    internal static void SetUntilSet(string tag, string value)
-    {
-      while (internetAlive && resources.WebErrorMessage == Set(tag, value))
-      {
-        Thread.Sleep(Variables.GeneralDelay);
-      }
-    }
-
-    internal static string GetUntilGet(string tag)
-    {
-      string value = resources.WebErrorMessage;
-
-      while (internetAlive && resources.WebErrorMessage == (value = Get(tag)))
-      {
-        Thread.Sleep(Variables.GeneralDelay);
-      }
-
-      return value;
-    }
-
     private static void exit()
     {
       Thread.Sleep(Variables.WindowCloseDelay);
@@ -153,7 +153,7 @@ namespace SimpleMaid
 
     private static void configureMachine()
     {
-      int valueLength = mainConfig.MachineName.Length + 1; // Variables.MachinesDelimiter
+      int valueLength = MainConfig.MachineName.Length + 1; // Variables.MachinesDelimiter
       int realValueLimit = (int)Math.Floor(Variables.IndividualValueLimit / valueLength) * valueLength;
 
       int listIndex = -1;
@@ -162,7 +162,7 @@ namespace SimpleMaid
       {
         listIndex++;
         currentList = GetUntilGet($"machines{listIndex}");
-        if (currentList.Contains(mainConfig.MachineName))
+        if (currentList.Contains(MainConfig.MachineName))
         {
           return;
         }
@@ -170,7 +170,7 @@ namespace SimpleMaid
 
       string machines = currentList;
 
-      SetUntilSet($"machines{listIndex}", $"{machines}{mainConfig.MachineName}{Variables.MachinesDelimiter}");
+      SetUntilSet($"machines{listIndex}", $"{machines}{MainConfig.MachineName}{Variables.MachinesDelimiter}");
     }
 
     /*private static bool isNameOK(string name)

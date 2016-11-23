@@ -31,10 +31,10 @@ namespace SimpleMaid
     internal static string UserChatMessage;
     internal static string ChatCommand;
 
-    internal static DirectoryInfo desiredAppDirectory;
-    internal static MainConfiguration mainConfig;
-    internal static Window mainWindow;
-    internal static Mutex singleInstance;
+    internal static DirectoryInfo DesiredAppDirectory;
+    internal static MainConfiguration MainConfig;
+    internal static Window MainWindow;
+    internal static Mutex SingleInstance;
 
     private static Thread connectionThread;
     private static Thread commandThread;
@@ -108,46 +108,46 @@ namespace SimpleMaid
       string realAppName = Path.GetFileName(ConsoleApplication.ExecutablePath);
 
       // Generate app directory path in a cross-platform way
-      desiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
+      DesiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
         Environment.SpecialFolder.LocalApplicationData), ConsoleApplication.CompanyName, desiredAppName));
 
       // Initialize main config file based on app directory
-      mainConfig = new MainConfiguration(Path.Combine(desiredAppDirectory.FullName,
+      MainConfig = new MainConfiguration(Path.Combine(DesiredAppDirectory.FullName,
         (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{desiredAppName}.ini"));
 
       // Don't show main window if app was autorun
-      mainWindow = NativeMethods.GetConsoleWindow();
-      bool inDesiredDir = desiredAppDirectory.IsEqualTo(ConsoleApplication.StartupPath);
+      MainWindow = NativeMethods.GetConsoleWindow();
+      bool inDesiredDir = DesiredAppDirectory.IsEqualTo(ConsoleApplication.StartupPath);
       if (inDesiredDir || rogueArg.Found)
       {
-        mainWindow.Hide();
+        MainWindow.Hide();
       }
 
       // Localize app strings according to resources.xx
       CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg.Value);
 
       // Close app if there is another instance running
-      singleInstance = new Mutex(false, $@"Local\{ConsoleApplication.AssemblyGuid}");
-      if (!singleInstance.WaitOne(0, false))
+      SingleInstance = new Mutex(false, $@"Local\{ConsoleApplication.AssemblyGuid}");
+      if (!SingleInstance.WaitOne(0, false))
       {
         reportPastSelf();
         exit();
       }
 
       // Copy files required for app to run locally
-      if (!inDesiredDir && mainConfig.AutoRun)
+      if (!inDesiredDir && MainConfig.AutoRun)
       {
-        string[] filePaths = { ConsoleApplication.ExecutablePath, mainConfig.ParserLocation,
+        string[] filePaths = { ConsoleApplication.ExecutablePath, MainConfig.ParserLocation,
           ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath };
 
         var langFolder = new DirectoryInfo(ConfigurationManager.AppSettings[Variables.LangFolderKey]);
-        var desiredAppSubdirectory = new DirectoryInfo(Path.Combine(desiredAppDirectory.FullName, langFolder.Name));
+        var desiredAppSubdirectory = new DirectoryInfo(Path.Combine(DesiredAppDirectory.FullName, langFolder.Name));
 
         try
         {
           foreach (var filePath in filePaths)
           {
-            File.Copy(filePath, Path.Combine(desiredAppDirectory.FullName, Path.GetFileName(filePath)), true);
+            File.Copy(filePath, Path.Combine(DesiredAppDirectory.FullName, Path.GetFileName(filePath)), true);
           }
 
           langFolder.CopyTo(desiredAppSubdirectory, false);
@@ -160,14 +160,14 @@ namespace SimpleMaid
       }
 
 
-      bool firstRun = !mainConfig.ExistsLocally;
+      bool firstRun = !MainConfig.ExistsLocally;
       //bool promptShown = false;
       if (firstRun)
       {
         //
         //
-        mainConfig.MachinePassword = passArg;
-        mainConfig.AutoRun = autorunArgFound;
+        MainConfig.MachinePassword = passArg;
+        MainConfig.AutoRun = autorunArgFound;
         //
       }
       else
@@ -190,7 +190,7 @@ namespace SimpleMaid
 
         if (autorunArgFound)
         {
-          mainConfig.AutoRun = !mainConfig.AutoRun;
+          MainConfig.AutoRun = !MainConfig.AutoRun;
         }
       }
 
@@ -207,9 +207,9 @@ namespace SimpleMaid
       }
 
       // Add or remove autorun entry if required
-      if (mainConfig.AutoRun)
+      if (MainConfig.AutoRun)
       {
-        App.SwitchAutorun(desiredAppName, Path.Combine(desiredAppDirectory.FullName, realAppName), true);
+        App.SwitchAutorun(desiredAppName, Path.Combine(DesiredAppDirectory.FullName, realAppName), true);
       }
       else
       {
@@ -256,7 +256,7 @@ namespace SimpleMaid
       {
         var now = DateTime.Now;
 
-        if (resources.WebErrorMessage != Set($"time.{mainConfig.MachineName}",
+        if (resources.WebErrorMessage != set($"time.{MainConfig.MachineName}",
           $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
           if (!internetAlive)
@@ -276,15 +276,15 @@ namespace SimpleMaid
 
       while (busyConnectionWise && internetAlive)
       {
-        bool remotePasswordAccepted = Get(mainConfig.MachineName) == mainConfig.MachinePassword;
-        bool localCommandSupplied = !String.IsNullOrWhiteSpace(mainConfig.LoginCommand);
+        bool remotePasswordAccepted = get(MainConfig.MachineName) == MainConfig.MachinePassword;
+        bool localCommandSupplied = !String.IsNullOrWhiteSpace(MainConfig.LoginCommand);
 
         if (remotePasswordAccepted || localCommandSupplied)
         {
-          mainConfig.LoginCommand = remotePasswordAccepted ? String.Empty : mainConfig.LoginCommand;
+          MainConfig.LoginCommand = remotePasswordAccepted ? String.Empty : MainConfig.LoginCommand;
 
           busyCommandWise = !busyCommandWise;
-          SetUntilSet(mainConfig.MachineName, String.Empty);
+          SetUntilSet(MainConfig.MachineName, String.Empty);
 
           resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
         }
@@ -311,7 +311,7 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        remoteCommand = GetUntilGet($"commands.{mainConfig.MachineName}");
+        remoteCommand = GetUntilGet($"commands.{MainConfig.MachineName}");
 
         if (String.Empty == remoteCommand || remoteCommand.StartsWith(ans))
         {
@@ -326,7 +326,7 @@ namespace SimpleMaid
         {
           char? specialCommandIdentifier = commandParts?[0]?[0];
 
-          bool localCommandSupplied = !String.IsNullOrWhiteSpace(mainConfig.LoginCommand);
+          bool localCommandSupplied = !String.IsNullOrWhiteSpace(MainConfig.LoginCommand);
           if (localCommandSupplied)
           {
             specialCommandIdentifier = Variables.RepeatCommand;
@@ -335,28 +335,28 @@ namespace SimpleMaid
           switch (specialCommandIdentifier)
           {
             case Variables.QuitCommand:
-              SetUntilSet($"commands.{mainConfig.MachineName}", ans + Variables.GeneralOKMsg);
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + Variables.GeneralOKMsg);
               exitCommand();
               break;
 
             case Variables.HideCommand:
-              SetUntilSet($"commands.{mainConfig.MachineName}", ans + hideCommand());
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + hideCommand());
               break;
 
             case Variables.ShowCommand:
-              SetUntilSet($"commands.{mainConfig.MachineName}", ans + showCommand());
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + showCommand());
               break;
 
             case Variables.DownloadCommand:
-              SetUntilSet($"commands.{mainConfig.MachineName}", ans + downloadCommand(commandParts));
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + downloadCommand(commandParts));
               break;
 
             case Variables.MessageCommand:
-              SetUntilSet($"commands.{mainConfig.MachineName}", ans + messageCommand(commandParts));
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + messageCommand(commandParts));
               break;
 
             case Variables.PowershellCommand:
-              SetUntilSet($"commands.{mainConfig.MachineName}", ans + powershellCommand(commandParts));
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + powershellCommand(commandParts));
               break;
 
             case Variables.RepeatCommand:
@@ -367,9 +367,9 @@ namespace SimpleMaid
 
               if (!localCommandSupplied)
               {
-                mainConfig.LoginCommand = remoteCommand;
+                MainConfig.LoginCommand = remoteCommand;
               }
-              else if (remoteCommand != mainConfig.LoginCommand)
+              else if (remoteCommand != MainConfig.LoginCommand)
               {
                 goto default;
               }
@@ -414,7 +414,7 @@ namespace SimpleMaid
         }
         else
         {
-          SetUntilSet($"commands.{mainConfig.MachineName}", ans + executeCommand(commandParts?[0]));
+          SetUntilSet($"commands.{MainConfig.MachineName}", ans + executeCommand(commandParts?[0]));
         }
       }
 
@@ -439,11 +439,11 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        remoteMessage = GetUntilGet($"messages.{mainConfig.MachineName}");
+        remoteMessage = GetUntilGet($"messages.{MainConfig.MachineName}");
 
         if (!String.IsNullOrWhiteSpace(UserChatMessage))
         {
-          SetUntilSet($"messages.{mainConfig.MachineName}", ans + UserChatMessage);
+          SetUntilSet($"messages.{MainConfig.MachineName}", ans + UserChatMessage);
           UserChatMessage = null;
         }
 
