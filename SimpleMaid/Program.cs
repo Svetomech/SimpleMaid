@@ -31,10 +31,10 @@ namespace SimpleMaid
     internal static string UserChatMessage;
     internal static string ChatCommand;
 
-    private static DirectoryInfo desiredAppDirectory;
+    internal static DirectoryInfo desiredAppDirectory;
     internal static MainConfiguration mainConfig;
-    private static Window mainWindow;
-    private static Mutex singleInstance;
+    internal static Window mainWindow;
+    internal static Mutex singleInstance;
 
     private static Thread connectionThread;
     private static Thread commandThread;
