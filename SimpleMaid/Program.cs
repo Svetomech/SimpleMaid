@@ -12,7 +12,28 @@ namespace SimpleMaid
 {
   internal static partial class Program
   {
-    public static string State
+    internal static DirectoryInfo DesiredAppDirectory;
+    internal static MainConfiguration MainConfig;
+    internal static Window MainWindow;
+
+    internal static frmChatWindow ChatboxWindow;
+    internal static bool ChatboxExit;
+    internal static string SupportChatMessage;
+    internal static string UserChatMessage;
+    internal static string ChatCommand;
+
+    private static Thread connectionThread;
+    private static Thread commandThread;
+    private static Thread chatThread;
+    private static bool busyConnectionWise;
+    private static bool busyCommandWise;
+    private static bool busyChatWise;
+
+    private static readonly bool runningWindows = (RunningPlatform() == Platform.Windows);
+    private static volatile bool internetAlive = true;
+    private static Mutex SingleInstance;
+
+    internal static string State
     {
       set
       {
@@ -24,27 +45,6 @@ namespace SimpleMaid
         return Console.Title.Substring(Console.Title.IndexOf(':') + 2);
       }
     }
-
-    internal static frmChatWindow ChatboxWindow;
-    internal static bool ChatboxExit;
-    internal static string SupportChatMessage;
-    internal static string UserChatMessage;
-    internal static string ChatCommand;
-
-    internal static DirectoryInfo DesiredAppDirectory;
-    internal static MainConfiguration MainConfig;
-    internal static Window MainWindow;
-    internal static Mutex SingleInstance;
-
-    private static Thread connectionThread;
-    private static Thread commandThread;
-    private static Thread chatThread;
-    private static bool busyConnectionWise;
-    private static bool busyCommandWise;
-    private static bool busyChatWise;
-
-    private static readonly bool runningWindows = (RunningPlatform() == Platform.Windows);
-    private static volatile bool internetAlive = true;
 
     private static void Main(string[] args)
     {
