@@ -1,21 +1,17 @@
-﻿using IniParser.Model;
-using Svetomech.Utilities;
+﻿using Svetomech.Utilities;
 using System;
 using System.Globalization;
+using System.IO;
+using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using static Svetomech.Utilities.PasswordStrength;
 using static Svetomech.Utilities.SimpleConsole;
-using static Svetomech.Utilities.NativeMethods;
-using System.Text;
-using System.Net;
-using System.IO;
 
 namespace SimpleMaid
 {
   internal static partial class Program
   {
-    // TODO: Set&Get vs SetUntilSet&GetUntilGet - clarify use cases
     internal static void SetUntilSet(string tag, string value)
     {
       while (internetAlive && resources.WebErrorMessage == set(tag, value))
