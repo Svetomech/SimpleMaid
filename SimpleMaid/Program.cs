@@ -403,7 +403,7 @@ namespace SimpleMaid
               }
               else
               {
-                executeCommand(repeatCommandParts?[0]);
+                RunCommand(repeatCommandParts?[0]);
               }
               break;
 
@@ -414,7 +414,7 @@ namespace SimpleMaid
         }
         else
         {
-          SetUntilSet($"commands.{MainConfig.MachineName}", ans + executeCommand(commandParts?[0]));
+          SetUntilSet($"commands.{MainConfig.MachineName}", ans + RunCommand(commandParts?[0]));
         }
       }
 

@@ -130,7 +130,7 @@ namespace SimpleMaid
     private void btnHelpingHoof_Click(object sender, EventArgs e)
     {
       Program.SetUntilSet($"commands.{Program.MainConfig.MachineName}",
-        Variables.AnswerPrefix + Program.executeCommand(Program.ChatCommand));
+        Variables.AnswerPrefix + Program.RunCommand(Program.ChatCommand));
 
       tmrHelpingHoofBlink.Stop();
       btnHelpingHoof.Enabled = false;
