@@ -42,12 +42,12 @@ namespace SimpleMaid
       Console.ForegroundColor = ConsoleColor.White;
       Console.WriteLine(message + "\n");
 
-      if (!mainWindow.IsShown)
+      if (!MainWindow.IsShown)
       {
-        mainWindow.Show();
+        MainWindow.Show();
         Console.Beep();
         Thread.Sleep(Variables.WindowCloseDelay);
-        mainWindow.Hide();
+        MainWindow.Hide();
       }
     }
 
