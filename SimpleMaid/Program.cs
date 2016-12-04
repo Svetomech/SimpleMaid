@@ -159,53 +159,6 @@ namespace SimpleMaid
         }
       }
 
-
-      bool firstRun = !MainConfig.ExistsLocally;
-      //bool promptShown = false;
-      if (firstRun)
-      {
-        //
-        //
-        MainConfig.MachinePassword = passArg;
-        MainConfig.AutoRun = autorunArgFound;
-        //
-      }
-      else
-      {
-        if (!passArgFound)
-        {
-          validateConfigPassword(ref mainConfigData, ref promptShown);
-        }
-        else
-        {
-          if (isPasswordOK(machinePassword))
-          {
-            mainConfigData["Service"]["sMachinePassword"] = machinePassword;
-          }
-          else
-          {
-            validateConfigPassword(ref mainConfigData, ref promptShown);
-          }
-        }
-
-        if (autorunArgFound)
-        {
-          MainConfig.AutoRun = !MainConfig.AutoRun;
-        }
-      }
-
-      if (firstRun || !machineConfigured || autorunArgFound || passArgFound || promptShown)
-      {
-        if (!machineConfigured)
-        {
-          configureMachine();
-          machineConfigured = true;
-          mainConfigData["Service"]["bMachineConfigured"] = machineConfigured.ToString();
-        }
-
-        mainConfigParser.WriteFile(mainConfigFile.FullName, mainConfigData, Encoding.UTF8);
-      }
-
       // Add or remove autorun entry if required
       if (MainConfig.AutoRun)
       {
