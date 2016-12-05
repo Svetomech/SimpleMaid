@@ -62,10 +62,10 @@ namespace SimpleMaid
       }
 
       // Highly optimised console arguments' searching
-      var rogueArg = new ConsoleArgument(false);
-      var autorunArg = new ConsoleArgument(false);
-      var langArg = new ConsoleArgument(false, CultureInfo.InstalledUICulture.Name);
-      var passArg = new ConsoleArgument(false, Variables.DefaultPassword);
+      var rogueArg = new ConsoleArgument();
+      var autorunArg = new ConsoleArgument();
+      var langArg = new ConsoleArgument(CultureInfo.InstalledUICulture.Name);
+      var passArg = new ConsoleArgument(Variables.DefaultPassword);
 
       if (args.Length >= 1)
       {
