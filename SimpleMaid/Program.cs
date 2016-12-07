@@ -21,16 +21,16 @@ namespace SimpleMaid
     internal static string UserChatMessage;
     internal static string ChatCommand;
 
+    private static readonly bool RunningWindows = (RunningPlatform() == Platform.Windows);
+    private static volatile bool _internetAlive = true;
+    private static Mutex _singleInstance;
+
     private static Thread _connectionThread;
     private static Thread _commandThread;
     private static Thread _chatThread;
     private static bool _busyConnectionWise;
     private static bool _busyCommandWise;
     private static bool _busyChatWise;
-
-    private static readonly bool RunningWindows = (RunningPlatform() == Platform.Windows);
-    private static volatile bool _internetAlive = true;
-    private static Mutex _singleInstance;
 
     internal static string State
     {
