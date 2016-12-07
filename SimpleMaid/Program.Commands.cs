@@ -14,7 +14,7 @@ namespace SimpleMaid
     {
       if (ConsoleType.None == console)
       {
-        return runningWindows ? ExecuteCommand(command, ConsoleType.CMD) : ExecuteCommand(command, ConsoleType.Bash);
+        return RunningWindows ? ExecuteCommand(command, ConsoleType.CMD) : ExecuteCommand(command, ConsoleType.Bash);
       }
       else
       {
@@ -145,7 +145,7 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        resurrectDeadThread(ref chatThread, serveMessages, busyChatWise);
+        resurrectDeadThread(ref _chatThread, ServeMessages, _busyChatWise);
       }
       else
       {

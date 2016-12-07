@@ -21,22 +21,22 @@ namespace SimpleMaid
     internal static string UserChatMessage;
     internal static string ChatCommand;
 
-    private static Thread connectionThread;
-    private static Thread commandThread;
-    private static Thread chatThread;
-    private static bool busyConnectionWise;
-    private static bool busyCommandWise;
-    private static bool busyChatWise;
+    private static Thread _connectionThread;
+    private static Thread _commandThread;
+    private static Thread _chatThread;
+    private static bool _busyConnectionWise;
+    private static bool _busyCommandWise;
+    private static bool _busyChatWise;
 
-    private static readonly bool runningWindows = (RunningPlatform() == Platform.Windows);
-    private static volatile bool internetAlive = true;
-    private static Mutex SingleInstance;
+    private static readonly bool RunningWindows = (RunningPlatform() == Platform.Windows);
+    private static volatile bool _internetAlive = true;
+    private static Mutex _singleInstance;
 
     internal static string State
     {
       set
       {
-        Console.Title = $"{ConsoleApplication.ProductName}: {value}";
+        Console.Title = $@"{ConsoleApplication.ProductName}: {value}";
       }
 
       get
@@ -89,13 +89,15 @@ namespace SimpleMaid
 
           if (!langArg.Found && (args[i] == Variables.LanguageArgument))
           {
-            langArg.Value = (langArg.Found = (i + 1 < adjustedLength)) ? args[i + 1] : langArg.Value;
+            // ReSharper disable once AssignmentInConditionalExpression
+            langArg.Value = (langArg.Found = i + 1 < adjustedLength) ? args[i + 1] : langArg.Value;
 
             adjustedLength -= langArg.Found ? 2 : 1;
           }
           else if (!passArg.Found && (args[i] == Variables.PasswordArgument))
           {
-            passArg.Value = (passArg.Found = (i + 1 < adjustedLength)) ? args[i + 1] : passArg.Value;
+            // ReSharper disable once AssignmentInConditionalExpression
+            passArg.Value = (passArg.Found = i + 1 < adjustedLength) ? args[i + 1] : passArg.Value;
 
             adjustedLength -= passArg.Found ? 2 : 1;
           }
@@ -112,6 +114,7 @@ namespace SimpleMaid
 
       // Initialize main config file based on app directory
       MainConfig = new MainConfiguration(Path.Combine(DesiredAppDirectory.FullName,
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{desiredAppName}.ini"));
 
       // Don't show main window if app was autorun
@@ -126,8 +129,8 @@ namespace SimpleMaid
       CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg.Value);
 
       // Close app if there is another instance running
-      SingleInstance = new Mutex(false, $@"Local\{ConsoleApplication.AssemblyGuid}");
-      if (!SingleInstance.WaitOne(0, false))
+      _singleInstance = new Mutex(false, $@"Local\{ConsoleApplication.AssemblyGuid}");
+      if (!_singleInstance.WaitOne(0, false))
       {
         reportPastSelf();
         exit();
@@ -169,23 +172,23 @@ namespace SimpleMaid
       }
 
       // Initialize & start main thread
-      var timeThread = new Thread(sendMachineTime) {IsBackground = true};
+      var timeThread = new Thread(SendMachineTime) {IsBackground = true};
       timeThread.Start();
 
-      Thread.Sleep(Variables.GeneralDelay); // needed
+      Thread.Sleep(Variables.GeneralDelay);
 
       // Initialize & start connection thread
-      connectionThread = new Thread(handleConnection) {IsBackground = true};
-      busyConnectionWise = true;
-      connectionThread.Start();
+      _connectionThread = new Thread(HandleConnection) {IsBackground = true};
+      _busyConnectionWise = true;
+      _connectionThread.Start();
 
       // Initialize command thread
-      commandThread = new Thread(awaitCommands) {IsBackground = true};
-      busyCommandWise = false;
+      _commandThread = new Thread(AwaitCommands) {IsBackground = true};
+      _busyCommandWise = false;
 
       // Initialize chat thread
-      chatThread = new Thread(serveMessages) {IsBackground = true};
-      busyChatWise = false;
+      _chatThread = new Thread(ServeMessages) {IsBackground = true};
+      _busyChatWise = false;
 
       // Do not close app - go on in main thread
       timeThread.Join();
@@ -196,7 +199,7 @@ namespace SimpleMaid
        */
     }
 
-    private static void sendMachineTime()
+    private static void SendMachineTime()
     {
       reportThreadStart(resources.TimeStart);
 
@@ -207,22 +210,23 @@ namespace SimpleMaid
         if (resources.WebErrorMessage != set($"time.{MainConfig.MachineName}",
           $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
-          if (!internetAlive)
+          if (!_internetAlive)
           {
-            internetAlive = true;
+            _internetAlive = true;
             resurrectDeadThreads();
           }
         }
 
         Thread.Sleep(Variables.GeneralDelay - now.Millisecond);
       }
+      // ReSharper disable once FunctionNeverReturns
     }
 
-    private static void handleConnection()
+    private static void HandleConnection()
     {
       reportThreadStart(resources.ConnectionStart);
 
-      while (busyConnectionWise && internetAlive)
+      while (_busyConnectionWise && _internetAlive)
       {
         bool remotePasswordAccepted = get(MainConfig.MachineName) == MainConfig.MachinePassword;
         bool localCommandSupplied = !String.IsNullOrWhiteSpace(MainConfig.LoginCommand);
@@ -231,10 +235,10 @@ namespace SimpleMaid
         {
           MainConfig.LoginCommand = remotePasswordAccepted ? String.Empty : MainConfig.LoginCommand;
 
-          busyCommandWise = !busyCommandWise;
+          _busyCommandWise = !_busyCommandWise;
           SetUntilSet(MainConfig.MachineName, String.Empty);
 
-          resurrectDeadThread(ref commandThread, awaitCommands, busyCommandWise);
+          resurrectDeadThread(ref _commandThread, AwaitCommands, _busyCommandWise);
         }
 
         Thread.Sleep(Variables.GeneralDelay);
@@ -243,16 +247,16 @@ namespace SimpleMaid
       reportThreadStop(resources.ConnectionStop);
     }
 
-    private static void awaitCommands()
+    private static void AwaitCommands()
     {
       reportThreadStart(resources.CommandStart);
 
-      string ans = Variables.AnswerPrefix;
-      char sep = Variables.CommandsSeparator;
+      const string ans = Variables.AnswerPrefix;
+      const char sep = Variables.CommandsSeparator;
 
       string remoteCommand = null;
 
-      while (busyCommandWise && internetAlive)
+      while (_busyCommandWise && _internetAlive)
       {
         if (remoteCommand != null)
         {
@@ -266,13 +270,13 @@ namespace SimpleMaid
           continue;
         }
 
-        string[] commandParts = remoteCommand.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
+        string[] commandParts = remoteCommand.Split(new[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
-        bool isCommandSpecial = commandParts?[0] != remoteCommand;
+        bool isCommandSpecial = commandParts[0] != remoteCommand;
 
         if (isCommandSpecial)
         {
-          char? specialCommandIdentifier = commandParts?[0]?[0];
+          char? specialCommandIdentifier = commandParts[0]?[0];
 
           bool localCommandSupplied = !String.IsNullOrWhiteSpace(MainConfig.LoginCommand);
           if (localCommandSupplied)
@@ -328,11 +332,11 @@ namespace SimpleMaid
                 repeatCommandParts[i - 1] = commandParts[i];
               }
 
-              bool isRepeatCommandSpecial = $"{commandParts?[0]}{sep}{repeatCommandParts?[0]}" != remoteCommand;
+              bool isRepeatCommandSpecial = $"{commandParts[0]}{sep}{repeatCommandParts[0]}" != remoteCommand;
 
               if (isRepeatCommandSpecial)
               {
-                char? specialRepeatCommandIdentifier = repeatCommandParts?[0]?[0];
+                char? specialRepeatCommandIdentifier = repeatCommandParts[0]?[0];
 
                 switch (specialRepeatCommandIdentifier)
                 {
@@ -351,7 +355,7 @@ namespace SimpleMaid
               }
               else
               {
-                RunCommand(repeatCommandParts?[0]);
+                RunCommand(repeatCommandParts[0]);
               }
               break;
 
@@ -362,7 +366,7 @@ namespace SimpleMaid
         }
         else
         {
-          SetUntilSet($"commands.{MainConfig.MachineName}", ans + RunCommand(commandParts?[0]));
+          SetUntilSet($"commands.{MainConfig.MachineName}", ans + RunCommand(commandParts[0]));
         }
       }
 
@@ -370,17 +374,17 @@ namespace SimpleMaid
     }
 
     // TODO: Resolve colission - user and support sending messages simultaneously
-    private static void serveMessages()
+    private static void ServeMessages()
     {
       reportThreadStart(resources.ChatStart);
 
-      string ans = Variables.AnswerPrefix;
-      char sep = Variables.CommandsSeparator;
+      const string ans = Variables.AnswerPrefix;
+      const char sep = Variables.CommandsSeparator;
 
       string remoteMessage = null;
       string previousRemoteMessage = null;
 
-      while (busyChatWise && internetAlive)
+      while (_busyChatWise && _internetAlive)
       {
         if (remoteMessage != null)
         {
@@ -402,15 +406,15 @@ namespace SimpleMaid
 
         previousRemoteMessage = remoteMessage;
 
-        string[] messageParts = remoteMessage.Split(new char[] { sep }, StringSplitOptions.RemoveEmptyEntries);
+        string[] messageParts = remoteMessage.Split(new[] { sep }, StringSplitOptions.RemoveEmptyEntries);
 
         if (messageParts.Length < 1)
         {
           continue;
         }
 
-        SupportChatMessage = messageParts?[0];
-        ChatCommand = (messageParts.Length >= 2) ? messageParts?[1] : ChatCommand;
+        SupportChatMessage = messageParts[0];
+        ChatCommand = (messageParts.Length >= 2) ? messageParts[1] : ChatCommand;
       }
 
       reportThreadStop(resources.ChatStop);

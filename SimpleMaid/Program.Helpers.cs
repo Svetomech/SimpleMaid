@@ -14,7 +14,7 @@ namespace SimpleMaid
   {
     internal static void SetUntilSet(string tag, string value)
     {
-      while (internetAlive && resources.WebErrorMessage == set(tag, value))
+      while (_internetAlive && resources.WebErrorMessage == set(tag, value))
       {
         Thread.Sleep(Variables.GeneralDelay);
       }
@@ -24,7 +24,7 @@ namespace SimpleMaid
     {
       string value = resources.WebErrorMessage;
 
-      while (internetAlive && resources.WebErrorMessage == (value = get(tag)))
+      while (_internetAlive && resources.WebErrorMessage == (value = get(tag)))
       {
         Thread.Sleep(Variables.GeneralDelay);
       }
@@ -56,14 +56,14 @@ namespace SimpleMaid
       catch (WebException)
       {
         reportWebError();
-        internetAlive = false;
+        _internetAlive = false;
         return resources.WebErrorMessage;
       }
       try { using (var response = request.GetResponse()) ; }
       catch (WebException)
       {
         reportWebError();
-        internetAlive = false;
+        _internetAlive = false;
         return resources.WebErrorMessage;
       }
 
@@ -100,7 +100,7 @@ namespace SimpleMaid
       catch (WebException)
       {
         reportWebError();
-        internetAlive = false;
+        _internetAlive = false;
         return resources.WebErrorMessage;
       }
 
@@ -119,7 +119,7 @@ namespace SimpleMaid
       catch (WebException)
       {
         reportWebError();
-        internetAlive = false;
+        _internetAlive = false;
         return resources.WebErrorMessage;
       }
 
@@ -247,7 +247,7 @@ namespace SimpleMaid
 
     private static void resetConsoleColor()
     {
-      if (runningWindows)
+      if (RunningWindows)
       {
         Console.BackgroundColor = ConsoleColor.Black;
       }
@@ -272,7 +272,7 @@ namespace SimpleMaid
 
     private static void openChatWindow()
     {
-      busyChatWise = true;
+      _busyChatWise = true;
 
       ChatboxWindow = new frmChatWindow();
       ChatboxWindow.ShowDialog();
@@ -281,21 +281,21 @@ namespace SimpleMaid
 
       ChatboxExit = false;
 
-      busyChatWise = false;
+      _busyChatWise = false;
     }
 
     private static void closeChatWindow()
     {
-      busyChatWise = false;
+      _busyChatWise = false;
 
       ChatboxExit = true;
     }
 
     private static void resurrectDeadThreads()
     {
-      Thread[] threads = { connectionThread,   commandThread,   chatThread };
-      Action[] starts  = { handleConnection,   awaitCommands,   serveMessages };
-      bool[]   flags   = { busyConnectionWise, busyCommandWise, busyChatWise };
+      Thread[] threads = { _connectionThread,   _commandThread,   _chatThread };
+      Action[] starts  = { HandleConnection,   AwaitCommands,   ServeMessages };
+      bool[]   flags   = { _busyConnectionWise, _busyCommandWise, _busyChatWise };
 
       for (int i = 0; i < threads.Length; ++i)
       {
