@@ -55,14 +55,14 @@ namespace SimpleMaid
       }
       catch (WebException)
       {
-        reportWebError();
+        ReportWebError();
         _internetAlive = false;
         return resources.WebErrorMessage;
       }
       try { using (var response = request.GetResponse()) ; }
       catch (WebException)
       {
-        reportWebError();
+        ReportWebError();
         _internetAlive = false;
         return resources.WebErrorMessage;
       }
@@ -99,7 +99,7 @@ namespace SimpleMaid
       }
       catch (WebException)
       {
-        reportWebError();
+        ReportWebError();
         _internetAlive = false;
         return resources.WebErrorMessage;
       }
@@ -118,7 +118,7 @@ namespace SimpleMaid
       }
       catch (WebException)
       {
-        reportWebError();
+        ReportWebError();
         _internetAlive = false;
         return resources.WebErrorMessage;
       }

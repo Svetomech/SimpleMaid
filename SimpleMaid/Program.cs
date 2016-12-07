@@ -56,7 +56,7 @@ namespace SimpleMaid
       // Forbid executing as admin/root
       if (App.IsElevated())
       {
-        reportGeneralError(resources.AdminErrorMessage);
+        ReportGeneralError(resources.AdminErrorMessage);
         exit();
       }
 
@@ -132,7 +132,7 @@ namespace SimpleMaid
       _singleInstance = new Mutex(false, $@"Local\{ConsoleApplication.AssemblyGuid}");
       if (!_singleInstance.WaitOne(0, false))
       {
-        reportPastSelf();
+        ReportPastSelf();
         exit();
       }
 
@@ -156,7 +156,7 @@ namespace SimpleMaid
         }
         catch (Exception exc)
         {
-          reportGeneralError(exc.Message);
+          ReportGeneralError(exc.Message);
           exit();
         }
       }
@@ -201,7 +201,7 @@ namespace SimpleMaid
 
     private static void SendMachineTime()
     {
-      reportThreadStart(resources.TimeStart);
+      ReportThreadStart(resources.TimeStart);
 
       while (true)
       {
@@ -224,7 +224,7 @@ namespace SimpleMaid
 
     private static void HandleConnection()
     {
-      reportThreadStart(resources.ConnectionStart);
+      ReportThreadStart(resources.ConnectionStart);
 
       while (_busyConnectionWise && _internetAlive)
       {
@@ -244,12 +244,12 @@ namespace SimpleMaid
         Thread.Sleep(Variables.GeneralDelay);
       }
 
-      reportThreadStop(resources.ConnectionStop);
+      ReportThreadStop(resources.ConnectionStop);
     }
 
     private static void AwaitCommands()
     {
-      reportThreadStart(resources.CommandStart);
+      ReportThreadStart(resources.CommandStart);
 
       const string ans = Variables.AnswerPrefix;
       const char sep = Variables.CommandsSeparator;
@@ -349,7 +349,7 @@ namespace SimpleMaid
                     break;
 
                   default:
-                    reportGeneralError(resources.WrongCommandErrMsg + remoteCommand);
+                    ReportGeneralError(resources.WrongCommandErrMsg + remoteCommand);
                     break;
                 }
               }
@@ -360,7 +360,7 @@ namespace SimpleMaid
               break;
 
             default:
-              reportGeneralError(resources.WrongCommandErrMsg + remoteCommand);
+              ReportGeneralError(resources.WrongCommandErrMsg + remoteCommand);
               break;
           }
         }
@@ -370,13 +370,13 @@ namespace SimpleMaid
         }
       }
 
-      reportThreadStop(resources.CommandStop);
+      ReportThreadStop(resources.CommandStop);
     }
 
     // TODO: Resolve colission - user and support sending messages simultaneously
     private static void ServeMessages()
     {
-      reportThreadStart(resources.ChatStart);
+      ReportThreadStart(resources.ChatStart);
 
       const string ans = Variables.AnswerPrefix;
       const char sep = Variables.CommandsSeparator;
@@ -417,7 +417,7 @@ namespace SimpleMaid
         ChatCommand = (messageParts.Length >= 2) ? messageParts[1] : ChatCommand;
       }
 
-      reportThreadStop(resources.ChatStop);
+      ReportThreadStop(resources.ChatStop);
     }
   }
 }

@@ -83,7 +83,7 @@ namespace SimpleMaid
 
             if (variable.Contains(" "))
             {
-              reportGeneralError(resources.InjectionErrorMessage);
+              ReportGeneralError(resources.InjectionErrorMessage);
               return null;
             }
 
