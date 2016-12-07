@@ -150,7 +150,7 @@ namespace SimpleMaid
     private static void configureMachine()
     {
       int valueLength = MainConfig.MachineName.Length + 1; // Variables.MachinesDelimiter
-      int realValueLimit = (int)Math.Floor(Variables.IndividualValueLimit / valueLength) * valueLength;
+      int realValueLimit = (int)Math.Floor((float)Variables.IndividualValueLimit / valueLength) * valueLength;
 
       int listIndex = -1;
       string currentList;
