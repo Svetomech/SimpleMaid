@@ -5,29 +5,29 @@ using System.Windows.Forms;
 
 namespace SimpleMaid
 {
-  public partial class frmChatWindow : Form
+  public partial class FrmChatWindow : Form
   {
-    public frmChatWindow()
+    public FrmChatWindow()
     {
       InitializeComponent();
     }
 
-    private static string userName;
-    private static string supportName;
-    private static string emptyLine;
-    private static Color originalColor;
+    private static string _userName;
+    private static string _supportName;
+    private static string _emptyLine;
+    private static Color _originalColor;
 
     private void frmChatWindow_Load(object sender, EventArgs e)
     {
       string configUserName = ConfigurationManager.AppSettings["ChatUserName"];
 
-      userName = (configUserName != Variables.KeywordDefault) ? configUserName : Environment.UserName;
-      supportName = resources.SupportName;
-      emptyLine = $"{userName}: ";
-      originalColor = btnHelpingHoof.BackColor;
+      _userName = (configUserName != Variables.KeywordDefault) ? configUserName : Environment.UserName;
+      _supportName = resources.SupportName;
+      _emptyLine = $"{_userName}: ";
+      _originalColor = btnHelpingHoof.BackColor;
 
-      this.Text = $"{Application.ProductName}: {resources.ChatWindowTitle}";
-      letterBody.Text = emptyLine;
+      Text = $@"{Application.ProductName}: {resources.ChatWindowTitle}";
+      letterBody.Text = _emptyLine;
       btnSendLetter.Text = resources.btnSendLetter_Text;
       btnBidFarewell.Text = resources.btnBidFarewell_Text;
 
@@ -35,7 +35,7 @@ namespace SimpleMaid
       btnSendLetter.Enabled = true;
       btnBidFarewell.Enabled = true;
 
-      updateCursor();
+      UpdateCursor();
     }
 
     private void frmChatWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -49,26 +49,26 @@ namespace SimpleMaid
     private void tmrSpikeAssistance_Tick(object sender, EventArgs e)
     {
       if (Program.ChatboxExit)
-        this.Dispose();
+        Dispose();
 
       // TODO: Remove this workaround (staying on top)
-      this.TopMost = true;
+      TopMost = true;
 
       if (Program.SupportChatMessage != null)
       {
-        if (String.Empty == letterBody.Text || !letterBody.Lines[letterBody.Lines.Length - 1].StartsWith(emptyLine))
+        if (String.Empty == letterBody.Text || !letterBody.Lines[letterBody.Lines.Length - 1].StartsWith(_emptyLine))
         {
-          letterBody.Text += $"{supportName}: {Program.SupportChatMessage}\n{emptyLine}";
+          letterBody.Text += $@"{_supportName}: {Program.SupportChatMessage}{Environment.NewLine}{_emptyLine}";
         }
         else
         {
-          letterBody.Text += $"\n{supportName}: {Program.SupportChatMessage}\n";
+          letterBody.Text += $@"{Environment.NewLine}{_supportName}: {Program.SupportChatMessage}{Environment.NewLine}";
           letterBody.Text += letterBody.Lines[letterBody.Lines.Length - 3];
-          deleteLine(letterBody.Lines.Length - 3);
+          DeleteLine(letterBody.Lines.Length - 3);
         }
         Program.SupportChatMessage = null;
 
-        updateCursor();
+        UpdateCursor();
       }
 
       if (Program.ChatCommand != null)
@@ -82,13 +82,13 @@ namespace SimpleMaid
 
     private void tmrHelpingHoofBlink_Tick(object sender, EventArgs e)
     {
-      bool original = btnHelpingHoof.BackColor == originalColor;
+      bool original = btnHelpingHoof.BackColor == _originalColor;
 
-      btnHelpingHoof.BackColor = (original) ? ProfessionalColors.ButtonSelectedHighlight : originalColor;
+      btnHelpingHoof.BackColor = (original) ? ProfessionalColors.ButtonSelectedHighlight : _originalColor;
     }
 
 
-    private void deleteLine(int aLine)
+    private void DeleteLine(int aLine)
     {
       int startIndex = letterBody.GetFirstCharIndexFromLine(aLine);
       int count = letterBody.Lines[aLine].Length;
@@ -101,9 +101,9 @@ namespace SimpleMaid
       letterBody.Text = letterBody.Text.Remove(startIndex, count);
     }
 
-    private void updateCursor()
+    private void UpdateCursor()
     {
-      this.Activate();
+      Activate();
       letterBody.SelectionStart = letterBody.Text.Length;
       letterBody.Focus();
     }
@@ -113,17 +113,17 @@ namespace SimpleMaid
     {
       string currentLine = letterBody.Lines[letterBody.Lines.Length - 1];
 
-      Program.UserChatMessage = currentLine.Remove(0, emptyLine.Length);
+      Program.UserChatMessage = currentLine.Remove(0, _emptyLine.Length);
 
-      if (currentLine.TrimEnd() != emptyLine.TrimEnd())
-        letterBody.Text += $"\n{emptyLine}";
+      if (currentLine.TrimEnd() != _emptyLine.TrimEnd())
+        letterBody.Text += $@"{Environment.NewLine}{_emptyLine}";
 
-      updateCursor();
+      UpdateCursor();
     }
 
     private void btnBidFarewell_Click(object sender, EventArgs e)
     {
-      this.Close();
+      Close();
     }
 
     // TODO: Generalize using command parsing from awaitCommands
@@ -136,7 +136,7 @@ namespace SimpleMaid
       btnHelpingHoof.Enabled = false;
     }
 
-    private static bool allowModification = true;
+    private static bool _allowModification = true;
 
     private void letterBody_KeyDown(object sender, KeyEventArgs e)
     {
@@ -148,7 +148,7 @@ namespace SimpleMaid
           break;
 
         case Keys.Back:
-          e.SuppressKeyPress = !allowModification;
+          e.SuppressKeyPress = !_allowModification;
           break;
       }
     }
@@ -156,9 +156,9 @@ namespace SimpleMaid
     private void letterBody_SelectionChanged(object sender, EventArgs e)
     {
       if (letterBody.SelectionLength == 0)
-        allowModification = (letterBody.SelectionStart > letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length);
+        _allowModification = (letterBody.SelectionStart > letterBody.GetFirstCharIndexOfCurrentLine() + _emptyLine.Length);
       else
-        allowModification = (letterBody.SelectionStart >= letterBody.GetFirstCharIndexOfCurrentLine() + emptyLine.Length);
+        _allowModification = (letterBody.SelectionStart >= letterBody.GetFirstCharIndexOfCurrentLine() + _emptyLine.Length);
     }
 
     /*private void letterBody_MouseEnter(object sender, EventArgs e)

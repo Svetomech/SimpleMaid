@@ -15,7 +15,7 @@ namespace SimpleMaid
     internal static MainConfiguration MainConfig;
     internal static Window MainWindow;
 
-    internal static frmChatWindow ChatboxWindow;
+    internal static FrmChatWindow ChatboxWindow;
     internal static bool ChatboxExit;
     internal static string SupportChatMessage;
     internal static string UserChatMessage;

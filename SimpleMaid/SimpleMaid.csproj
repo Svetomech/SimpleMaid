@@ -54,11 +54,11 @@
     <Compile Include="Program.Commands.cs" />
     <Compile Include="Program.Helpers.cs" />
     <Compile Include="Program.Reports.cs" />
-    <Compile Include="frmChatWindow.cs">
+    <Compile Include="FrmChatWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmChatWindow.Designer.cs">
-      <DependentUpon>frmChatWindow.cs</DependentUpon>
+    <Compile Include="FrmChatWindow.Designer.cs">
+      <DependentUpon>FrmChatWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,8 +79,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="frmChatWindow.resx">
-      <DependentUpon>frmChatWindow.cs</DependentUpon>
+    <EmbeddedResource Include="FrmChatWindow.resx">
+      <DependentUpon>FrmChatWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
