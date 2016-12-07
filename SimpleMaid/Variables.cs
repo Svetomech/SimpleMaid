@@ -29,7 +29,7 @@ namespace SimpleMaid
     internal const string AnswerPrefix = "A: ";
     internal const string EvaluateVariable = "eval<";
     internal const string EvaluateVariableEnd = ">";
-    internal const double IndividualValueLimit = 500; // [characters]
+    internal const int IndividualValueLimit = 500; // [characters]
 
     // Custom commands
     internal const char QuitCommand       = 'q';
