@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SimpleMaid
+﻿namespace SimpleMaid
 {
   public struct ConsoleArgument
   {
