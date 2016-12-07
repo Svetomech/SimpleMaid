@@ -31,24 +31,24 @@ namespace SimpleMaid
     {
       if (!MainWindow.IsShown)
       {
-        return Variables.GeneralOKMsg;
+        return Variables.GeneralOkMsg;
       }
 
       MainWindow.Hide();
 
-      return Variables.GeneralOKMsg;
+      return Variables.GeneralOkMsg;
     }
 
     private static string showCommand()
     {
       if (MainWindow.IsShown)
       {
-        return Variables.GeneralOKMsg;
+        return Variables.GeneralOkMsg;
       }
 
       MainWindow.Show();
 
-      return Variables.GeneralOKMsg;
+      return Variables.GeneralOkMsg;
     }
 
     private static string downloadCommand(string[] commandParts)
