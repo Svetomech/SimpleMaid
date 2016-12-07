@@ -287,7 +287,7 @@ namespace SimpleMaid
           switch (specialCommandIdentifier)
           {
             case Variables.QuitCommand:
-              SetUntilSet($"commands.{MainConfig.MachineName}", ans + Variables.GeneralOKMsg);
+              SetUntilSet($"commands.{MainConfig.MachineName}", ans + Variables.GeneralOkMsg);
               exitCommand();
               break;
 

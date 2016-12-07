@@ -41,7 +41,7 @@ namespace SimpleMaid
     internal const char RepeatCommand     = 'r';
 
     // Non-localisible
-    internal const string GeneralOKMsg = "OK!";
+    internal const string GeneralOkMsg = "OK!";
     internal const string PowershellLinuxErrMsg = "https://github.com/powershell/powershell";
     internal const string IncompleteCommandErrMsg = "One good turn deserves another.";
 
