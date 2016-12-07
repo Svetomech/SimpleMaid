@@ -1,6 +1,6 @@
 ﻿namespace SimpleMaid
 {
-  partial class frmChatWindow
+  partial class FrmChatWindow
   {
     /// <summary>
     /// Required designer variable.
@@ -104,7 +104,7 @@
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.Name = "frmChatWindow";
+      this.Name = "FrmChatWindow";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

@@ -274,7 +274,7 @@ namespace SimpleMaid
     {
       _busyChatWise = true;
 
-      ChatboxWindow = new frmChatWindow();
+      ChatboxWindow = new FrmChatWindow();
       ChatboxWindow.ShowDialog();
 
       // ! code below only executes after ChatboxWindow is closed
