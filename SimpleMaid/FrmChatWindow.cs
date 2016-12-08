@@ -45,6 +45,26 @@ namespace SimpleMaid
     }
 
 
+    private void DeleteLine(int aLine)
+    {
+      int startIndex = letterBody.GetFirstCharIndexFromLine(aLine);
+      int count = letterBody.Lines[aLine].Length;
+
+      if (aLine < letterBody.Lines.Length - 1)
+      {
+        count += letterBody.GetFirstCharIndexFromLine(aLine + 1) - ((startIndex + count - 1) + 1);
+      }
+
+      letterBody.Text = letterBody.Text.Remove(startIndex, count);
+    }
+
+    private void UpdateCursor()
+    {
+      Activate();
+      letterBody.SelectionStart = letterBody.Text.Length;
+      letterBody.Focus();
+    }
+
     // TODO: Visibility change when deactivated
     private void tmrSpikeAssistance_Tick(object sender, EventArgs e)
     {
@@ -85,27 +105,6 @@ namespace SimpleMaid
       bool original = btnHelpingHoof.BackColor == _originalColor;
 
       btnHelpingHoof.BackColor = (original) ? ProfessionalColors.ButtonSelectedHighlight : _originalColor;
-    }
-
-
-    private void DeleteLine(int aLine)
-    {
-      int startIndex = letterBody.GetFirstCharIndexFromLine(aLine);
-      int count = letterBody.Lines[aLine].Length;
-
-      if (aLine < letterBody.Lines.Length - 1)
-      {
-        count += letterBody.GetFirstCharIndexFromLine(aLine + 1) - ((startIndex + count - 1) + 1);
-      }
-
-      letterBody.Text = letterBody.Text.Remove(startIndex, count);
-    }
-
-    private void UpdateCursor()
-    {
-      Activate();
-      letterBody.SelectionStart = letterBody.Text.Length;
-      letterBody.Focus();
     }
 
 
