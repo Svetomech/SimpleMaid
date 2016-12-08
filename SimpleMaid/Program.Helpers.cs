@@ -1,12 +1,9 @@
 ﻿using Svetomech.Utilities;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using static Svetomech.Utilities.SimpleConsole;
 
 namespace SimpleMaid
 {
@@ -14,7 +11,7 @@ namespace SimpleMaid
   {
     internal static void SetUntilSet(string tag, string value)
     {
-      while (_internetAlive && resources.WebErrorMessage == set(tag, value))
+      while (_internetAlive && resources.WebErrorMessage == Set(tag, value))
       {
         Thread.Sleep(Variables.GeneralDelay);
       }
@@ -24,7 +21,7 @@ namespace SimpleMaid
     {
       string value = resources.WebErrorMessage;
 
-      while (_internetAlive && resources.WebErrorMessage == (value = get(tag)))
+      while (_internetAlive && resources.WebErrorMessage == (value = Get(tag)))
       {
         Thread.Sleep(Variables.GeneralDelay);
       }
@@ -32,7 +29,7 @@ namespace SimpleMaid
       return value;
     }
 
-    private static string set(string tag, string value)
+    private static string Set(string tag, string value)
     {
       tag = $"{ConsoleApplication.ProductName}_{tag}";
 
@@ -59,7 +56,8 @@ namespace SimpleMaid
         _internetAlive = false;
         return resources.WebErrorMessage;
       }
-      try { using (var response = request.GetResponse()) ; }
+      // ReSharper disable once EmptyEmbeddedStatement
+      try { using (request.GetResponse()) ; }
       catch (WebException)
       {
         ReportWebError();
@@ -67,14 +65,14 @@ namespace SimpleMaid
         return resources.WebErrorMessage;
       }
 
-      resetConsoleColor();
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.Gray;
-      Console.WriteLine($"SET  {tag}  {value}\n");
+      Console.WriteLine($@"SET  {tag}  {value}{Environment.NewLine}");
 
       return String.Empty;
     }
 
-    private static string get(string tag)
+    private static string Get(string tag)
     {
       tag = $"{ConsoleApplication.ProductName}_{tag}";
 
@@ -109,11 +107,12 @@ namespace SimpleMaid
       {
         using (var response = request.GetResponse())
         using (var responseStream = response.GetResponseStream())
+        // ReSharper disable once AssignNullToNotNullAttribute
         using (var sr = new StreamReader(responseStream))
         {
           value = sr.ReadToEnd();
-          value = value.Substring(value.IndexOf(tag) + tag.Length + 4);
-          value = value.Remove(value.IndexOf("\""));
+          value = value.Substring(value.IndexOf(tag, StringComparison.Ordinal) + tag.Length + 4);
+          value = value.Remove(value.IndexOf("\"", StringComparison.Ordinal));
         }
       }
       catch (WebException)
@@ -124,153 +123,25 @@ namespace SimpleMaid
       }
 
       // TODO: Rewrite - problems with decoding
-      value = decodeEncodedNonAsciiCharacters(value);
+      value = value.DecodeNonAsciiCharacters();
       value = value.Replace(@"\/", @"/");
       value = value.Replace(@"\\", @"\");
       value = WebUtility.HtmlDecode(value);
 
-      resetConsoleColor();
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.DarkGreen;
-      Console.WriteLine($"GET  {tag}  {value}\n");
+      Console.WriteLine($@"GET  {tag}  {value}{Environment.NewLine}");
 
       return value;
     }
 
-    private static void exit()
+    private static void Exit()
     {
       Thread.Sleep(Variables.WindowCloseDelay);
       Environment.Exit(0);
     }
 
-    private static string createMachine()
-    {
-      return Guid.NewGuid().ToString();
-    }
-
-    private static void configureMachine()
-    {
-      int valueLength = MainConfig.MachineName.Length + 1; // Variables.MachinesDelimiter
-      int realValueLimit = (int)Math.Floor((float)Variables.IndividualValueLimit / valueLength) * valueLength;
-
-      int listIndex = -1;
-      string currentList;
-      do
-      {
-        listIndex++;
-        currentList = GetUntilGet($"machines{listIndex}");
-        if (currentList.Contains(MainConfig.MachineName))
-        {
-          return;
-        }
-      } while (currentList.Length >= realValueLimit);
-
-      string machines = currentList;
-
-      SetUntilSet($"machines{listIndex}", $"{machines}{MainConfig.MachineName}{Variables.MachinesDelimiter}");
-    }
-
-    /*private static bool isNameOK(string name)
-    {
-      Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
-      return Guid.TryParse(name, out temp);
-    }
-
-    private static bool isPasswordOK(string password)
-    {
-      var strength = CheckStrength(password);
-
-      Program.State = $"{resources.MainWindowTitle} [{nameof(PasswordStrength)}: {strength}]";
-
-      return (strength >= Variables.MinimalPasswordStrength);
-    }*/
-
-    private static string passwordPrompt()
-    {
-      return InsecurePasswordPrompt(resources.PasswordEnterTip);
-    }
-
-    // TODO: Unite these two into validatePassword
-    /*private static void validateMemoryPassword(ref IniData configuration, ref bool promptShown)
-    {
-      if (isPasswordOK(machinePassword))
-      {
-        configuration["Service"].AddKey("sMachinePassword", machinePassword);
-      }
-      else
-      {
-        if (Program.Hidden)
-        {
-          ShowWindow(mainWindowHandle, SW_SHOW);
-        }
-
-        while (!isPasswordOK(machinePassword = passwordPrompt()))
-        {
-          reportWeakPassword();
-        }
-        promptShown = true;
-
-        configuration["Service"].AddKey("sMachinePassword", machinePassword);
-
-        if (Program.Hidden)
-        {
-          ShowWindow(mainWindowHandle, SW_HIDE);
-        }
-      }
-    }
-    private static void validateConfigPassword(ref IniData configuration, ref bool promptShown)
-    {
-      if (isPasswordOK(configuration["Service"]["sMachinePassword"]))
-      {
-        machinePassword = configuration["Service"]["sMachinePassword"];
-      }
-      else
-      {
-        if (Program.Hidden)
-        {
-          ShowWindow(mainWindowHandle, SW_SHOW);
-        }
-
-        while (!isPasswordOK(machinePassword = passwordPrompt()))
-        {
-          reportWeakPassword();
-        }
-        promptShown = true;
-
-        configuration["Service"]["sMachinePassword"] = machinePassword;
-
-        if (Program.Hidden)
-        {
-          ShowWindow(mainWindowHandle, SW_HIDE);
-        }
-      }
-    }*/
-
-    private static void resetConsoleColor()
-    {
-      if (RunningWindows)
-      {
-        Console.BackgroundColor = ConsoleColor.Black;
-      }
-      else
-      {
-        Console.ResetColor();
-      }
-    }
-
-    // TODO: Get filename from Response.Header
-    private static string urlToFileName(string url)
-    {
-      return Uri.UnescapeDataString(url.Substring(url.LastIndexOf('/') + 1));
-    }
-
-    // TODO: Implement adequate decoding
-    private static string decodeEncodedNonAsciiCharacters(string value)
-    {
-      return Regex.Replace(value, @"\\u(?<Value>[a-zA-Z0-9]{4})", m =>
-        ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString());
-    }
-
-    private static void openChatWindow()
+    private static void OpenChatWindow()
     {
       _busyChatWise = true;
 
@@ -284,14 +155,14 @@ namespace SimpleMaid
       _busyChatWise = false;
     }
 
-    private static void closeChatWindow()
+    private static void CloseChatWindow()
     {
       _busyChatWise = false;
 
       ChatboxExit = true;
     }
 
-    private static void resurrectDeadThreads()
+    private static void ResurrectDeadThreads()
     {
       Thread[] threads = { _connectionThread,   _commandThread,   _chatThread };
       Action[] starts  = { HandleConnection,   AwaitCommands,   ServeMessages };
@@ -299,16 +170,15 @@ namespace SimpleMaid
 
       for (int i = 0; i < threads.Length; ++i)
       {
-        resurrectDeadThread(ref threads[i], starts[i], flags[i]);
+        ResurrectDeadThread(ref threads[i], starts[i], flags[i]);
       }
     }
 
-    private static void resurrectDeadThread(ref Thread thread, Action start, bool flag)
+    private static void ResurrectDeadThread(ref Thread thread, Action start, bool flag)
     {
       if (flag && thread != null && !thread.IsAlive)
       {
-        thread = new Thread(new ThreadStart(start));
-        thread.IsBackground = true;
+        thread = new Thread(new ThreadStart(start)) {IsBackground = true};
         thread.Start();
       }
     }

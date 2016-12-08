@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using static Svetomech.Utilities.SimpleConsole;
+using static Svetomech.Utilities.SimpleString;
 
 namespace SimpleMaid
 {
@@ -67,7 +68,7 @@ namespace SimpleMaid
       if ((quickDownload = (commandParts.Count == 2)) || Variables.KeywordDefault == commandParts[2])
       {
         downloadDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        downloadFileName = urlToFileName(commandParts[1]);
+        downloadFileName = UrlToFileNameDropbox(commandParts[1]);
       }
       else if (commandParts.Count >= 3)
       {
@@ -143,7 +144,7 @@ namespace SimpleMaid
 
       if (null == ChatboxWindow || ChatboxWindow.IsDisposed)
       {
-        var chatboxThread = new Thread(openChatWindow) {IsBackground = true};
+        var chatboxThread = new Thread(OpenChatWindow) {IsBackground = true};
         chatboxThread.Start();
 
         while (null == ChatboxWindow || !ChatboxWindow.Visible)
@@ -151,11 +152,11 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        resurrectDeadThread(ref _chatThread, ServeMessages, _busyChatWise);
+        ResurrectDeadThread(ref _chatThread, ServeMessages, _busyChatWise);
       }
       else
       {
-        closeChatWindow();
+        CloseChatWindow();
       }
 
       return $"{Variables.MessageCommand},{ChatboxWindow.Visible}";

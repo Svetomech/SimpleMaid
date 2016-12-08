@@ -8,7 +8,7 @@ namespace SimpleMaid
   {
     private static void ReportPastSelf()
     {
-      resetConsoleColor();
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.DarkMagenta;
       Console.WriteLine(resources.PastSins + Environment.NewLine);
     }
@@ -31,7 +31,7 @@ namespace SimpleMaid
 
     private static void ReportWebError()
     {
-      resetConsoleColor();
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.DarkYellow;
       Console.WriteLine(resources.WebErrorMessage + Environment.NewLine);
     }
@@ -53,7 +53,7 @@ namespace SimpleMaid
 
     private static void ReportThreadStart(string message)
     {
-      resetConsoleColor();
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.Cyan;
       Console.WriteLine(message + Environment.NewLine);
 
@@ -65,7 +65,7 @@ namespace SimpleMaid
 
     private static void ReportThreadStop(string message)
     {
-      resetConsoleColor();
+      Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.Red;
       Console.WriteLine(message + Environment.NewLine);
 
