@@ -57,7 +57,7 @@ namespace SimpleMaid
       if (App.IsElevated())
       {
         ReportGeneralError(resources.AdminErrorMessage);
-        exit();
+        Exit();
       }
 
       // Highly optimised console arguments' searching
@@ -133,7 +133,7 @@ namespace SimpleMaid
       if (!_singleInstance.WaitOne(0, false))
       {
         ReportPastSelf();
-        exit();
+        Exit();
       }
 
       // Copy files required for app to run locally
@@ -157,7 +157,7 @@ namespace SimpleMaid
         catch (Exception exc)
         {
           ReportGeneralError(exc.Message);
-          exit();
+          Exit();
         }
       }
 
@@ -207,13 +207,13 @@ namespace SimpleMaid
       {
         var now = DateTime.Now;
 
-        if (resources.WebErrorMessage != set($"time.{MainConfig.MachineName}",
+        if (resources.WebErrorMessage != Set($"time.{MainConfig.MachineName}",
           $"{now.ToShortDateString()} {now.ToLongTimeString()}"))
         {
           if (!_internetAlive)
           {
             _internetAlive = true;
-            resurrectDeadThreads();
+            ResurrectDeadThreads();
           }
         }
 
@@ -228,7 +228,7 @@ namespace SimpleMaid
 
       while (_busyConnectionWise && _internetAlive)
       {
-        bool remotePasswordAccepted = get(MainConfig.MachineName) == MainConfig.MachinePassword;
+        bool remotePasswordAccepted = Get(MainConfig.MachineName) == MainConfig.MachinePassword;
         bool localCommandSupplied = !String.IsNullOrWhiteSpace(MainConfig.LoginCommand);
 
         if (remotePasswordAccepted || localCommandSupplied)
@@ -238,7 +238,7 @@ namespace SimpleMaid
           _busyCommandWise = !_busyCommandWise;
           SetUntilSet(MainConfig.MachineName, String.Empty);
 
-          resurrectDeadThread(ref _commandThread, AwaitCommands, _busyCommandWise);
+          ResurrectDeadThread(ref _commandThread, AwaitCommands, _busyCommandWise);
         }
 
         Thread.Sleep(Variables.GeneralDelay);
