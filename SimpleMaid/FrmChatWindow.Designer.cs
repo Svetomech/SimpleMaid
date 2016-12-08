@@ -110,8 +110,8 @@
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Dear Princess, ...";
       this.TopMost = true;
-      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmChatWindow_FormClosing);
-      this.Load += new System.EventHandler(this.frmChatWindow_Load);
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmChatWindow_FormClosing);
+      this.Load += new System.EventHandler(this.FrmChatWindow_Load);
       this.ResumeLayout(false);
 
     }
