@@ -17,7 +17,7 @@ namespace SimpleMaid
     private static string _emptyLine;
     private static Color _originalColor;
 
-    private void frmChatWindow_Load(object sender, EventArgs e)
+    private void FrmChatWindow_Load(object sender, EventArgs e)
     {
       string configUserName = ConfigurationManager.AppSettings["ChatUserName"];
 
@@ -38,7 +38,7 @@ namespace SimpleMaid
       UpdateCursor();
     }
 
-    private void frmChatWindow_FormClosing(object sender, FormClosingEventArgs e)
+    private void FrmChatWindow_FormClosing(object sender, FormClosingEventArgs e)
     {
       e.Cancel = true;
       Program.ChatboxExit = true;
