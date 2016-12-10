@@ -136,6 +136,17 @@ namespace SimpleMaid
         Exit();
       }
 
+      // Read main config file (or defaults if there's none)
+      try
+      {
+        MainConfig.Load();
+      }
+      catch (Exception exc)
+      {
+        ReportGeneralError(exc.Message);
+        Exit();
+      }
+
       // Copy files required for app to run locally
       if (!inDesiredDir && MainConfig.AutoRun)
       {
