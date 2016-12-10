@@ -59,41 +59,6 @@ namespace SimpleMaid
       }
     }
 
-
-    internal bool MachineConfigured
-    {
-      set
-      {
-        data[mainSection][machineConfiguredKey] = value.ToString();
-      }
-
-      get
-      {
-        return (bool.Parse(data[mainSection][machineConfiguredKey]));
-      }
-    }
-
-    internal string MachineName
-    {
-      set
-      {
-        MachineConfigured = false;
-
-        data[mainSection][machineNameKey] = value;
-      }
-
-      get
-      {
-        Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
-        if (!Guid.TryParse(data[mainSection][machineNameKey], out temp))
-        {
-          //MachineName = ;
-        }
-
-        return data[mainSection][machineNameKey];
-      }
-    }
-
     internal string MachinePassword
     {
       set
@@ -107,33 +72,6 @@ namespace SimpleMaid
         //validateConfigPassword(ref mainConfigData, ref promptShown); если Exists
       }
     }
-
-    internal bool AutoRun
-    {
-      set
-      {
-        MachineConfigured = false;
-
-        data["Service"]["bAutoRun"] = value.ToString();
-      }
-
-      get
-      {
-        return (bool.Parse(data["Service"]["bAutoRun"]));
-      }
-    }
-
-    internal string LoginCommand
-    {
-      set;
-      get;
-    }
-
-    //update
-
-    //merge
-
-    //promptshown?
 
     // !String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]) - logonAutomatically
 
