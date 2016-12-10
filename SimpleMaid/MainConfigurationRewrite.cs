@@ -27,70 +27,78 @@ namespace SimpleMaid
 
     internal bool MachineConfigured
     {
+      get
+      {
+        return bool.Parse(data[mainSectionName]["bMachineConfigured"]);
+      }
+
       set
       {
         data[mainSectionName]["bMachineConfigured"] = value.ToString();
-      }
-
-      get
-      {
-        return (bool.Parse(data[mainSectionName]["bMachineConfigured"]));
       }
     }
 
     internal string MachineName
     {
-      set
-      {
-        throw new NotImplementedException();
-      }
-
       get
       {
-        throw new NotImplementedException();
+        return data[mainSectionName]["sMachineName"];
+      }
+
+      set
+      {
+        data[mainSectionName]["sMachineName"] = value;
+
+        MachineConfigured = false;
       }
     }
 
     internal string MachinePassword
     {
-      set
-      {
-        throw new NotImplementedException();
-      }
-
       get
       {
-        throw new NotImplementedException();
+        return data[mainSectionName]["sMachinePassword"];
+      }
+
+      set
+      {
+        data[mainSectionName]["sMachinePassword"] = value;
+
+        MachineConfigured = false;
       }
     }
 
     internal bool AutoRun
     {
-      set
-      {
-        throw new NotImplementedException();
-      }
-
       get
       {
-        throw new NotImplementedException();
+        return bool.Parse(data[mainSectionName]["bAutoRun"]);
+      }
+
+      set
+      {
+        data[mainSectionName]["bAutoRun"] = value.ToString();
+
+        MachineConfigured = false;
       }
     }
 
     internal string LoginCommand
     {
-      set
-      {
-        throw new NotImplementedException();
-      }
-
       get
       {
-        throw new NotImplementedException();
+        return data[mainSectionName]["sLoginCommand"];
+      }
+
+      set
+      {
+        data[mainSectionName]["sLoginCommand"] = value;
+
+        MachineConfigured = false;
       }
     }
 
-    internal void Load()
+    internal void Load() //params args
     {
       if (ExistsLocally)
       {
