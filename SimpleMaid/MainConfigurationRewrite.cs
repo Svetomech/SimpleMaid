@@ -1,5 +1,6 @@
 ﻿using IniParser;
 using IniParser.Model;
+using Svetomech.Utilities;
 using System;
 using System.IO;
 using System.Reflection;
@@ -135,6 +136,52 @@ namespace SimpleMaid
     private void validate()
     {
       throw new NotImplementedException();
+    }
+
+    private string createMachine()
+    {
+      return Guid.NewGuid().ToString();
+    }
+
+    private void configureMachine()
+    {
+      int valueLength = MachineName.Length + 1; // Variables.MachinesDelimiter
+      int realValueLimit = (int)Math.Floor((float)Variables.IndividualValueLimit / valueLength) * valueLength;
+
+      int listIndex = -1;
+      string currentList;
+      do
+      {
+        listIndex++;
+        currentList = Program.GetUntilGet($"machines{listIndex}");
+        if (currentList.Contains(MachineName))
+        {
+          return;
+        }
+      } while (currentList.Length >= realValueLimit);
+
+      Program.SetUntilSet($"machines{listIndex}", String.Join(Variables.MachinesDelimiter.ToString(),
+        currentList.TrimEnd(Variables.MachinesDelimiter), MachineName));
+    }
+
+    private bool isNameOk(string name)
+    {
+      Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
+      return Guid.TryParse(name, out temp);
+    }
+
+    private bool isPasswordOk(string password)
+    {
+      var strength = PasswordStrength.CheckStrength(password);
+
+      Program.AddToTitle($"[{nameof(PasswordStrength)}: {strength}]");
+
+      return strength >= Variables.MinimalPasswordStrength;
+    }
+
+    private string passwordPrompt()
+    {
+      return SimpleConsole.InsecurePasswordPrompt(resources.PasswordEnterTip);
     }
   }
 }

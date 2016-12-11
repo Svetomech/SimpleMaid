@@ -75,55 +75,8 @@ namespace SimpleMaid
 
     // !String.IsNullOrWhiteSpace(mainConfigData["Service"]["sLogonCommand"]) - logonAutomatically
 
-    private static string CreateMachine()
-    {
-      return Guid.NewGuid().ToString();
-    }
-
-    private static void ConfigureMachine()
-    {
-      int valueLength = MainConfig.MachineName.Length + 1; // Variables.MachinesDelimiter
-      int realValueLimit = (int)Math.Floor((float)Variables.IndividualValueLimit / valueLength) * valueLength;
-
-      int listIndex = -1;
-      string currentList;
-      do
-      {
-        listIndex++;
-        currentList = GetUntilGet($"machines{listIndex}");
-        if (currentList.Contains(MainConfig.MachineName))
-        {
-          return;
-        }
-      } while (currentList.Length >= realValueLimit);
-
-      string machines = currentList;
-
-      SetUntilSet($"machines{listIndex}", $"{machines}{MainConfig.MachineName}{Variables.MachinesDelimiter}");
-    }
-
-    private static bool IsNameOk(string name)
-    {
-      Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
-      return Guid.TryParse(name, out temp);
-    }
-
-    private static bool IsPasswordOk(string password)
-    {
-      var strength = PasswordStrength.CheckStrength(password);
-
-      Program.State = $"{resources.MainWindowTitle} [{nameof(PasswordStrength)}: {strength}]";
-
-      return (strength >= Variables.MinimalPasswordStrength);
-    }
-
-    private static string PasswordEntered()
-    {
-      return InsecurePasswordPrompt(resources.PasswordEnterTip);
-    }
-
     // TODO: Unite these two into validatePassword
-    /*private static void validateMemoryPassword(ref IniData configuration, ref bool promptShown)
+    private static void validateMemoryPassword(ref IniData configuration, ref bool promptShown)
     {
       if (isPasswordOK(machinePassword))
       {
@@ -176,6 +129,6 @@ namespace SimpleMaid
           ShowWindow(mainWindowHandle, SW_HIDE);
         }
       }
-    }*/
+    }
   }
 }

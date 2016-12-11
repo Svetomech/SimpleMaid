@@ -32,11 +32,16 @@ namespace SimpleMaid
     private static bool _busyCommandWise;
     private static bool _busyChatWise;
 
-    internal static string State
+    internal static void AddToTitle(string value)
+    {
+      Title = Title.Insert(Title.IndexOf(' ') + 1, value + " ");
+    }
+
+    private static string Title
     {
       set
       {
-        Console.Title = $@"{ConsoleApplication.ProductName}: {value}";
+        Console.Title = $@"{ConsoleApplication.ProductName}: {value} ";
       }
 
       get
@@ -52,6 +57,7 @@ namespace SimpleMaid
       System.Windows.Forms.Application.EnableVisualStyles();
       ChatboxWindow = null;
       ChatboxExit = false;
+      Title = resources.MainWindowTitle;
 
       // Forbid executing as admin/root
       if (App.IsElevated())
