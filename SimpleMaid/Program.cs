@@ -85,6 +85,7 @@ namespace SimpleMaid
             langArg.Value = (langArg.Found = i + 1 < adjustedLength) ? args[i + 1] : langArg.Value;
 
             adjustedLength -= langArg.Found ? 2 : 1;
+            i += langArg.Found ? 1 : 0;
           }
           else if (!passArg.Found && (args[i] == Variables.PasswordArgument))
           {
@@ -92,6 +93,7 @@ namespace SimpleMaid
             passArg.Value = (passArg.Found = i + 1 < adjustedLength) ? args[i + 1] : passArg.Value;
 
             adjustedLength -= passArg.Found ? 2 : 1;
+            i += passArg.Found ? 1 : 0;
           }
         }
       }
