@@ -26,6 +26,7 @@ namespace SimpleMaid
 
     internal bool ExistsLocally => file.Exists;
     internal string ParserLocation { get; } = Assembly.GetAssembly(typeof(FileIniDataParser)).Location;
+    internal string UtilitiesLocation { get; } = Assembly.GetAssembly(typeof(PasswordStrength)).Location;
 
 
     internal bool MachineConfigured
