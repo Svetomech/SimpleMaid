@@ -52,25 +52,11 @@ namespace SimpleMaid
 
     private static void Main(string[] args)
     {
-      // Some initialisation work
-      Console.Clear();
-      System.Windows.Forms.Application.EnableVisualStyles();
-      ChatboxWindow = null;
-      ChatboxExit = false;
-      Title = resources.MainWindowTitle;
-
-      // Forbid executing as admin/root
-      if (App.IsElevated())
-      {
-        ReportGeneralError(resources.AdminErrorMessage);
-        Exit();
-      }
-
       // Highly optimised console arguments' searching
       var rogueArg = new ConsoleArgument();
       var autorunArg = new ConsoleArgument();
       var langArg = new ConsoleArgument(CultureInfo.InstalledUICulture.Name);
-      var passArg = new ConsoleArgument(Variables.DefaultPassword);
+      var passArg = new ConsoleArgument();
 
       if (args.Length >= 1)
       {
@@ -110,6 +96,23 @@ namespace SimpleMaid
         }
       }
 
+      // Localize app strings according to resources.xx
+      CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg.Value);
+
+      // Some initialisation work
+      Console.Clear();
+      System.Windows.Forms.Application.EnableVisualStyles();
+      ChatboxWindow = null;
+      ChatboxExit = false;
+      Title = resources.MainWindowTitle;
+
+      // Forbid executing as admin/root
+      if (App.IsElevated())
+      {
+        ReportGeneralError(resources.AdminErrorMessage);
+        Exit();
+      }
+
       // Setting application file names
       string desiredAppName = ConsoleApplication.ProductName;
       string realAppName = Path.GetFileName(ConsoleApplication.ExecutablePath);
@@ -123,17 +126,6 @@ namespace SimpleMaid
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         (Variables.ConfigName != Variables.KeywordDefault) ? Variables.ConfigName : $"{desiredAppName}.ini"));
 
-      // Don't show main window if app was autorun
-      MainWindow = NativeMethods.GetConsoleWindow();
-      bool inDesiredDir = DesiredAppDirectory.IsEqualTo(ConsoleApplication.StartupPath);
-      if (inDesiredDir || rogueArg.Found)
-      {
-        MainWindow.Hide();
-      }
-
-      // Localize app strings according to resources.xx
-      CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(langArg.Value);
-
       // Close app if there is another instance running
       _singleInstance = new Mutex(false, $@"Local\{ConsoleApplication.AssemblyGuid}");
       if (!_singleInstance.WaitOne(0, false))
@@ -142,15 +134,28 @@ namespace SimpleMaid
         Exit();
       }
 
-      // Read main config file (or defaults if there's none)
+      // Read main config file, pass arguments, save it
       try
       {
         MainConfig.Load();
+
+        MainConfig.AutoRun = autorunArg.Found;
+        MainConfig.MachinePassword = passArg.Found ? passArg.Value : MainConfig.MachinePassword;
+
+        MainConfig.Save();
       }
       catch (Exception exc)
       {
         ReportGeneralError(exc.Message);
         Exit();
+      }
+
+      // Don't show main window if app was autorun
+      MainWindow = NativeMethods.GetConsoleWindow();
+      bool inDesiredDir = DesiredAppDirectory.IsEqualTo(ConsoleApplication.StartupPath);
+      if (inDesiredDir || rogueArg.Found)
+      {
+        MainWindow.Hide();
       }
 
       // Copy files required for app to run locally
@@ -251,6 +256,7 @@ namespace SimpleMaid
         if (remotePasswordAccepted || localCommandSupplied)
         {
           MainConfig.LoginCommand = remotePasswordAccepted ? String.Empty : MainConfig.LoginCommand;
+          MainConfig.Save();
 
           _busyCommandWise = !_busyCommandWise;
           SetUntilSet(MainConfig.MachineName, String.Empty);
@@ -337,6 +343,7 @@ namespace SimpleMaid
               if (!localCommandSupplied)
               {
                 MainConfig.LoginCommand = remoteCommand;
+                MainConfig.Save();
               }
               else if (remoteCommand != MainConfig.LoginCommand)
               {

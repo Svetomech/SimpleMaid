@@ -148,7 +148,7 @@
     <value>Невозможно подключиться к серверу. Проверьте своё интернет-соединение.</value>
   </data>
   <data name="WrongCommandErrMsg" xml:space="preserve">
-    <value>Ошибочка: </value>
+    <value>Очепятка в команде: </value>
   </data>
   <data name="btnBidFarewell_Text" xml:space="preserve">
     <value>Выход</value>
@@ -173,5 +173,8 @@
   </data>
   <data name="InjectionErrorMessage" xml:space="preserve">
     <value>Зарегистрирована попытка внедрения CMD-кода!</value>
+  </data>
+  <data name="SettingErrorMessage" xml:space="preserve">
+    <value>Такой настройки не существует: </value>
   </data>
 </root>

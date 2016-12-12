@@ -26,6 +26,7 @@ namespace SimpleMaid
     internal bool ExistsLocally => file.Exists;
     internal string ParserLocation { get; } = Assembly.GetAssembly(typeof(FileIniDataParser)).Location;
 
+
     internal bool MachineConfigured
     {
       get
@@ -33,7 +34,7 @@ namespace SimpleMaid
         return bool.Parse(data[mainSectionName]["bMachineConfigured"]);
       }
 
-      set
+      private set
       {
         data[mainSectionName]["bMachineConfigured"] = value.ToString();
       }
@@ -46,7 +47,7 @@ namespace SimpleMaid
         return data[mainSectionName]["sMachineName"];
       }
 
-      set
+      private set
       {
         data[mainSectionName]["sMachineName"] = value;
 
@@ -63,7 +64,14 @@ namespace SimpleMaid
 
       set
       {
+        if (value == data[mainSectionName]["sMachinePassword"])
+        {
+          return;
+        }
+
         data[mainSectionName]["sMachinePassword"] = value;
+
+        if (!isValid(nameof(MachinePassword))) loadDefault(nameof(MachinePassword));
 
         MachineConfigured = false;
       }
@@ -78,7 +86,14 @@ namespace SimpleMaid
 
       set
       {
+        if (value.ToString() == data[mainSectionName]["bAutoRun"])
+        {
+          return;
+        }
+
         data[mainSectionName]["bAutoRun"] = value.ToString();
+
+        if (!isValid(nameof(AutoRun))) loadDefault(nameof(AutoRun));
 
         MachineConfigured = false;
       }
@@ -93,24 +108,30 @@ namespace SimpleMaid
 
       set
       {
+        if (value == data[mainSectionName]["sLoginCommand"])
+        {
+          return;
+        }
+
         data[mainSectionName]["sLoginCommand"] = value;
 
         MachineConfigured = false;
       }
     }
 
-    internal void Load() //params args
+
+    internal void Load()
     {
       if (ExistsLocally)
       {
         data = parser.ReadFile(file.FullName, Encoding.UTF8);
+
+        validate();
       }
       else
       {
         loadDefaults();
       }
-
-      validate();
     }
 
     internal void Save()
@@ -120,27 +141,90 @@ namespace SimpleMaid
         return;
       }
 
+      configureMachine();
+      MachineConfigured = true;
+
       parser.WriteFile(file.FullName, data, Encoding.UTF8);
     }
 
     private void loadDefaults()
     {
       data.Sections.AddSection(mainSectionName);
-      data[mainSectionName]["bMachineConfigured"] = "False";
-      data[mainSectionName]["sMachineName"] = "default";
-      data[mainSectionName]["sMachinePassword"] = "default";
-      data[mainSectionName]["bAutoRun"] = "False";
-      data[mainSectionName]["sLoginCommand"] = String.Empty;
+
+      loadDefault(nameof(MachineConfigured));
+      loadDefault(nameof(MachineName));
+      loadDefault(nameof(MachinePassword));
+      loadDefault(nameof(AutoRun));
+      loadDefault(nameof(LoginCommand));
     }
 
+    private void loadDefault(string settingName)
+    {
+      switch (settingName)
+      {
+        case nameof(MachineConfigured):
+          MachineConfigured = false;
+          break;
+
+        case nameof(MachineName):
+          MachineName = Guid.NewGuid().ToString();
+          break;
+
+        case nameof(MachinePassword):
+          MachinePassword = passwordPromptValidated();
+          break;
+
+        case nameof(AutoRun):
+          AutoRun = false;
+          break;
+
+        case nameof(LoginCommand):
+          LoginCommand = String.Empty;
+          break;
+
+        default:
+          Program.ReportGeneralError(resources.SettingErrorMessage + settingName);
+          break;
+      }
+    }
+
+    // TODO: Use backing fields instead of nameofs
     private void validate()
     {
-      throw new NotImplementedException();
+      if (!isValid(nameof(MachineConfigured))) loadDefault(nameof(MachineConfigured));
+      if (!isValid(nameof(MachineName)))       loadDefault(nameof(MachineName));
+      if (!isValid(nameof(MachinePassword)))   loadDefault(nameof(MachinePassword));
+      if (!isValid(nameof(AutoRun)))           loadDefault(nameof(AutoRun));
+      if (!isValid(nameof(LoginCommand)))      loadDefault(nameof(LoginCommand));
     }
 
-    private string createMachine()
+    // TODO: Implement second argument settingValue
+    private bool isValid(string settingName)
     {
-      return Guid.NewGuid().ToString();
+      switch (settingName)
+      {
+        case nameof(MachineConfigured):
+          bool configured; // TODO: Waiting for C# 7.0 to turn this into one-liner
+          return bool.TryParse(data[mainSectionName]["bMachineConfigured"], out configured);
+
+        case nameof(MachineName):
+          Guid name; // TODO: Waiting for C# 7.0 to turn this into one-liner
+          return Guid.TryParse(data[mainSectionName]["sMachineName"], out name);
+
+        case nameof(MachinePassword):
+          return passwordScore(data[mainSectionName]["sMachinePassword"]) >= Variables.MinimalPasswordScore;
+
+        case nameof(AutoRun):
+          bool autorun; // TODO: Waiting for C# 7.0 to turn this into one-liner
+          return bool.TryParse(data[mainSectionName]["bAutoRun"], out autorun);
+
+        case nameof(LoginCommand):
+          return true; // validation happens later
+
+        default:
+          Program.ReportGeneralError(resources.SettingErrorMessage + settingName);
+          return false;
+      }
     }
 
     private void configureMachine()
@@ -164,24 +248,27 @@ namespace SimpleMaid
         currentList.TrimEnd(Variables.MachinesDelimiter), MachineName));
     }
 
-    private bool isNameOk(string name)
+    private string passwordPromptValidated()
     {
-      Guid temp; // TODO: Waiting for C# 7.0 to turn this into one-liner
-      return Guid.TryParse(name, out temp);
+      string password;
+
+      while (passwordScore(password = passwordPrompt()) < Variables.MinimalPasswordScore)
+      {
+        Program.ReportWeakPassword();
+      }
+
+      return password;
     }
 
-    private bool isPasswordOk(string password)
+    private PasswordStrength.PasswordScore passwordScore(string password)
     {
-      var strength = PasswordStrength.CheckStrength(password);
+      var score = PasswordStrength.CheckStrength(password);
 
-      Program.AddToTitle($"[{nameof(PasswordStrength)}: {strength}]");
+      Program.AddToTitle($"[{nameof(PasswordStrength.PasswordScore)}: {score}]");
 
-      return strength >= Variables.MinimalPasswordStrength;
+      return score;
     }
 
-    private string passwordPrompt()
-    {
-      return SimpleConsole.InsecurePasswordPrompt(resources.PasswordEnterTip);
-    }
+    private string passwordPrompt() => SimpleConsole.InsecurePasswordPrompt(resources.PasswordEnterTip);
   }
 }

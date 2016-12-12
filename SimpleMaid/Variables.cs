@@ -11,10 +11,9 @@ namespace SimpleMaid
     internal static readonly NetworkCredential Credentials = CredentialCache.DefaultNetworkCredentials;
 
     // Some defaults
-    internal const string KeywordDefault = "default";
+    internal const string KeywordDefault = "default"; // -> MainConfigurationDefault.ini
     internal const string ConfigName = KeywordDefault;
-    internal const string DefaultPassword = KeywordDefault;
-    internal const PasswordScore MinimalPasswordStrength = PasswordScore.Weak;
+    internal const PasswordScore MinimalPasswordScore = PasswordScore.Weak;
     internal const string LangFolderKey = "LangFolderName"; // -> App.config
 
     // Console arguments

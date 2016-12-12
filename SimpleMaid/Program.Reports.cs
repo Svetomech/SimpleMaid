@@ -6,14 +6,22 @@ namespace SimpleMaid
 {
   internal static partial class Program
   {
-    private static void ReportPastSelf()
+    internal static void ReportGeneralError(string message)
     {
-      Console.ResetColor();
-      Console.ForegroundColor = ConsoleColor.DarkMagenta;
-      Console.WriteLine(resources.PastSins + Environment.NewLine);
+      Console.BackgroundColor = ConsoleColor.Blue;
+      Console.ForegroundColor = ConsoleColor.White;
+      Console.WriteLine(message + Environment.NewLine);
+
+      if (!MainWindow.IsShown)
+      {
+        MainWindow.Show();
+        Console.Beep();
+        Thread.Sleep(Variables.WindowCloseDelay);
+        MainWindow.Hide();
+      }
     }
 
-    private static void ReportWeakPassword()
+    internal static void ReportWeakPassword()
     {
       string middlePractical = "| " + resources.PasswordWeakHint;
       string middle = middlePractical + " |";
@@ -29,26 +37,18 @@ namespace SimpleMaid
       Console.CursorVisible = true;
     }
 
+    private static void ReportPastSelf()
+    {
+      Console.ResetColor();
+      Console.ForegroundColor = ConsoleColor.DarkMagenta;
+      Console.WriteLine(resources.PastSins + Environment.NewLine);
+    }
+
     private static void ReportWebError()
     {
       Console.ResetColor();
       Console.ForegroundColor = ConsoleColor.DarkYellow;
       Console.WriteLine(resources.WebErrorMessage + Environment.NewLine);
-    }
-
-    private static void ReportGeneralError(string message)
-    {
-      Console.BackgroundColor = ConsoleColor.Blue;
-      Console.ForegroundColor = ConsoleColor.White;
-      Console.WriteLine(message + Environment.NewLine);
-
-      if (!MainWindow.IsShown)
-      {
-        MainWindow.Show();
-        Console.Beep();
-        Thread.Sleep(Variables.WindowCloseDelay);
-        MainWindow.Hide();
-      }
     }
 
     private static void ReportThreadStart(string message)
