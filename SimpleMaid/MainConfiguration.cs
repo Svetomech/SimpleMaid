@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using static Svetomech.Utilities.PasswordStrength;
 
 namespace SimpleMaid
 {
@@ -212,7 +213,7 @@ namespace SimpleMaid
           return Guid.TryParse(data[mainSectionName]["sMachineName"], out name);
 
         case nameof(MachinePassword):
-          return passwordScore(data[mainSectionName]["sMachinePassword"]) >= Variables.MinimalPasswordScore;
+          return CheckStrength(data[mainSectionName]["sMachinePassword"]) >= Variables.MinimalPasswordScore;
 
         case nameof(AutoRun):
           bool autorun; // TODO: Waiting for C# 7.0 to turn this into one-liner
@@ -251,22 +252,16 @@ namespace SimpleMaid
     private string passwordPromptValidated()
     {
       string password;
+      PasswordScore score;
 
-      while (passwordScore(password = passwordPrompt()) < Variables.MinimalPasswordScore)
+      while ((score = CheckStrength(password = passwordPrompt())) < Variables.MinimalPasswordScore)
       {
         Program.ReportWeakPassword();
       }
 
+      Program.AddToTitle($"[{nameof(PasswordScore)}: {score}]");
+
       return password;
-    }
-
-    private PasswordStrength.PasswordScore passwordScore(string password)
-    {
-      var score = PasswordStrength.CheckStrength(password);
-
-      Program.AddToTitle($"[{nameof(PasswordStrength.PasswordScore)}: {score}]");
-
-      return score;
     }
 
     private string passwordPrompt() => SimpleConsole.InsecurePasswordPrompt(resources.PasswordEnterTip);
