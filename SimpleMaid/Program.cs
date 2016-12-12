@@ -102,6 +102,7 @@ namespace SimpleMaid
       // Some initialisation work
       Console.Clear();
       System.Windows.Forms.Application.EnableVisualStyles();
+      MainWindow = NativeMethods.GetConsoleWindow();
       ChatboxWindow = null;
       ChatboxExit = false;
       Title = resources.MainWindowTitle;
@@ -151,7 +152,6 @@ namespace SimpleMaid
       }
 
       // Don't show main window if app was autorun
-      MainWindow = NativeMethods.GetConsoleWindow();
       bool inDesiredDir = DesiredAppDirectory.IsEqualTo(ConsoleApplication.StartupPath);
       if (inDesiredDir || rogueArg.Found)
       {
