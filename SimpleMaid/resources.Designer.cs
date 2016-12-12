@@ -196,6 +196,15 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no setting named: .
+        /// </summary>
+        internal static string SettingErrorMessage {
+            get {
+                return ResourceManager.GetString("SettingErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Support.
         /// </summary>
         internal static string SupportName {
@@ -223,7 +232,7 @@ namespace SimpleMaid {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A typo: .
+        ///   Looks up a localized string similar to Command typo: .
         /// </summary>
         internal static string WrongCommandErrMsg {
             get {

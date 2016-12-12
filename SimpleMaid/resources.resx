@@ -142,7 +142,7 @@
     <value>Problem connecting to server. Check your internet connection.</value>
   </data>
   <data name="WrongCommandErrMsg" xml:space="preserve">
-    <value>A typo: </value>
+    <value>Command typo: </value>
   </data>
   <data name="ChatStart" xml:space="preserve">
     <value>Chat thread has started.</value>
@@ -173,5 +173,8 @@
   </data>
   <data name="InjectionErrorMessage" xml:space="preserve">
     <value>CMD injection attempt detected!</value>
+  </data>
+  <data name="SettingErrorMessage" xml:space="preserve">
+    <value>There is no setting named: </value>
   </data>
 </root>
