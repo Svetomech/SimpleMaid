@@ -140,7 +140,7 @@ namespace SimpleMaid
       {
         MainConfig.Load();
 
-        MainConfig.AutoRun = autorunArg.Found;
+        MainConfig.AutoRun = autorunArg.Found ? !MainConfig.AutoRun : MainConfig.AutoRun;
         MainConfig.MachinePassword = passArg.Found ? passArg.Value : MainConfig.MachinePassword;
 
         MainConfig.Save();
