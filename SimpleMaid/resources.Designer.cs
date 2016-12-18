@@ -178,11 +178,29 @@ namespace SimpleMaid {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please, repeat your password: .
+        /// </summary>
+        internal static string PasswordRepeatTip {
+            get {
+                return ResourceManager.GetString("PasswordRepeatTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong..
+        /// </summary>
+        internal static string PasswordRepeatWrong {
+            get {
+                return ResourceManager.GetString("PasswordRepeatWrong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Too weak..
         /// </summary>
-        internal static string PasswordWeakHint {
+        internal static string PasswordWeak {
             get {
-                return ResourceManager.GetString("PasswordWeakHint", resourceCulture);
+                return ResourceManager.GetString("PasswordWeak", resourceCulture);
             }
         }
         

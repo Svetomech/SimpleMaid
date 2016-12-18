@@ -252,19 +252,27 @@ namespace SimpleMaid
 
     private string passwordPromptValidated()
     {
-      string password;
+      string password, passwordRepeated;
       PasswordScore score;
 
       while ((score = CheckStrength(password = passwordPrompt())) < Variables.MinimalPasswordScore)
       {
-        Program.ReportWeakPassword();
+        Program.AddToTitle($"[{nameof(PasswordScore)}: {score}]");
+        Program.ReportPassword(resources.PasswordWeak);
       }
 
       Program.AddToTitle($"[{nameof(PasswordScore)}: {score}]");
+
+      while ((passwordRepeated = passwordPromptRepeat()) != password)
+      {
+        Program.ReportPassword(resources.PasswordRepeatWrong);
+      }
 
       return password;
     }
 
     private string passwordPrompt() => SimpleConsole.InsecurePasswordPrompt(resources.PasswordEnterTip);
+
+    private string passwordPromptRepeat() => SimpleConsole.InsecurePasswordPrompt(resources.PasswordRepeatTip);
   }
 }

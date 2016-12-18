@@ -159,7 +159,7 @@
   <data name="PasswordEnterTip" xml:space="preserve">
     <value>Пожалуйста, установите пароль: </value>
   </data>
-  <data name="PasswordWeakHint" xml:space="preserve">
+  <data name="PasswordWeak" xml:space="preserve">
     <value>Слишком слабый.</value>
   </data>
   <data name="ChatWindowTitle" xml:space="preserve">
@@ -176,5 +176,11 @@
   </data>
   <data name="SettingErrorMessage" xml:space="preserve">
     <value>Такой настройки не существует: </value>
+  </data>
+  <data name="PasswordRepeatTip" xml:space="preserve">
+    <value>Пожалуйста, повторите пароль: </value>
+  </data>
+  <data name="PasswordRepeatWrong" xml:space="preserve">
+    <value>Неправильный.</value>
   </data>
 </root>
