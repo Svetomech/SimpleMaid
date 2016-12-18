@@ -13,7 +13,7 @@ namespace SimpleMaid
     // Some defaults
     internal const string KeywordDefault = "default"; // -> MainConfigurationDefault.ini
     internal const string ConfigName = KeywordDefault;
-    internal const PasswordScore MinimalPasswordScore = PasswordScore.Weak;
+    internal const PasswordScore MinimalPasswordScore = PasswordScore.Fair;
     internal const string LangFolderKey = "LangFolderName"; // -> App.config
 
     // Console arguments
@@ -47,6 +47,6 @@ namespace SimpleMaid
     // In milliseconds
     internal const int GeneralDelay       = 1000;
     internal const int WindowCloseDelay   = 2000;
-    internal const int PasswordWeakDelay  = 500;
+    internal const int PasswordReportDelay  = 500;
   }
 }

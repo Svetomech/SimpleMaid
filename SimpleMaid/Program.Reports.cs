@@ -21,9 +21,9 @@ namespace SimpleMaid
       }
     }
 
-    internal static void ReportWeakPassword()
+    internal static void ReportPassword(string mistake)
     {
-      string middlePractical = "| " + resources.PasswordWeakHint;
+      string middlePractical = "| " + mistake;
       string middle = middlePractical + " |";
       middle = middlePractical + Line.GetFilled(' ').Remove(0, middle.Length) + " |";
 
@@ -32,7 +32,7 @@ namespace SimpleMaid
       Console.Write(@"#" + Line.GetFilled('-').Remove(0, 2) + @"#");
       Console.CursorVisible = false;
 
-      Thread.Sleep(Variables.PasswordWeakDelay);
+      Thread.Sleep(Variables.PasswordReportDelay);
 
       Console.CursorVisible = true;
     }

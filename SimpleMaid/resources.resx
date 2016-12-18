@@ -159,7 +159,7 @@
   <data name="PasswordEnterTip" xml:space="preserve">
     <value>Please, setup a password: </value>
   </data>
-  <data name="PasswordWeakHint" xml:space="preserve">
+  <data name="PasswordWeak" xml:space="preserve">
     <value>Too weak.</value>
   </data>
   <data name="ChatWindowTitle" xml:space="preserve">
@@ -176,5 +176,11 @@
   </data>
   <data name="SettingErrorMessage" xml:space="preserve">
     <value>There is no setting named: </value>
+  </data>
+  <data name="PasswordRepeatTip" xml:space="preserve">
+    <value>Please, repeat your password: </value>
+  </data>
+  <data name="PasswordRepeatWrong" xml:space="preserve">
+    <value>Wrong.</value>
   </data>
 </root>
