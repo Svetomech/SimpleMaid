@@ -14,6 +14,7 @@ namespace SimpleMaid
     internal const string KeywordDefault = "default"; // -> MainConfigurationDefault.ini
     internal const string ConfigName = KeywordDefault;
     internal const PasswordScore MinimalPasswordScore = PasswordScore.Fair;
+    internal const bool ForbidElevatedExecution = true;
     internal const string LangFolderKey = "LangFolderName"; // -> App.config
 
     // Console arguments
