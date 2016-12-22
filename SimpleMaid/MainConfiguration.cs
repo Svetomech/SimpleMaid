@@ -22,6 +22,8 @@ namespace SimpleMaid
       file = new FileInfo(fileName);
       parser = new FileIniDataParser();
       data = new IniData();
+
+      data.Sections.AddSection(mainSectionName);
     }
 
     internal bool ExistsLocally => file.Exists;
@@ -117,6 +119,8 @@ namespace SimpleMaid
 
         data[mainSectionName]["sLoginCommand"] = value;
 
+        if (!isValid(nameof(LoginCommand))) loadDefault(nameof(LoginCommand));
+
         MachineConfigured = false;
       }
     }
@@ -149,15 +153,23 @@ namespace SimpleMaid
       parser.WriteFile(file.FullName, data, Encoding.UTF8);
     }
 
+
     private void loadDefaults()
     {
-      data.Sections.AddSection(mainSectionName);
-
       loadDefault(nameof(MachineConfigured));
       loadDefault(nameof(MachineName));
       loadDefault(nameof(MachinePassword));
       loadDefault(nameof(AutoRun));
       loadDefault(nameof(LoginCommand));
+    }
+
+    private void validate()
+    {
+      if (!isValid(nameof(MachineConfigured))) loadDefault(nameof(MachineConfigured));
+      if (!isValid(nameof(MachineName))) loadDefault(nameof(MachineName));
+      if (!isValid(nameof(MachinePassword))) loadDefault(nameof(MachinePassword));
+      if (!isValid(nameof(AutoRun))) loadDefault(nameof(AutoRun));
+      if (!isValid(nameof(LoginCommand))) loadDefault(nameof(LoginCommand));
     }
 
     private void loadDefault(string settingName)
@@ -190,16 +202,6 @@ namespace SimpleMaid
       }
     }
 
-    // TODO: Use backing fields instead of nameofs
-    private void validate()
-    {
-      if (!isValid(nameof(MachineConfigured))) loadDefault(nameof(MachineConfigured));
-      if (!isValid(nameof(MachineName)))       loadDefault(nameof(MachineName));
-      if (!isValid(nameof(MachinePassword)))   loadDefault(nameof(MachinePassword));
-      if (!isValid(nameof(AutoRun)))           loadDefault(nameof(AutoRun));
-      if (!isValid(nameof(LoginCommand)))      loadDefault(nameof(LoginCommand));
-    }
-
     // TODO: Implement second argument settingValue
     private bool isValid(string settingName)
     {
@@ -228,6 +230,7 @@ namespace SimpleMaid
           return false;
       }
     }
+
 
     private void configureMachine()
     {

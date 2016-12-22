@@ -110,7 +110,7 @@ namespace SimpleMaid
       Title = resources.MainWindowTitle;
 
       // Forbid executing as admin/root
-      if (App.IsElevated())
+      if (Variables.ForbidElevatedExecution && App.IsElevated())
       {
         ReportGeneralError(resources.AdminErrorMessage);
         Exit();
