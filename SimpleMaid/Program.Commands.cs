@@ -91,7 +91,7 @@ namespace SimpleMaid
             }
 
             string unevaluatedVariable = ev + variable + evd;
-            string evaluatedVariable = RunCommand($"echo {variable}");
+            string evaluatedVariable = RunCommand($"echo {variable}").TrimEnd('\n');
 
             commandParts[2] = commandParts[2].Replace(unevaluatedVariable, evaluatedVariable);
 
