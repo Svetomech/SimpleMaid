@@ -161,7 +161,7 @@ namespace SimpleMaid
       }
 
       // Copy files required for app to run locally
-      if (!inDesiredDir && MainConfig.AutoRun)
+      if (MainConfig.AutoRun && !inDesiredDir)
       {
         string[] filePaths = { ConsoleApplication.ExecutablePath, MainConfig.ParserLocation, MainConfig.UtilitiesLocation,
           ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath };
