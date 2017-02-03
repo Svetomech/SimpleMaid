@@ -237,7 +237,20 @@ namespace SimpleMaid
           if (!_internetAlive)
           {
             _internetAlive = true;
-            ResurrectDeadThreads();
+
+            var flags   = new bool[]        { _busyConnectionWise, _busyCommandWise, _busyChatWise };
+            var threads = new Thread[]      { _connectionThread,   _commandThread,   _chatThread };
+            var starts  = new ThreadStart[] { HandleConnection,    AwaitCommands,    ServeMessages };
+
+            for (int i = 0; i < threads.Length; ++i)
+            {
+              if (!flags[i]) continue;
+
+              if (threads[i].IsAlive) threads[i].Join();
+
+              threads[i] = new Thread(starts[i]) { IsBackground = true };
+              threads[i].Start();
+            }
           }
         }
 
@@ -255,15 +268,31 @@ namespace SimpleMaid
         bool remotePasswordAccepted = Get(MainConfig.MachineName) == MainConfig.MachinePassword;
         bool localCommandSupplied = !String.IsNullOrWhiteSpace(MainConfig.LoginCommand);
 
-        if (remotePasswordAccepted || localCommandSupplied)
+        if (remotePasswordAccepted)
         {
-          MainConfig.LoginCommand = remotePasswordAccepted ? String.Empty : MainConfig.LoginCommand;
+          MainConfig.LoginCommand = String.Empty;
           MainConfig.Save();
 
           _busyCommandWise = !_busyCommandWise;
           SetUntilSet(MainConfig.MachineName, String.Empty);
 
-          ResurrectDeadThread(ref _commandThread, AwaitCommands, _busyCommandWise);
+          if (_busyCommandWise)
+          {
+            if (_commandThread.IsAlive) _commandThread.Join();
+
+            _commandThread = new Thread(AwaitCommands) { IsBackground = true };
+            _commandThread.Start();
+          }
+        }
+        else if (localCommandSupplied)
+        {
+          _busyCommandWise = true;
+
+          if (!_commandThread.IsAlive)
+          {
+            _commandThread = new Thread(AwaitCommands) { IsBackground = true };
+            _commandThread.Start();
+          }
         }
 
         Thread.Sleep(Variables.GeneralDelay);

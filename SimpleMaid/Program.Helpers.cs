@@ -154,33 +154,5 @@ namespace SimpleMaid
 
       _busyChatWise = false;
     }
-
-    private static void CloseChatWindow()
-    {
-      _busyChatWise = false;
-
-      ChatboxExit = true;
-    }
-
-    private static void ResurrectDeadThreads()
-    {
-      Thread[] threads = { _connectionThread,   _commandThread,   _chatThread };
-      Action[] starts  = { HandleConnection,   AwaitCommands,   ServeMessages };
-      bool[]   flags   = { _busyConnectionWise, _busyCommandWise, _busyChatWise };
-
-      for (int i = 0; i < threads.Length; ++i)
-      {
-        ResurrectDeadThread(ref threads[i], starts[i], flags[i]);
-      }
-    }
-
-    private static void ResurrectDeadThread(ref Thread thread, Action start, bool flag)
-    {
-      if (flag && thread != null && !thread.IsAlive)
-      {
-        thread = new Thread(new ThreadStart(start)) {IsBackground = true};
-        thread.Start();
-      }
-    }
   }
 }
