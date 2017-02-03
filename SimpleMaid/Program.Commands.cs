@@ -152,11 +152,14 @@ namespace SimpleMaid
           Thread.Sleep(Variables.GeneralDelay);
         }
 
-        ResurrectDeadThread(ref _chatThread, ServeMessages, _busyChatWise);
+        _chatThread = new Thread(ServeMessages) { IsBackground = true };
+        _chatThread.Start();
       }
       else
       {
-        CloseChatWindow();
+        _busyChatWise = false;
+
+        ChatboxExit = true;
       }
 
       return $"{Variables.MessageCommand},{ChatboxWindow.Visible}";
