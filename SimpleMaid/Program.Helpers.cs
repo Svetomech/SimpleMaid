@@ -111,8 +111,8 @@ namespace SimpleMaid
         using (var sr = new StreamReader(responseStream))
         {
           value = sr.ReadToEnd();
-          value = value.Substring(value.IndexOf(tag, StringComparison.Ordinal) + tag.Length + 4);
-          value = value.Remove(value.IndexOf("\"", StringComparison.Ordinal));
+          value = value.Substring(value.IndexOf(tag, StringComparison.Ordinal) + tag.Length + 3);
+          value = value.StartsWith("\"") ? "" : value.Remove(value.IndexOf("\"", StringComparison.Ordinal));
         }
       }
       catch (WebException)
