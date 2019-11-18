@@ -6,7 +6,7 @@ namespace SimpleMaid
   internal static class Variables
   {
     // Web strings
-    internal const string ServerAddress = "https://apptinywebdb.appspot.com";
+    internal const string ServerAddress = "http://tinywebdb.appinventor.mit.edu";
     internal const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64)";
     internal static readonly NetworkCredential Credentials = CredentialCache.DefaultNetworkCredentials;
 

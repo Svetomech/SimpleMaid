@@ -123,6 +123,7 @@ namespace SimpleMaid
       // Generate app directory path in a cross-platform way
       DesiredAppDirectory = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(
         Environment.SpecialFolder.LocalApplicationData), ConsoleApplication.CompanyName, desiredAppName));
+      DesiredAppDirectory.Create();
 
       // Initialize main config file based on app directory
       MainConfig = new MainConfiguration(Path.Combine(DesiredAppDirectory.FullName,
